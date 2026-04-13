@@ -9,8 +9,8 @@
 //
 // Both functions accept a FEN string representing the current position and
 // write the best move in UCI notation (e.g. "e2e4", "e7e8q") into out_move.
-// We think this is optimal because bitboard sounds a bit annoying to do transfer
-// between C++/Python and CSL/Python
+// We think this is optimal because bitboard sounds a bit annoying to do
+// transfer between C++/Python and CSL/Python.
 //
 // Returns  0 on success.
 // Returns -1 if no legal move exists (checkmate / stalemate).
