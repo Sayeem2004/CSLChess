@@ -1,0 +1,4 @@
+[submodule "chess-library"]
+	path = chess-library
+	url = git@github.com:Disservin/chess-library.git
+	branch = master
