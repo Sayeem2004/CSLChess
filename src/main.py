@@ -1,150 +1,116 @@
 """
-Plays a chess game where our C++ engine (alpha-beta or monte-carlo skeleton)
-faces Stockfish.  The chosen C++ source is compiled automatically on startup.
+Plays one or more chess games where our engine faces Stockfish.
+The chosen algorithm is compiled/loaded automatically on startup.
 
 Usage:
-    usage: python main.py [-h] [--algorithm {alpha-beta,monte-carlo}] [--color {white,black}] [--depth DEPTH]
-               [--stockfish STOCKFISH] [--stockfish-depth STOCKFISH_DEPTH]
+    python main.py --algorithm {cpp-alpha-beta,cpp-monte-carlo,csl-alpha-beta,csl-monte-carlo}
+                   (--depth DEPTH | --time TIME_MS | --flops FLOPS)
+                   [--color {white,black}] [--num NUM] [--verbose]
 """
-from stockfish import Stockfish
-import subprocess
 import argparse
-import ctypes
+import random
 import chess
-import sys
-import os
 
-from utils import print_green, print_yellow, print_red
-
-SRC_DIR = os.path.dirname(os.path.abspath(__file__))
-STANDARD_DIR = os.path.join(SRC_DIR, "standard")
-MOVE_BUF_LEN = 8  # longest UCI move is 5 chars (e.g. "e7e8q\0")
+from utils import print_green, print_yellow, print_red, engine_best_move, stockfish_best_move
+from utils.load import load_engine, load_stockfish
 
 
-def compile_and_load(algorithm: str):
-    """Compile the C++ shared library for `algorithm` and return its ctypes fn."""
-    if algorithm == "alpha-beta":
-        src     = os.path.join(STANDARD_DIR, "alpha-beta.cpp")
-        lib_out = os.path.join(STANDARD_DIR, "alpha-beta.so")
-        fn_name = "best_move_alpha_beta"
-    else:
-        src     = os.path.join(STANDARD_DIR, "monte-carlo.cpp")
-        lib_out = os.path.join(STANDARD_DIR, "monte-carlo.so")
-        fn_name = "best_move_monte_carlo"
-
-    utils_src = os.path.join(STANDARD_DIR, "utils.cpp")
-
-    import glob
-    sf_dir = os.path.join(SRC_DIR, "..", "stockfish", "stockfish-11-src")
-    sf_sources = glob.glob(os.path.join(sf_dir, "*.cpp")) + glob.glob(os.path.join(sf_dir, "syzygy", "*.cpp"))
-    sf_sources = [f for f in sf_sources if os.path.basename(f) != "main.cpp"]
-
-    print_yellow(f"[build] compiling {os.path.basename(src)} ...")
-    cmd = ["g++", "-O2", "-std=c++17", "-shared", "-static", "-static-libgcc", "-static-libstdc++", "-fPIC"]
-    cmd.extend([src, utils_src])
-    cmd.extend(sf_sources)
-    cmd.extend(["-o", lib_out])
-
-    result = subprocess.run(
-        cmd,
-        capture_output=True, text=True,
-    )
-
-    if result.returncode != 0:
-        print_red(f"[build] failed: \n{result.stderr}")
-        sys.exit(1)
-    print_green(f"[build] succeeded at {os.path.relpath(lib_out)}\n")
-
-    lib_path = os.path.abspath(lib_out)
-    if hasattr(os, "add_dll_directory"):
-        lib = ctypes.CDLL(lib_path, winmode=0)
-    else:
-        lib = ctypes.CDLL(lib_path)
-
-    fn  = getattr(lib, fn_name)
-    fn.argtypes = [
-        ctypes.c_char_p,  # fen
-        ctypes.c_int,     # depth / num_simulations
-        ctypes.c_char_p,  # out_move buffer
-        ctypes.c_int,     # out_len
-    ]
-    fn.restype = ctypes.c_int
-    return fn
-
-
-def cpp_best_move(fn, board: chess.Board, param: int) -> chess.Move | None:
+def play_game(algorithm: str, our_color: chess.Color, budget_type: str, budget: int,
+              engine, stockfish, verbose: bool) -> str:
     """
-    Invoke the C++ engine for the current position.
-    Returns a legal chess.Move, or None if the engine returned an error / illegal move.
+    Play a single game. Returns 'win', 'loss', or 'draw' from our engine's perspective.
+    `engine` and `stockfish` are pre-loaded handles (compiled/loaded once before the game loop).
     """
-    fen_bytes = board.fen().encode()
-    buf       = ctypes.create_string_buffer(MOVE_BUF_LEN)
-    rc        = fn(fen_bytes, param, buf, MOVE_BUF_LEN)
-
-    if rc != 0: return None
-    uci_str = buf.value.decode().strip()
-    try: move = chess.Move.from_uci(uci_str)
-    except chess.InvalidMoveError: return None
-    return move if move in board.legal_moves else None
-
-
-def play_game(algorithm: str, our_color: chess.Color, depth: int, stockfish_path: str, stockfish_depth: int) -> None:
-    fn        = compile_and_load(algorithm)
     board     = chess.Board()
     color_str = "White" if our_color == chess.WHITE else "Black"
 
-    print_yellow(f"{'='*60}")
-    print_yellow(f"  Engine  : {algorithm} ({color_str})")
-    print_yellow(f"  Opponent: Stockfish (depth {stockfish_depth})")
-    print_yellow(f"{'='*60}\n")
-
-    stockfish = Stockfish(path=stockfish_path, depth=stockfish_depth)
+    if verbose:
+        print_yellow(f"{'='*60}")
+        print_yellow(f"  Engine  : {algorithm} ({color_str})")
+        print_yellow(f"  Budget  : {budget_type}={budget}")
+        print_yellow(f"  Opponent: Stockfish")
+        print_yellow(f"{'='*60}\n")
 
     move_number = 1
     while not board.is_game_over():
-        if board.turn == chess.WHITE:
-            print(f"--- Move {move_number} (White) ---")
-        else:
-            print(f"--- Move {move_number} (Black) ---")
-            move_number += 1
-        print(board)
-        print()
+        if verbose:
+            side = "White" if board.turn == chess.WHITE else "Black"
+            print(f"--- Move {move_number} ({side}) ---")
+            print(board)
+            print()
 
         if board.turn == our_color:
-            move = cpp_best_move(fn, board, depth)
+            move = engine_best_move(algorithm, engine, board, budget_type, budget)
             if move is None:
                 move = next(iter(board.legal_moves))
-                print_red(f"  [{algorithm}] (fallback)  {board.san(move)}\n")
+                if verbose: print_red(f"  [{algorithm}] (fallback)  {board.san(move)}\n")
             else:
-                print_green(f"  [{algorithm}]  {board.san(move)}\n")
-
+                if verbose: print_green(f"  [{algorithm}]  {board.san(move)}\n")
         else:
-            stockfish.set_fen_position(board.fen())
-            best_uci = stockfish.get_best_move()
-            move     = chess.Move.from_uci(best_uci)
-            print_yellow(f"  [stockfish]  {board.san(move)}\n")
+            move = stockfish_best_move(stockfish, board, budget_type, budget)
+            if move is None:
+                move = next(iter(board.legal_moves))
+                if verbose: print_red(f"  [stockfish] (fallback)  {board.san(move)}\n")
+            else:
+                if verbose: print_yellow(f"  [stockfish]  {board.san(move)}\n")
 
+        if board.turn == chess.BLACK:
+            move_number += 1
         board.push(move)
 
-    print("="*60)
-    print(board)
     outcome = board.outcome()
+    if verbose:
+        print("="*60)
+        print(board)
+        print("="*60 + "\n")
 
-    if outcome is None or outcome.winner is None: print("\n  Result: draw")
-    elif outcome.winner == our_color: print(f"\n  Result: {algorithm} wins!")
-    else: print("\n  Result: Stockfish wins.")
-    print("="*60)
-
+    if outcome is None or outcome.winner is None: return "draw"
+    return "win" if outcome.winner == our_color else "loss"
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Standard CPP Engine vs Stockfish")
-    parser.add_argument("--algorithm", choices=["alpha-beta", "monte-carlo"], default="alpha-beta", help="Search algorithm (default: alpha-beta)")
-    parser.add_argument("--color", choices=["white", "black"], default="white", help="Color our engine plays (default: white)")
-    parser.add_argument("--depth", type=int, default=20000, help="Search depth / simulation count for our engine (default: 1000 num simulations for MCTS)")
-    parser.add_argument("--stockfish", default="../stockfish/stockfish-11-modern", help="Path to the Stockfish binary (default: ../stockfish/stockfish-11-modern)")
-    parser.add_argument("--stockfish-depth", type=int, default=1, help="Stockfish search depth (default: 1)")
+    algorithms = ["cpp-alpha-beta", "cpp-monte-carlo", "csl-alpha-beta", "csl-monte-carlo"]
+    parser = argparse.ArgumentParser(description="CSLChess Engine vs Stockfish")
+    parser.add_argument("--algorithm", required=True, choices=algorithms,        help="Search algorithm to use")
+    parser.add_argument("--color",     choices=["white", "black"], default=None, help="Color our engine plays (default: random per game)")
+    parser.add_argument("--num",       type=int, default=1,                      help="Number of games to play (default: 1)")
+    parser.add_argument("--verbose",   action="store_true",                      help="Print board and move output each turn")
 
+    budget = parser.add_mutually_exclusive_group(required=True)
+    budget.add_argument("--depth", type=int, metavar="DEPTH",   help="Limit search by depth (alpha-beta, stockfish) or simulation count (MCTS)")
+    budget.add_argument("--time",  type=int, metavar="TIME_MS", help="Limit search by time in milliseconds")
+    budget.add_argument("--flops", type=int, metavar="FLOPS",   help="Limit search by floating-point operation count")
     args = parser.parse_args()
-    our_color = chess.WHITE if args.color == "white" else chess.BLACK
-    play_game(args.algorithm, our_color, args.depth, args.stockfish, args.stockfish_depth)
+
+    if args.depth is not None:  budget_type, budget_val = "depth", args.depth
+    elif args.time is not None: budget_type, budget_val = "time",  args.time
+    else:                       budget_type, budget_val = "flops", args.flops
+
+    engine    = load_engine(args.algorithm)
+    stockfish = load_stockfish()
+    wins, losses, draws = 0, 0, 0
+
+    for i in range(args.num):
+        if args.color is None: our_color = random.choice([chess.WHITE, chess.BLACK])
+        else: our_color = chess.WHITE if args.color == "white" else chess.BLACK
+        color_str = "white" if our_color == chess.WHITE else "black"
+        print_yellow(f"Game {i + 1}/{args.num}  (our engine plays {color_str})")
+
+        result = play_game(args.algorithm, our_color, budget_type, budget_val, engine, stockfish, args.verbose)
+        if result == "win":    wins   += 1; print_green(f"  -> win\n")
+        elif result == "loss": losses += 1; print_red(f"  -> loss\n")
+        else:                  draws  += 1; print_yellow(f"  -> draw\n")
+
+    print_yellow(f"{'='*60}")
+    print_yellow(f"  Final Results")
+    print_yellow(f"{'='*60}")
+    print_yellow(f"  Algorithm : {args.algorithm}")
+    print_yellow(f"  Budget    : {budget_type}={budget_val}")
+    print_yellow(f"  Games     : {args.num}")
+    print_yellow(f"  Color     : {args.color or 'random'}")
+    print_yellow(f"{'='*60}")
+    print_green( f"  Wins  : {wins}")
+    print_red(   f"  Losses: {losses}")
+    print_yellow(f"  Draws : {draws}")
+    print_yellow(f"  Win % : {100 * wins / args.num:.1f}%")
+    print_yellow(f"{'='*60}")
