@@ -1,6 +1,3 @@
-#TODO: Make this look less like AI slop
-#TODO: To get the stockfish binary, download from https://drive.google.com/drive/folders/10b915Xd9DcTvkAVPib9VETcJtRUkK14U, the modern one (last exe, see filename in the args at bottom)
-
 """
 Plays a chess game where our C++ engine (alpha-beta or monte-carlo skeleton)
 faces Stockfish.  The chosen C++ source is compiled automatically on startup.
@@ -38,7 +35,7 @@ def compile_and_load(algorithm: str):
     utils_src = os.path.join(STANDARD_DIR, "utils.cpp")
 
     import glob
-    sf_dir = os.path.join(os.path.dirname(STANDARD_DIR), "stockfish_11_src", "src")
+    sf_dir = os.path.join(SRC_DIR, "..", "stockfish", "stockfish-11-src")
     sf_sources = glob.glob(os.path.join(sf_dir, "*.cpp")) + glob.glob(os.path.join(sf_dir, "syzygy", "*.cpp"))
     sf_sources = [f for f in sf_sources if os.path.basename(f) != "main.cpp"]
 
@@ -63,7 +60,7 @@ def compile_and_load(algorithm: str):
         lib = ctypes.CDLL(lib_path, winmode=0)
     else:
         lib = ctypes.CDLL(lib_path)
-        
+
     fn  = getattr(lib, fn_name)
     fn.argtypes = [
         ctypes.c_char_p,  # fen
@@ -145,7 +142,7 @@ if __name__ == "__main__":
     parser.add_argument("--algorithm", choices=["alpha-beta", "monte-carlo"], default="alpha-beta", help="Search algorithm (default: alpha-beta)")
     parser.add_argument("--color", choices=["white", "black"], default="white", help="Color our engine plays (default: white)")
     parser.add_argument("--depth", type=int, default=20000, help="Search depth / simulation count for our engine (default: 1000 num simulations for MCTS)")
-    parser.add_argument("--stockfish", default="../stockfish_20011801_x64_modern.exe", help="Path to the Stockfish binary (default: stockfish)")
+    parser.add_argument("--stockfish", default="../stockfish/stockfish-11-modern", help="Path to the Stockfish binary (default: ../stockfish/stockfish-11-modern)")
     parser.add_argument("--stockfish-depth", type=int, default=1, help="Stockfish search depth (default: 1)")
 
     args = parser.parse_args()

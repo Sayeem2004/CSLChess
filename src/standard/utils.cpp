@@ -3,13 +3,13 @@
 #include "utils.h"
 
 #include <mutex>
-#include "../stockfish_11_src/src/bitboard.h"
-#include "../stockfish_11_src/src/position.h"
-#include "../stockfish_11_src/src/evaluate.h"
-#include "../stockfish_11_src/src/thread.h"
-#include "../stockfish_11_src/src/uci.h"
-#include "../stockfish_11_src/src/endgame.h"
-#include "../stockfish_11_src/src/search.h"
+#include "../../stockfish/stockfish-11-src/bitboard.h"
+#include "../../stockfish/stockfish-11-src/position.h"
+#include "../../stockfish/stockfish-11-src/evaluate.h"
+#include "../../stockfish/stockfish-11-src/thread.h"
+#include "../../stockfish/stockfish-11-src/uci.h"
+#include "../../stockfish/stockfish-11-src/endgame.h"
+#include "../../stockfish/stockfish-11-src/search.h"
 
 namespace PSQT {
     void init();
