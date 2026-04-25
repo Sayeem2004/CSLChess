@@ -4,6 +4,7 @@
 #include "common.hpp"
 #include "utils.h"
 #include <random>
+#include <memory>
 
 // rollout() simulates a random playout from the given state until a terminal state is reached or a maximum depth is exceeded.
 // returns 1.0 (win), 0.0 (loss), or 0.5 (draw) from the perspective of the side that was to move when rollout() was first called.

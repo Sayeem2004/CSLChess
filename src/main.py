@@ -1,11 +1,13 @@
+#TODO: Make this look less like AI slop
+#TODO: To get the stockfish binary, download from https://drive.google.com/drive/folders/10b915Xd9DcTvkAVPib9VETcJtRUkK14U, the modern one (last exe, see filename in the args at bottom)
+
 """
 Plays a chess game where our C++ engine (alpha-beta or monte-carlo skeleton)
 faces Stockfish.  The chosen C++ source is compiled automatically on startup.
 
 Usage:
-    python main.py [--algorithm {alpha-beta, monte-carlo}]
-                   [--color {white, black}]
-                   [--timelimit N]
+    usage: python main.py [-h] [--algorithm {alpha-beta,monte-carlo}] [--color {white,black}] [--depth DEPTH]
+               [--stockfish STOCKFISH] [--stockfish-depth STOCKFISH_DEPTH]
 """
 from stockfish import Stockfish
 import subprocess
@@ -17,8 +19,7 @@ import os
 
 from utils import print_green, print_yellow, print_red
 
-
-SRC_DIR      = os.path.dirname(os.path.abspath(__file__))
+SRC_DIR = os.path.dirname(os.path.abspath(__file__))
 STANDARD_DIR = os.path.join(SRC_DIR, "standard")
 MOVE_BUF_LEN = 8  # longest UCI move is 5 chars (e.g. "e7e8q\0")
 
@@ -34,18 +35,35 @@ def compile_and_load(algorithm: str):
         lib_out = os.path.join(STANDARD_DIR, "monte-carlo.so")
         fn_name = "best_move_monte_carlo"
 
+    utils_src = os.path.join(STANDARD_DIR, "utils.cpp")
+
+    import glob
+    sf_dir = os.path.join(os.path.dirname(STANDARD_DIR), "stockfish_11_src", "src")
+    sf_sources = glob.glob(os.path.join(sf_dir, "*.cpp")) + glob.glob(os.path.join(sf_dir, "syzygy", "*.cpp"))
+    sf_sources = [f for f in sf_sources if os.path.basename(f) != "main.cpp"]
+
     print_yellow(f"[build] compiling {os.path.basename(src)} ...")
+    cmd = ["g++", "-O2", "-std=c++17", "-shared", "-static", "-static-libgcc", "-static-libstdc++", "-fPIC"]
+    cmd.extend([src, utils_src])
+    cmd.extend(sf_sources)
+    cmd.extend(["-o", lib_out])
+
     result = subprocess.run(
-        ["g++", "-O2", "-std=c++17", "-shared", "-fPIC", src, "-o", lib_out],
+        cmd,
         capture_output=True, text=True,
     )
 
     if result.returncode != 0:
-        print_red(f"[build] failed: \n{result.stderr}", file=sys.stderr)
+        print_red(f"[build] failed: \n{result.stderr}")
         sys.exit(1)
     print_green(f"[build] succeeded at {os.path.relpath(lib_out)}\n")
 
-    lib = ctypes.CDLL(lib_out)
+    lib_path = os.path.abspath(lib_out)
+    if hasattr(os, "add_dll_directory"):
+        lib = ctypes.CDLL(lib_path, winmode=0)
+    else:
+        lib = ctypes.CDLL(lib_path)
+        
     fn  = getattr(lib, fn_name)
     fn.argtypes = [
         ctypes.c_char_p,  # fen
@@ -83,7 +101,7 @@ def play_game(algorithm: str, our_color: chess.Color, depth: int, stockfish_path
     print_yellow(f"  Opponent: Stockfish (depth {stockfish_depth})")
     print_yellow(f"{'='*60}\n")
 
-    stockfish   = Stockfish(path=stockfish_path, depth=stockfish_depth)
+    stockfish = Stockfish(path=stockfish_path, depth=stockfish_depth)
 
     move_number = 1
     while not board.is_game_over():
@@ -126,10 +144,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Standard CPP Engine vs Stockfish")
     parser.add_argument("--algorithm", choices=["alpha-beta", "monte-carlo"], default="alpha-beta", help="Search algorithm (default: alpha-beta)")
     parser.add_argument("--color", choices=["white", "black"], default="white", help="Color our engine plays (default: white)")
-    parser.add_argument("--depth", type=int, default=5, help="Search depth / simulation count for our engine (default: 5)")
-    parser.add_argument("--stockfish", default="stockfish", help="Path to the Stockfish binary (default: stockfish)")
-    parser.add_argument("--stockfish-depth", type=int, default=5, help="Stockfish search depth (default: 5)")
+    parser.add_argument("--depth", type=int, default=20000, help="Search depth / simulation count for our engine (default: 1000 num simulations for MCTS)")
+    parser.add_argument("--stockfish", default="../stockfish_20011801_x64_modern.exe", help="Path to the Stockfish binary (default: stockfish)")
+    parser.add_argument("--stockfish-depth", type=int, default=1, help="Stockfish search depth (default: 1)")
 
-    args      = parser.parse_args()
+    args = parser.parse_args()
     our_color = chess.WHITE if args.color == "white" else chess.BLACK
     play_game(args.algorithm, our_color, args.depth, args.stockfish, args.stockfish_depth)
