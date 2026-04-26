@@ -8,7 +8,7 @@ def cpp_best_move_depth(fn, board: chess.Board, depth: int) -> chess.Move | None
     """
     Query the C++ engine (alpha-beta or MCTS) for the best move with a depth limit.
     `fn`    - ctypes function returned by load_standard_alpha_beta / load_standard_monte_carlo.
-    `depth` - search depth (alpha-beta) or simulation count (MCTS).
+    `depth` - search depth directly (alpha-beta) or exponentiated to get rough simulation count (MCTS).
     Returns a legal chess.Move, or None on error / illegal result.
     """
     fen_bytes = board.fen().encode()
@@ -32,7 +32,7 @@ def stockfish_best_move_depth(stockfish, board: chess.Board, depth: int) -> ches
     stockfish.set_depth(depth)
     stockfish.set_fen_position(board.fen())
     best_uci = stockfish.get_best_move()
-    
+
     if best_uci is None: return None
     try: move = chess.Move.from_uci(best_uci)
     except chess.InvalidMoveError: return None

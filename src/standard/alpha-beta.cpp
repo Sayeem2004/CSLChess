@@ -1,24 +1,34 @@
 #include <cstring>
 
-#include "../../chess-library/include/chess.hpp"
 #include "common.hpp"
-#include "utils.hpp"
-
+#include "evaluate.hpp"
 
 // TODO: implement alpha-beta minimax search
-void alpha_beta_search(const chess::Board& board, chess::Board& next_board) {
-    return;
-}
-
-
-int best_move_alpha_beta(const char* fen, int depth, char* out_move, int out_len) {
-    chess::Board board, next_board;
-    if (!board.setFen(fen)) return -2;  // Invalid FEN
+// Returns the best move found and writes it into out_move in UCI format.
+// Returns 0 on success, -1 if no legal moves, -2 if FEN is invalid.
+static int run_alpha_beta(const char* fen, char* out_move, int out_len) {
+    chess::Board board;
+    if (!board.setFen(fen)) return -2;
 
     chess::Movelist moves;
     chess::movegen::legalmoves(moves, board);
-    if (moves.empty()) return -1;  // Checkmate or stalemate
+    if (moves.empty()) return -1;
 
-    alpha_beta_search(board, next_board);
-    return 0; // TODO return the best move in UCI format
+    // TODO: alpha-beta search — pick best move and write UCI string to out_move
+    return 0;
+}
+
+int best_move_alpha_beta_depth(const char* fen, int depth, char* out_move, int out_len) {
+    // TODO: use depth to limit search
+    return run_alpha_beta(fen, out_move, out_len);
+}
+
+int best_move_alpha_beta_time(const char* fen, int time_ms, char* out_move, int out_len) {
+    // TODO: use time_ms to limit search
+    return run_alpha_beta(fen, out_move, out_len);
+}
+
+int best_move_alpha_beta_flops(const char* fen, int flop_budget, char* out_move, int out_len) {
+    // TODO: use flop_budget to limit search
+    return run_alpha_beta(fen, out_move, out_len);
 }

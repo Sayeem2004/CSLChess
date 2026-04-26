@@ -40,7 +40,7 @@ def play_game(algorithm: str, our_color: chess.Color, budget_type: str, budget: 
             print()
 
         if board.turn == our_color:
-            move = engine_best_move(algorithm, engine, board, budget_type, budget)
+            move = engine_best_move(algorithm, engine[budget_type], board, budget_type, budget)
             if move is None:
                 move = next(iter(board.legal_moves))
                 if verbose: print_red(f"  [{algorithm}] (fallback)  {board.san(move)}\n")

@@ -19,21 +19,19 @@ STOCKFISH_WIN_EXE  = os.path.join(STOCKFISH_DIR, "stockfish-11-modern.exe")
 MOVE_BUF_LEN = 8 # Longest UCI move is 5 chars (e.g. "e7e8q\0")
 
 
-def _compile_and_load(src: str, lib_out: str, fn_name: str):
-    """Compile src + utils.cpp + Stockfish sources into a shared library and return the ctypes fn."""
-    utils_src  = os.path.join(STANDARD_DIR, "utils.cpp")
-    sf_sources = glob.glob(os.path.join(STOCKFISH_SRC_DIR, "*.cpp")) + \
-                 glob.glob(os.path.join(STOCKFISH_SRC_DIR, "syzygy", "*.cpp"))
-    sf_sources = [f for f in sf_sources if os.path.basename(f) != "main.cpp"]
-
+def _compile_library(src: str, lib_out: str) -> ctypes.CDLL:
+    """Compile src + evaluate.cpp + stockfish code into a shared library and return the CDLL."""
     if os.path.exists(lib_out):
         print_yellow(f"[build] {os.path.basename(lib_out)} already exists, skipping compilation\n")
     else:
+        evaluate_src = os.path.join(STANDARD_DIR, "evaluate.cpp")
+        sf_sources   = glob.glob(os.path.join(STOCKFISH_SRC_DIR, "*.cpp")) + \
+                       glob.glob(os.path.join(STOCKFISH_SRC_DIR, "syzygy", "*.cpp"))
+        sf_sources   = [f for f in sf_sources if os.path.basename(f) != "main.cpp"]
+
         print_yellow(f"[build] compiling {os.path.basename(src)} ...")
-        cmd = ["g++", "-O2", "-std=c++17", "-shared", "-fPIC"]
-        cmd.extend([src, utils_src])
-        cmd.extend(sf_sources)
-        cmd.extend(["-o", lib_out])
+        cmd = ["g++", "-O2", "-std=c++17", "-shared", "-fPIC",
+               src, evaluate_src, *sf_sources, "-o", lib_out]
 
         result = subprocess.run(cmd, capture_output=True, text=True)
         if result.returncode != 0:
@@ -42,12 +40,15 @@ def _compile_and_load(src: str, lib_out: str, fn_name: str):
         print_green(f"[build] succeeded at {os.path.relpath(lib_out)}\n")
 
     lib_path = os.path.abspath(lib_out)
-    lib = ctypes.CDLL(lib_path, winmode=0) if hasattr(os, "add_dll_directory") else ctypes.CDLL(lib_path)
+    return ctypes.CDLL(lib_path, winmode=0) if hasattr(os, "add_dll_directory") else ctypes.CDLL(lib_path)
 
+
+def _bind_fn(lib: ctypes.CDLL, fn_name: str):
+    """Extract a best-move function from a loaded library and attach its ctypes signature."""
     fn = getattr(lib, fn_name)
     fn.argtypes = [
         ctypes.c_char_p,  # fen
-        ctypes.c_int,     # depth / num_simulations
+        ctypes.c_int,     # budget (depth / time_ms / flop_budget)
         ctypes.c_char_p,  # out_move buffer
         ctypes.c_int,     # out_len
     ]
@@ -55,27 +56,39 @@ def _compile_and_load(src: str, lib_out: str, fn_name: str):
     return fn
 
 
-def load_standard_alpha_beta():
-    """Compile and load the standard C++ alpha-beta engine. Returns the best_move_alpha_beta ctypes fn."""
+def load_standard_alpha_beta() -> dict:
+    """Compile and load the standard C++ alpha-beta engine.
+    Returns a dict with keys 'depth', 'time', 'flops' mapping to their ctypes fns."""
     src     = os.path.join(STANDARD_DIR, "alpha-beta.cpp")
     lib_out = os.path.join(STANDARD_DIR, "alpha-beta.so")
-    return _compile_and_load(src, lib_out, "best_move_alpha_beta")
+    lib = _compile_library(src, lib_out)
+    return {
+        "depth": _bind_fn(lib, "best_move_alpha_beta_depth"),
+        "time":  _bind_fn(lib, "best_move_alpha_beta_time"),
+        "flops": _bind_fn(lib, "best_move_alpha_beta_flops"),
+    }
 
 
-def load_standard_monte_carlo():
-    """Compile and load the standard C++ MCTS engine. Returns the best_move_monte_carlo ctypes fn."""
+def load_standard_monte_carlo() -> dict:
+    """Compile and load the standard C++ MCTS engine.
+    Returns a dict with keys 'depth', 'time', 'flops' mapping to their ctypes fns."""
     src     = os.path.join(STANDARD_DIR, "monte-carlo.cpp")
     lib_out = os.path.join(STANDARD_DIR, "monte-carlo.so")
-    return _compile_and_load(src, lib_out, "best_move_monte_carlo")
+    lib = _compile_library(src, lib_out)
+    return {
+        "depth": _bind_fn(lib, "best_move_monte_carlo_depth"),
+        "time":  _bind_fn(lib, "best_move_monte_carlo_time"),
+        "flops": _bind_fn(lib, "best_move_monte_carlo_flops"),
+    }
 
 
-def load_csl_alpha_beta():
-    """Load the CSL alpha-beta engine. Returns the best_move_alpha_beta ctypes fn."""
+def load_csl_alpha_beta() -> dict:
+    """Load the CSL alpha-beta engine. Not yet implemented."""
     pass
 
 
-def load_csl_monte_carlo():
-    """Load the CSL MCTS engine. Returns the best_move_monte_carlo ctypes fn."""
+def load_csl_monte_carlo() -> dict:
+    """Load the CSL MCTS engine. Not yet implemented."""
     pass
 
 
@@ -91,8 +104,8 @@ def load_stockfish_windows(path: str = STOCKFISH_WIN_EXE):
     return Stockfish(path=path)
 
 
-def load_engine(algorithm: str):
-    """Return the engine handle for the chosen algorithm."""
+def load_engine(algorithm: str) -> dict:
+    """Return a dict of {budget_type: ctypes_fn} for the chosen algorithm."""
     if algorithm == "cpp-alpha-beta":  return load_standard_alpha_beta()
     if algorithm == "cpp-monte-carlo": return load_standard_monte_carlo()
     if algorithm == "csl-alpha-beta":  return load_csl_alpha_beta()
