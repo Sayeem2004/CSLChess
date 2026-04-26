@@ -95,13 +95,15 @@ def load_csl_monte_carlo() -> dict:
 def load_stockfish_unix(path: str = STOCKFISH_UNIX_BIN):
     """Return a Stockfish instance backed by the Unix binary at `path`."""
     from stockfish import Stockfish
-    return Stockfish(path=path)
+    # Crippled settings for testing against a much weaker opponent (~1100 ELO)
+    return Stockfish(path=path, parameters={"Skill Level": 0, "UCI_LimitStrength": True, "UCI_Elo": 1320})
 
 
 def load_stockfish_windows(path: str = STOCKFISH_WIN_EXE):
     """Return a Stockfish instance backed by the Windows binary at `path`."""
     from stockfish import Stockfish
-    return Stockfish(path=path)
+    # Crippled settings for testing against a much weaker opponent (~1100 ELO)
+    return Stockfish(path=path, parameters={"Skill Level": 0, "UCI_LimitStrength": True, "UCI_Elo": 1320})
 
 
 def load_engine(algorithm: str) -> dict:

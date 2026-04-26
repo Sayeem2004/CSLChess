@@ -8,7 +8,7 @@
 
 // rollout() simulates a random playout from the given state until a terminal state is reached or a maximum depth is exceeded.
 // Returns 1.0 (win), 0.0 (loss), or 0.5 (draw) from the perspective of the side that was to move when rollout() was first called.
-double rollout(chess::Board state, int max_depth = 50) {
+double rollout(chess::Board state, int max_depth = 5) {
     static thread_local std::mt19937 rng(std::random_device{}());
     const chess::Color root_color = state.sideToMove();
 
@@ -31,7 +31,8 @@ double rollout(chess::Board state, int max_depth = 50) {
     // If rollout truncated, we use evaluate function as a proxy
     int eval = engine_evaluate(state);
     if (state.sideToMove() != root_color) eval = -eval;
-    return eval > 0 ? 1.0 : (eval < 0 ? 0.0 : 0.5); // Win if eval positive, loss if eval negative, draw if eval zero
+    constexpr double k = 0.003; 
+    return 1.0 / (1.0 + std::exp(-k * eval));
 }
 
 
@@ -59,7 +60,7 @@ struct MCTSNode {
     bool is_terminal() const { return untried_moves.empty() && children.empty(); }
     bool fully_expanded() const { return untried_moves.empty(); }
 
-    MCTSNode* best_child(double c = std::sqrt(2.0)) const { // TODO: tune constant c
+    MCTSNode* best_child(double c = std::sqrt(1.0)) const { // TODO: tune constant c
         MCTSNode* best    = nullptr;
         double best_score = -1e18;
         double log_visits = std::log((double)visits);
@@ -135,6 +136,11 @@ chess::Move monte_carlo_search(const chess::Board& board, int max_depth = 50, in
         }
     }
 
+    double expected_win_rate = 1.0 - (best->wins / best->visits);
+    printf("MCTS prefers move %s with %s rate %.2f%%\n",
+           chess::uci::moveToUci(best->move).c_str(), 
+           expected_win_rate >= 0.5 ? "win" : "loss", 
+           std::max(expected_win_rate, 1.0 - expected_win_rate) * 100.0);    
     return best->move; // Return the move that leads to the best child of the root after MCTS
 }
 
@@ -148,8 +154,8 @@ int best_move_monte_carlo_depth(const char* fen, int depth, char* out_move, int 
     if (moves.empty()) return -1; // Checkmate or stalemate
 
     // Use branching_factor^depth simulations to somewhat match alpha-beta's node budget at the same depth
-    constexpr int BRANCHING_FACTOR = 5;
-    int bounded_depth = std::min(depth, 7);
+    constexpr int BRANCHING_FACTOR = 10;
+    int bounded_depth = std::min(depth, 5);
     int num_simulations = std::pow(BRANCHING_FACTOR, bounded_depth); // TODO: tune this formula somehow?
 
     chess::Move best = monte_carlo_search(board, depth, num_simulations);
