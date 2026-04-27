@@ -1,4 +1,5 @@
 #include <mutex>
+#include <omp.h>
 
 #include "../../stockfish/stockfish-11-src/bitboard.h"
 #include "../../stockfish/stockfish-11-src/endgame.h"
@@ -21,7 +22,7 @@ static void init_stockfish() {
     Position::init();
     Bitbases::init();
     Endgames::init();
-    Threads.set(1);
+    Threads.set(omp_get_max_threads());
     Search::clear();
 }
 
@@ -31,7 +32,7 @@ int engine_evaluate(const chess::Board& board) {
 
     Position pos;
     StateInfo si;
-    pos.set(board.getFen(), false, &si, Threads.main());
+    pos.set(board.getFen(), false, &si, Threads[omp_get_thread_num()]);
 
     // Stockfish's Eval::evaluate() asserts !pos.checkers(), so fall back to
     // simple material counting when the side to move is in check.
