@@ -1,6 +1,7 @@
 #include <cstring>
 #include <memory>
 #include <random>
+#include <omp.h>
 
 #include "common.hpp"
 #include "evaluate.hpp"
@@ -117,31 +118,62 @@ static void backprop(MCTSNode* node, double result) {
 
 // Best move found after num_simulations playouts/simulations of MCTS from the given board state.
 // TODO: tune default max_depth and num_simulations parameters
+
 chess::Move monte_carlo_search(const chess::Board& board, int max_depth = 50, int num_simulations = 1000) {
-    MCTSNode root(board); // Create root node of the search tree
+    int num_threads = omp_get_max_threads();
+    int sims_per_thread = num_simulations / num_threads;
 
-    for (int i = 0; i < num_simulations; ++i) {
-        MCTSNode* leaf = tree_descend(&root);
-        double result = rollout(leaf->board, max_depth);
-        backprop(leaf, result);
-    }
+    // Each thread builds its own independent tree
+    std::vector<std::unique_ptr<MCTSNode>> roots(num_threads);
+    for (int t = 0; t < num_threads; ++t)
+        roots[t] = std::make_unique<MCTSNode>(board);
 
-    // TODO: best move is the one with most visits for now, is this the correct criterion?
-    MCTSNode* best = nullptr;
-    int most_visits = -1;
-    for (const auto& child : root.children) {
-        if (child->visits > most_visits) {
-            most_visits = child->visits;
-            best = child.get();
+    #pragma omp parallel for schedule(static, 1)
+    for (int t = 0; t < num_threads; ++t) {
+        MCTSNode* root = roots[t].get();
+        for (int i = 0; i < sims_per_thread; ++i) {
+            MCTSNode* leaf = tree_descend(root);
+            double result = rollout(leaf->board, max_depth);
+            backprop(leaf, result);
         }
     }
 
-    double expected_win_rate = 1.0 - (best->wins / best->visits);
-    printf("MCTS prefers move %s with %s rate %.2f%%\n",
-           chess::uci::moveToUci(best->move).c_str(), 
-           expected_win_rate >= 0.5 ? "win" : "loss", 
-           std::max(expected_win_rate, 1.0 - expected_win_rate) * 100.0);    
-    return best->move; // Return the move that leads to the best child of the root after MCTS
+    // Merge visit/win counts across all roots' children by move
+    std::unordered_map<uint16_t, std::pair<int,double>> move_stats; // move -> {visits, wins}
+    for (int t = 0; t < num_threads; ++t) {
+        for (const auto& child : roots[t]->children) {
+            uint16_t key = child->move.move(); // raw move bits as key
+            auto& s = move_stats[key];
+            s.first  += child->visits;
+            s.second += child->wins;
+        }
+    }
+
+    uint16_t best_key = 0;
+    int most_visits = -1;
+    chess::Move best_move = chess::Move::NO_MOVE;
+
+    for (int t = 0; t < num_threads; ++t) {
+        for (const auto& child : roots[t]->children) {
+            uint16_t key = child->move.move();
+            int v = move_stats[key].first;
+            if (v > most_visits) {
+                most_visits = v;
+                best_key = key;
+                best_move = child->move;
+            }
+        }
+    }
+
+    auto& best_stats = move_stats[best_key];
+    double expected_win_rate = 1.0 - (best_stats.second / best_stats.first);
+    printf("MCTS prefers move %s with %s rate %.2f%% (%d visits across %d threads)\n",
+           chess::uci::moveToUci(best_move).c_str(),
+           expected_win_rate >= 0.5 ? "win" : "loss",
+           std::max(expected_win_rate, 1.0 - expected_win_rate) * 100.0,
+           most_visits, num_threads);
+
+    return best_move;
 }
 
 

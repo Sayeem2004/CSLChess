@@ -30,7 +30,7 @@ def _compile_library(src: str, lib_out: str) -> ctypes.CDLL:
         sf_sources   = [f for f in sf_sources if os.path.basename(f) != "main.cpp"]
 
         print_yellow(f"[build] compiling {os.path.basename(src)} ...")
-        cmd = ["g++", "-O2", "-std=c++17", "-shared", "-fPIC",
+        cmd = ["g++", "-O2", "-std=c++17", "-shared", "-fPIC", "-fopenmp",
                src, evaluate_src, *sf_sources, "-o", lib_out]
 
         result = subprocess.run(cmd, capture_output=True, text=True)
