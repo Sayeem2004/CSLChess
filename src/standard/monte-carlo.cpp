@@ -189,8 +189,8 @@ int best_move_monte_carlo_depth(const char* fen, int depth, char* out_move, int 
 
     // Use branching_factor^depth simulations to somewhat match alpha-beta's node budget at the same depth
     constexpr int BRANCHING_FACTOR = 10;
-    int bounded_depth = std::min(depth, 6);
-    int num_simulations = std::pow(BRANCHING_FACTOR, bounded_depth); // TODO: tune this formula somehow?
+    int bounded_depth = std::min(depth, 7);
+    int num_simulations = 1000000//std::pow(BRANCHING_FACTOR, bounded_depth); // TODO: tune this formula somehow?
 
     chess::Move best = monte_carlo_search(board, depth, num_simulations);
     std::string uci  = chess::uci::moveToUci(best);
