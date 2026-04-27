@@ -38,7 +38,7 @@ double rollout(chess::Board state, int max_depth = 5) {
 
 
 struct MCTSNode {
-    chess::Board board; // Board state at this node
+    //chess::Board board; // Board state at this node
     chess::Move move; // Move that led to this node
     double wins = 0.0; int visits = 0;
     std::vector<chess::Move> untried_moves;
@@ -46,10 +46,10 @@ struct MCTSNode {
     MCTSNode* parent = nullptr;
 
     explicit MCTSNode(const chess::Board& b, chess::Move m = chess::Move::NO_MOVE, MCTSNode* p = nullptr)
-        : board(b), move(m), parent(p) {
+        : move(m), parent(p) {
         // Generate randomized list of legal moves upon node construction
         chess::Movelist ml;
-        chess::movegen::legalmoves(ml, board);
+        chess::movegen::legalmoves(ml, b);
         for (int i = 0; i < (int)ml.size(); ++i)
             untried_moves.push_back(ml[i]);
         static thread_local std::mt19937 rng(std::random_device{}());
@@ -61,7 +61,7 @@ struct MCTSNode {
     bool is_terminal() const { return untried_moves.empty() && children.empty(); }
     bool fully_expanded() const { return untried_moves.empty(); }
 
-    MCTSNode* best_child(double c = std::sqrt(1.0)) const { // TODO: tune constant c
+    MCTSNode* best_child(double c = std::sqrt(0.0)) const { // TODO: tune constant c
         MCTSNode* best    = nullptr;
         double best_score = -1e18;
         double log_visits = std::log((double)visits);
@@ -83,22 +83,23 @@ struct MCTSNode {
 
 // tree_descend() descends from the given node until it finds a node that is not fully expanded or is terminal,
 // expanding a new child if possible, and then returns the node that was reached
-static MCTSNode* tree_descend(MCTSNode* node) {
+static MCTSNode* tree_descend(MCTSNode* node, chess::Board& board) {
     while (!node->is_terminal()) {
         if (!node->fully_expanded()) {
             // Expand tree by creating a new child node for an untried move
             chess::Move m = node->untried_moves.back();
             node->untried_moves.pop_back();
 
-            chess::Board next = node->board;
-            next.makeMove(m); // Play out the move to get the next board state
+            //chess::Board next = node->board;
+            board.makeMove(m); // Play out the move to get the next board state
 
-            node->children.push_back(std::make_unique<MCTSNode>(next, m, node));
+            node->children.push_back(std::make_unique<MCTSNode>(board, m, node));
             return node->children.back().get(); // Return the newly expanded node
         }
 
         // Descend into the best child according to UCB1 until we reach a node that is not fully expanded or is terminal
         node = node->best_child();
+        board.makeMove(node->move); // play move to keep node in sync
     }
     return node; // Return a terminal node
 }
@@ -132,8 +133,9 @@ chess::Move monte_carlo_search(const chess::Board& board, int max_depth = 50, in
     for (int t = 0; t < num_threads; ++t) {
         MCTSNode* root = roots[t].get();
         for (int i = 0; i < sims_per_thread; ++i) {
-            MCTSNode* leaf = tree_descend(root);
-            double result = rollout(leaf->board, max_depth);
+            chess::Board local_board = board; // Each thread needs its own copy of the board to play out moves
+            MCTSNode* leaf = tree_descend(root, local_board);
+            double result = rollout(local_board, max_depth);
             backprop(leaf, result);
         }
     }
@@ -187,7 +189,7 @@ int best_move_monte_carlo_depth(const char* fen, int depth, char* out_move, int 
 
     // Use branching_factor^depth simulations to somewhat match alpha-beta's node budget at the same depth
     constexpr int BRANCHING_FACTOR = 10;
-    int bounded_depth = std::min(depth, 5);
+    int bounded_depth = std::min(depth, 6);
     int num_simulations = std::pow(BRANCHING_FACTOR, bounded_depth); // TODO: tune this formula somehow?
 
     chess::Move best = monte_carlo_search(board, depth, num_simulations);
