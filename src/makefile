@@ -6,8 +6,13 @@ venv:
 install: venv
 	venv/bin/pip install -r requirements.txt
 
-process:
-	venv/bin/python benchmark/process.py
+
+count-nodes:
+	venv/bin/python benchmark/count_nodes.py
+
+update-fen:
+	venv/bin/python benchmark/update_fen.py
+
 
 play-cpp-ab-depth:
 	venv/bin/python main.py --algorithm cpp-alpha-beta --depth 3 --num 100
@@ -48,6 +53,7 @@ play-cpp-mc-flops-verbose:
 
 
 .PHONY: venv install
+.PHONY: count-nodes update-fen
 .PHONY: play-cpp-ab-depth play-cpp-ab-time play-cpp-ab-flops
 .PHONY: play-cpp-ab-depth-verbose play-cpp-ab-time-verbose play-cpp-ab-flops-verbose
 .PHONY: play-cpp-mc-depth play-cpp-mc-time play-cpp-mc-flops

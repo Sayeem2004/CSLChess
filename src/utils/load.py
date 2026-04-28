@@ -82,6 +82,33 @@ def load_standard_monte_carlo() -> dict:
     }
 
 
+def load_perft():
+    """Compile and load the standalone performance test functions
+    Returns a ctypes function: count_nodes_depth(fen, depth) -> long long."""
+    src     = os.path.join(STANDARD_DIR, "perft.cpp")
+    lib_out = os.path.join(STANDARD_DIR, "perft.so")
+
+    if not os.path.exists(lib_out):
+        print_yellow("[build] compiling perft.cpp ...")
+        cmd    = ["g++", "-O2", "-std=c++17", "-shared", "-fPIC", src, "-o", lib_out]
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        
+        if result.returncode != 0:
+            print_red(f"[build] failed:\n{result.stderr}")
+            sys.exit(1)
+        print_green(f"[build] succeeded at {os.path.relpath(lib_out)}\n")
+    else:
+        print_yellow("[build] perft.so already exists, skipping compilation\n")
+
+    lib_path = os.path.abspath(lib_out)
+    lib      = ctypes.CDLL(lib_path, winmode=0) if hasattr(os, "add_dll_directory") else ctypes.CDLL(lib_path)
+    
+    fn          = lib.count_nodes_depth
+    fn.argtypes = [ctypes.c_char_p, ctypes.c_int]
+    fn.restype  = ctypes.c_longlong
+    return fn
+
+
 def load_csl_alpha_beta() -> dict:
     """Load the CSL alpha-beta engine. Not yet implemented."""
     pass
