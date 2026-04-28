@@ -71,15 +71,16 @@ def play_game(algorithm: str, our_color: chess.Color, budget_type: str, budget: 
 if __name__ == "__main__":
     algorithms = ["cpp-alpha-beta", "cpp-monte-carlo", "csl-alpha-beta", "csl-monte-carlo"]
     parser = argparse.ArgumentParser(description="CSLChess Engine vs Stockfish")
-    parser.add_argument("--algorithm", required=True, choices=algorithms,        help="Search algorithm to use")
-    parser.add_argument("--color",     choices=["white", "black"], default=None, help="Color our engine plays (default: random per game)")
-    parser.add_argument("--num",       type=int, default=1,                      help="Number of games to play (default: 1)")
-    parser.add_argument("--verbose",   action="store_true",                      help="Print board and move output each turn")
+    parser.add_argument("--algorithm", required=True, choices=algorithms,                    help="Search algorithm to use")
+    parser.add_argument("--color", choices=["white", "black"], default=None,                 help="Color our engine plays (default: random per game)")
+    parser.add_argument("--num", type=int, default=1,                                        help="Number of games to play (default: 1)")
+    parser.add_argument("--skill", type=int, default=0, choices=range(21), metavar="[0-20]", help="Stockfish skill 0-20 (default: 0, ~1320 ELO)")
+    parser.add_argument("--verbose", action="store_true",                                    help="Print board and move output each turn")
 
     budget = parser.add_mutually_exclusive_group(required=True)
-    budget.add_argument("--depth", type=int, metavar="DEPTH",   help="Limit search by depth (alpha-beta, stockfish) or simulation count (MCTS)")
-    budget.add_argument("--time",  type=int, metavar="TIME_MS", help="Limit search by time in milliseconds")
-    budget.add_argument("--cycles", type=int, metavar="CYCLES", help="Limit search by cycle count")
+    budget.add_argument("--depth",  type=int, metavar="DEPTH",   help="Limit search by depth (alpha-beta, stockfish) or simulation count (MCTS)")
+    budget.add_argument("--time",   type=int, metavar="TIME_MS", help="Limit search by time in milliseconds")
+    budget.add_argument("--cycles", type=int, metavar="CYCLES",  help="Limit search by cycle count")
     args = parser.parse_args()
 
     if args.depth is not None:  budget_type, budget_val = "depth", args.depth
@@ -87,7 +88,7 @@ if __name__ == "__main__":
     else:                       budget_type, budget_val = "cycles", args.cycles
 
     engine    = load_engine(args.algorithm)
-    stockfish = load_stockfish()
+    stockfish = load_stockfish(args.skill)
     wins, losses, draws = 0, 0, 0
 
     for i in range(args.num):

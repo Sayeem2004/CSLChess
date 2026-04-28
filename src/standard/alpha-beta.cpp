@@ -2,19 +2,21 @@
 #include <chrono>
 #include <cstring>
 #include <mutex>
-#include <papi.h>
 #include <thread>
 #include <unordered_map>
+#ifdef USE_PAPI
+#include <papi.h>
+#endif
 
 #include "common.hpp"
 #include "evaluate.hpp"
 
 
 // Tools for enforcing time and cycle limits.
+#ifdef USE_PAPI
 static std::once_flag papi_init_flag;
-static void init_papi() {
-    PAPI_library_init(PAPI_VER_CURRENT);
-}
+static void init_papi() { PAPI_library_init(PAPI_VER_CURRENT); }
+#endif
 static std::atomic<bool> exceeded_budget{false};
 
 
@@ -199,34 +201,40 @@ int best_move_alpha_beta_cycles(const char* fen, int megacycle_budget, char* out
     chess::movegen::legalmoves(moves, board);
     if (moves.empty()) return -1;
 
+    tt.clear();
+    exceeded_budget = false;
+
+#ifdef USE_PAPI
     std::call_once(papi_init_flag, init_papi);
     int event_set = PAPI_NULL;
     PAPI_create_eventset(&event_set);
     PAPI_add_event(event_set, PAPI_TOT_CYC);
     PAPI_start(event_set);
-
-    tt.clear();
-    exceeded_budget = false;
-
     long long cycle_budget = (long long)megacycle_budget * 1'000'000LL;
+#endif
+
     chess::Move best = moves[0];
     for (int depth = 1; !exceeded_budget; depth++) {
         chess::Move candidate = search_root(board, depth);
         if (!exceeded_budget) best = candidate;
 
+#ifdef USE_PAPI
         long long cycles_used;
         PAPI_read(event_set, &cycles_used);
         if (cycles_used >= cycle_budget) break;
+#endif
 
         auto it = tt.find(board.hash());
         if (it != tt.end() && std::abs(it->second.score) > 15000) break;
     }
     exceeded_budget = true;
 
+#ifdef USE_PAPI
     long long cycles_used;
     PAPI_stop(event_set, &cycles_used);
     PAPI_cleanup_eventset(event_set);
     PAPI_destroy_eventset(&event_set);
+#endif
 
     std::string uci = chess::uci::moveToUci(best);
     std::strncpy(out_move, uci.c_str(), out_len);

@@ -8,15 +8,17 @@ import os
 from utils.random import print_green, print_yellow, print_red
 
 
-SRC_DIR            = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-STANDARD_DIR       = os.path.join(SRC_DIR, "standard")
-STOCKFISH_DIR      = os.path.join(SRC_DIR, "..", "stockfish")
-STOCKFISH_SRC_DIR  = os.path.join(STOCKFISH_DIR, "stockfish-11-src")
-STOCKFISH_UNIX_BIN = os.path.join(STOCKFISH_DIR, "stockfish-11-modern")
-STOCKFISH_WIN_EXE  = os.path.join(STOCKFISH_DIR, "stockfish-11-modern.exe")
+SRC_DIR             = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+STANDARD_DIR        = os.path.join(SRC_DIR, "standard")
+STOCKFISH_DIR       = os.path.join(SRC_DIR, "..", "stockfish")
+STOCKFISH_SRC_DIR   = os.path.join(STOCKFISH_DIR, "stockfish-11-src")
+STOCKFISH_LINUX_BIN = os.path.join(STOCKFISH_DIR, "stockfish-11-modern")
+STOCKFISH_MAC_BIN   = os.path.join(STOCKFISH_DIR, "stockfish-11-modern-mac")
+STOCKFISH_WIN_EXE   = os.path.join(STOCKFISH_DIR, "stockfish-11-modern.exe")
 
 
 MOVE_BUF_LEN = 8 # Longest UCI move is 5 chars (e.g. "e7e8q\0")
+CXX          = os.environ.get("CXX", "g++")
 
 
 def _compile_library(src: str, lib_out: str) -> ctypes.CDLL:
@@ -29,9 +31,10 @@ def _compile_library(src: str, lib_out: str) -> ctypes.CDLL:
                        glob.glob(os.path.join(STOCKFISH_SRC_DIR, "syzygy", "*.cpp"))
         sf_sources   = [f for f in sf_sources if os.path.basename(f) != "main.cpp"]
 
-        print_yellow(f"[build] compiling {os.path.basename(src)} ...")
-        cmd = ["g++", "-O2", "-std=c++17", "-shared", "-fPIC", "-fopenmp", "-lpapi",
-               src, evaluate_src, *sf_sources, "-o", lib_out]
+        papi_flags = ["-DUSE_PAPI", "-lpapi"] if platform.system() == "Linux" else []
+        print_yellow(f"[build] compiling {os.path.basename(src)} with {CXX} ...")
+        cmd = [CXX, "-O2", "-std=c++17", "-shared", "-fPIC", "-fopenmp",
+               *papi_flags, src, evaluate_src, *sf_sources, "-o", lib_out]
 
         result = subprocess.run(cmd, capture_output=True, text=True)
         if result.returncode != 0:
@@ -119,18 +122,33 @@ def load_csl_monte_carlo() -> dict:
     pass
 
 
-def load_stockfish_unix(path: str = STOCKFISH_UNIX_BIN):
-    """Return a Stockfish instance backed by the Unix binary at `path`."""
-    from stockfish import Stockfish
-    # Crippled settings for testing against a much weaker opponent (~1100 ELO)
-    return Stockfish(path=path, parameters={"Skill Level": 0, "UCI_LimitStrength": True, "UCI_Elo": 1320})
+# Maps Skill Level (0-20) to approximate UCI_Elo
+SKILL_TO_ELO = {
+    0: 1320, 1: 1380, 2: 1440, 3: 1500, 4: 1560, 5: 1620,
+    6: 1700, 7: 1800, 8: 1900, 9: 1950, 10: 2000, 11: 2100,
+    12: 2200, 13: 2300, 14: 2400, 15: 2450, 16: 2500, 17: 2600,
+    18: 2700, 19: 2900, 20: 3190,
+}
 
 
-def load_stockfish_windows(path: str = STOCKFISH_WIN_EXE):
-    """Return a Stockfish instance backed by the Windows binary at `path`."""
+def _load_stockfish(skill_level: int, path: str):
     from stockfish import Stockfish
-    # Crippled settings for testing against a much weaker opponent (~1100 ELO)
-    return Stockfish(path=path, parameters={"Skill Level": 0, "UCI_LimitStrength": True, "UCI_Elo": 1320})
+    elo = SKILL_TO_ELO.get(skill_level, 1320)
+    if elo == 1320: skill_level = 0  # Avoid printing unsupported skill levels
+    print_yellow(f"[stockfish] loaded at skill level {skill_level} (~{elo} ELO)\n")
+    return Stockfish(path=path, parameters={"Skill Level": skill_level, "UCI_LimitStrength": True, "UCI_Elo": elo})
+
+def load_stockfish_linux(skill_level: int = 0, path: str = STOCKFISH_LINUX_BIN):
+    """Return a Stockfish instance backed by the Linux binary."""
+    return _load_stockfish(skill_level, path)
+
+def load_stockfish_mac(skill_level: int = 0, path: str = STOCKFISH_MAC_BIN):
+    """Return a Stockfish instance backed by the macOS binary."""
+    return _load_stockfish(skill_level, path)
+
+def load_stockfish_windows(skill_level: int = 0, path: str = STOCKFISH_WIN_EXE):
+    """Return a Stockfish instance backed by the Windows binary."""
+    return _load_stockfish(skill_level, path)
 
 
 def load_engine(algorithm: str) -> dict:
@@ -141,8 +159,8 @@ def load_engine(algorithm: str) -> dict:
     if algorithm == "csl-monte-carlo": return load_csl_monte_carlo()
 
 
-def load_stockfish():
+def load_stockfish(skill_level: int = 0):
     """Load Stockfish using the platform-appropriate binary."""
-    if platform.system() == "Windows":
-        return load_stockfish_windows()
-    return load_stockfish_unix()  # Darwin + Linux
+    if platform.system() == "Windows": return load_stockfish_windows(skill_level)
+    if platform.system() == "Darwin":  return load_stockfish_mac(skill_level)
+    return load_stockfish_linux(skill_level)
