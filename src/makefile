@@ -7,6 +7,9 @@ install: venv
 	venv/bin/pip install -r requirements.txt
 
 
+calibrate-stockfish:
+	venv/bin/python benchmark/calibrate_stockfish.py
+
 count-nodes:
 	venv/bin/python benchmark/count_nodes.py
 
@@ -53,7 +56,7 @@ play-cpp-mc-flops-verbose:
 
 
 .PHONY: venv install
-.PHONY: count-nodes update-fen
+.PHONY: calibrate-stockfish count-nodes update-fen
 .PHONY: play-cpp-ab-depth play-cpp-ab-time play-cpp-ab-flops
 .PHONY: play-cpp-ab-depth-verbose play-cpp-ab-time-verbose play-cpp-ab-flops-verbose
 .PHONY: play-cpp-mc-depth play-cpp-mc-time play-cpp-mc-flops

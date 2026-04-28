@@ -5,6 +5,7 @@ static long long perft(chess::Board& board, int depth) {
     if (depth == 0) return 1;
     chess::Movelist moves;
     chess::movegen::legalmoves(moves, board);
+
     long long nodes = 0;
     for (const auto& move : moves) {
         board.makeMove(move);

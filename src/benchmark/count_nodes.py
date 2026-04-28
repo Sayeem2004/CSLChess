@@ -5,12 +5,9 @@ import sys
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
+from benchmark import PHASES, DATA_DIR
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 from utils.load import load_perft
-
-
-DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "data")
-PHASES   = ["early", "mid", "late"]
 
 
 def run_count_nodes(max_depth: int, num_threads: int):
@@ -39,6 +36,7 @@ def run_count_nodes(max_depth: int, num_threads: int):
 
         totals = {col: sum(r[col] for r in results) for col in depth_cols}
         n_pos  = len(fens)
+        avgs   = [totals[col] / n_pos for col in depth_cols]
 
         with open(out_path, "w", newline="") as f_out:
             writer = csv.DictWriter(f_out, fieldnames=["UpdatedFEN"] + depth_cols)
@@ -48,14 +46,16 @@ def run_count_nodes(max_depth: int, num_threads: int):
 
         summary_path = os.path.join(DATA_DIR, phase, "node_counts_summary.csv")
         with open(summary_path, "w", newline="") as f_sum:
-            writer = csv.DictWriter(f_sum, fieldnames=["depth", "sum", "average"])
+            writer = csv.DictWriter(f_sum, fieldnames=["depth", "sum", "average", "branching_factor"])
             writer.writeheader()
-            for col in depth_cols:
-                writer.writerow({"depth": col, "sum": totals[col], "average": totals[col] / n_pos})
+            for d, col in enumerate(depth_cols):
+                bf = f"{avgs[d] / avgs[d-1]:.2f}" if d > 0 and avgs[d-1] > 0 else ""
+                writer.writerow({"depth": col, "sum": totals[col], "average": f"{avgs[d]:.1f}", "branching_factor": bf})
 
-        print(f"  {'depth':<10} {'sum':>12} {'average':>12}")
-        for col in depth_cols:
-            print(f"  {col:<10} {totals[col]:>12} {totals[col] / n_pos:>12.1f}")
+        print(f"  {'depth':<10} {'sum':>12} {'average':>12} {'bf':>8}")
+        for d, col in enumerate(depth_cols):
+            bf = f"{avgs[d] / avgs[d-1]:.2f}" if d > 0 and avgs[d-1] > 0 else ""
+            print(f"  {col:<10} {totals[col]:>12} {avgs[d]:>12.1f} {bf:>8}")
         print(f"[count_nodes] {phase}: wrote {out_path} \nand {summary_path}")
 
 

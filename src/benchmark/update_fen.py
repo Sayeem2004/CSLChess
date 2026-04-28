@@ -2,9 +2,7 @@ import chess
 import csv
 import os
 
-
-DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "data")
-PHASES   = ["early", "mid", "late"]
+from benchmark import PHASES, DATA_DIR
 
 
 def update_fen(phase: str):
