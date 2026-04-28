@@ -4,6 +4,7 @@ venv:
 	$(PYTHON) -m venv venv
 
 install: venv
+	venv/bin/python -m pip install --upgrade pip
 	venv/bin/pip install -r requirements.txt
 
 

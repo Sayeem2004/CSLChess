@@ -117,7 +117,7 @@ def calibrate(phase: str, depth: int, sf_path: str, perf_event: str):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--depth",      type=int, default=8)
+    parser.add_argument("--depth",      type=int, default=10)
     parser.add_argument("--stockfish",  default=STOCKFISH_UNIX_BIN)
     parser.add_argument("--perf-event", default="cycles",
                         help="perf hardware counter name (CPU-specific)")
