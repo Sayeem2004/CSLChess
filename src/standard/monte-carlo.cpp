@@ -4,9 +4,17 @@
 #include <atomic>
 #include <mutex>
 #include <omp.h>
+#include <thread>
 
 #include "common.hpp"
 #include "evaluate.hpp"
+
+#ifdef USE_PAPI
+#include <papi.h>
+static std::once_flag papi_init_flag;
+static void init_papi() { PAPI_library_init(PAPI_VER_CURRENT); }
+#endif
+static std::atomic<bool> exceeded_budget{false};
 
 
 // rollout() simulates a random playout from the given state until a terminal state is reached or a maximum depth is exceeded.
@@ -138,18 +146,19 @@ static void backprop(MCTSNode* node, double result) {
 }
 
 
-chess::Move monte_carlo_search(const chess::Board& board, int max_depth = 50, int num_simulations = 1000) {
-    
-    MCTSNode root(board);
-
+// Add an overload that accepts an existing root to accumulate into
+static void run_simulations(MCTSNode& root, const chess::Board& board,
+                            int max_depth, int num_simulations) {
     #pragma omp parallel for schedule(dynamic, 16)
     for (int i = 0; i < num_simulations; ++i) {
-        chess::Board local_board = board; 
+        chess::Board local_board = board;
         MCTSNode* leaf = tree_descend(&root, local_board);
         double result = rollout(local_board, max_depth);
         backprop(leaf, result);
     }
+}
 
+static chess::Move pick_best(MCTSNode& root) {
     int most_visits = -1;
     chess::Move best_move = chess::Move::NO_MOVE;
     double expected_win_rate = 0.0;
@@ -172,57 +181,109 @@ chess::Move monte_carlo_search(const chess::Board& board, int max_depth = 50, in
     return best_move;
 }
 
+chess::Move monte_carlo_search(const chess::Board& board, int max_depth = 5, int num_simulations = 1000) {
+    MCTSNode root(board);
+    run_simulations(root, board, max_depth, num_simulations);
+    return pick_best(root);
+}
 
 int best_move_monte_carlo_depth(const char* fen, int depth, char* out_move, int out_len) {
     chess::Board board;
-    if (!board.setFen(fen)) return -2; // Invalid FEN
-
+    if (!board.setFen(fen)) return -2;
     chess::Movelist moves;
     chess::movegen::legalmoves(moves, board);
-    if (moves.empty()) return -1; // Checkmate or stalemate
+    if (moves.empty()) return -1;
 
-    // Use branching_factor^depth simulations to somewhat match alpha-beta's node budget at the same depth
-    constexpr int BRANCHING_FACTOR = 10;
-    int bounded_depth = std::min(depth, 10);
-    int num_simulations = 500000; //std::pow(BRANCHING_FACTOR, bounded_depth); // TODO: tune this formula somehow?
+    MCTSNode root(board);
+    run_simulations(root, board, depth, 100000); // fixed number of simulations for depth-limited search
 
-    chess::Move best = monte_carlo_search(board, depth, num_simulations);
-    std::string uci  = chess::uci::moveToUci(best);
-    std::strncpy(out_move, uci.c_str(), out_len);
+    chess::Move best = pick_best(root);
+    std::strncpy(out_move, chess::uci::moveToUci(best).c_str(), out_len);
+    out_move[out_len-1] = '\0';
+    return 0;
+}
+
+int best_move_monte_carlo_time(const char* fen, int time_ms,
+                               char* out_move, int out_len) {
+    chess::Board board;
+    if (!board.setFen(fen)) return -2;
+    chess::Movelist moves;
+    chess::movegen::legalmoves(moves, board);
+    if (moves.empty()) return -1;
+
+    exceeded_budget = false;
+
+    using clock = std::chrono::steady_clock;
+    auto deadline = clock::now() + std::chrono::milliseconds(time_ms);
+
+    std::thread timer([deadline]() {
+        while (!exceeded_budget && clock::now() < deadline)
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        exceeded_budget = true;
+    });
+
+    constexpr int BATCH_SIZE = 1000;
+    constexpr int SEARCH_DEPTH = 5;
+
+    MCTSNode root(board);
+    while (!exceeded_budget)
+        run_simulations(root, board, SEARCH_DEPTH, BATCH_SIZE);
+
+    exceeded_budget = true;
+    timer.join();
+
+    chess::Move best = pick_best(root);
+    std::strncpy(out_move, chess::uci::moveToUci(best).c_str(), out_len);
     out_move[out_len - 1] = '\0';
     return 0;
 }
 
-
-int best_move_monte_carlo_time(const char* fen, int time_ms, char* out_move, int out_len) {
+int best_move_monte_carlo_cycles(const char* fen, int megacycle_budget,
+                                 char* out_move, int out_len) {
     chess::Board board;
-    if (!board.setFen(fen)) return -2; // Invalid FEN
-
+    if (!board.setFen(fen)) return -2;
     chess::Movelist moves;
     chess::movegen::legalmoves(moves, board);
-    if (moves.empty()) return -1; // Checkmate or stalemate
+    if (moves.empty()) return -1;
 
-    // TODO: run simulations until time_ms budget is exhausted
-    chess::Move best = monte_carlo_search(board);
-    std::string uci  = chess::uci::moveToUci(best);
-    std::strncpy(out_move, uci.c_str(), out_len);
-    out_move[out_len - 1] = '\0';
-    return 0;
-}
+    exceeded_budget = false;
 
+    #ifdef USE_PAPI
+    std::call_once(papi_init_flag, init_papi);
+    int event_set = PAPI_NULL;
+    PAPI_create_eventset(&event_set);
+    PAPI_add_event(event_set, PAPI_TOT_CYC);
+    PAPI_start(event_set);
+    long long cycle_budget = (long long)megacycle_budget * 1'000'000LL;
+    #endif
 
-int best_move_monte_carlo_cycles(const char* fen, int megacycle_budget, char* out_move, int out_len) {
-    chess::Board board;
-    if (!board.setFen(fen)) return -2; // Invalid FEN
+    constexpr int BATCH_SIZE = 1000;
+    constexpr int SEARCH_DEPTH = 5;
 
-    chess::Movelist moves;
-    chess::movegen::legalmoves(moves, board);
-    if (moves.empty()) return -1; // Checkmate or stalemate
+    MCTSNode root(board);
+    while (!exceeded_budget) {
+        run_simulations(root, board, SEARCH_DEPTH, BATCH_SIZE);
 
-    // TODO: run simulations until megacycle_budget is exhausted
-    chess::Move best = monte_carlo_search(board);
-    std::string uci  = chess::uci::moveToUci(best);
-    std::strncpy(out_move, uci.c_str(), out_len);
+    #ifdef USE_PAPI
+        long long cycles_used;
+        PAPI_read(event_set, &cycles_used);
+        if (cycles_used >= cycle_budget) exceeded_budget = true;
+    #else
+        // fallback if PAPI unavailable
+        (void)megacycle_budget;
+        exceeded_budget = true; // run exactly one batch
+    #endif
+    }
+
+    #ifdef USE_PAPI
+    long long cycles_used;
+    PAPI_stop(event_set, &cycles_used);
+    PAPI_cleanup_eventset(event_set);
+    PAPI_destroy_eventset(&event_set);
+    #endif
+
+    chess::Move best = pick_best(root);
+    std::strncpy(out_move, chess::uci::moveToUci(best).c_str(), out_len);
     out_move[out_len - 1] = '\0';
     return 0;
 }
