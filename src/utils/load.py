@@ -30,7 +30,7 @@ def _compile_library(src: str, lib_out: str) -> ctypes.CDLL:
         sf_sources   = [f for f in sf_sources if os.path.basename(f) != "main.cpp"]
 
         print_yellow(f"[build] compiling {os.path.basename(src)} ...")
-        cmd = ["g++", "-O2", "-std=c++17", "-shared", "-fPIC", "-fopenmp",
+        cmd = ["g++", "-O2", "-std=c++17", "-shared", "-fPIC", "-fopenmp", "-lpapi",
                src, evaluate_src, *sf_sources, "-o", lib_out]
 
         result = subprocess.run(cmd, capture_output=True, text=True)
@@ -48,7 +48,7 @@ def _bind_fn(lib: ctypes.CDLL, fn_name: str):
     fn = getattr(lib, fn_name)
     fn.argtypes = [
         ctypes.c_char_p,  # fen
-        ctypes.c_int,     # budget (depth / time_ms / flop_budget)
+        ctypes.c_int,     # budget (depth / time_ms / megaflop_budget)
         ctypes.c_char_p,  # out_move buffer
         ctypes.c_int,     # out_len
     ]

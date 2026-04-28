@@ -1,11 +1,21 @@
 #include <atomic>
 #include <chrono>
 #include <cstring>
+#include <mutex>
+#include <papi.h>
 #include <thread>
 #include <unordered_map>
 
 #include "common.hpp"
 #include "evaluate.hpp"
+
+
+// Tools for enforcing time and flop limits.
+static std::once_flag papi_init_flag;
+static void init_papi() {
+    PAPI_library_init(PAPI_VER_CURRENT);
+}
+static std::atomic<bool> exceeded_budget{false};
 
 
 // Transposition Table (TT) for caching previously evaluated positions.
@@ -17,16 +27,15 @@ struct TTEntry {
     chess::Move best_move;
 };
 static std::unordered_map<uint64_t, TTEntry> tt;
-static std::atomic<bool> timed_out{false};
 
 
 // Returns a score in centipawns from the perspective of the side to move.
 // `alpha` - lower bound (best score the maximising side is guaranteed so far)
 // `beta`  - upper bound (best score the minimising side is guaranteed so far)
 static int negamax(chess::Board& board, int depth, int alpha, int beta) {
-    if (timed_out) return 0; // Abort immediately — result will be discarded
+    if (exceeded_budget) return 0; // Abort immediately — result will be discarded
     if (board.isRepetition(2) || board.isHalfMoveDraw()) return 0; // Draw
-    
+
     const int alpha_orig = alpha;
     uint64_t hash        = board.hash();
     auto it              = tt.find(hash);
@@ -77,7 +86,7 @@ static int negamax(chess::Board& board, int depth, int alpha, int beta) {
         if (alpha >= beta) break; // Pruning cutoff
     }
 
-    if (!timed_out) {
+    if (!exceeded_budget) {
         TTFlag flag = (best <= alpha_orig) ? TT_UPPER : (best >= beta) ? TT_LOWER : TT_EXACT;
         tt[hash]    = {best, depth, flag, best_move};
     }
@@ -116,8 +125,8 @@ static chess::Move search_root(chess::Board& board, int depth) {
         if (score > alpha) alpha = score;
     }
 
-    // Store root in TT so the next iterative deepening pass orders moves correctly
-    if (!timed_out) tt[root_hash] = {best_score, depth, TT_EXACT, best_move};
+    // Store root in TT so the next iterative deepening depth orders moves correctly
+    if (!exceeded_budget) tt[root_hash] = {best_score, depth, TT_EXACT, best_move};
     return best_move;
 }
 
@@ -131,7 +140,7 @@ int best_move_alpha_beta_depth(const char* fen, int depth, char* out_move, int o
     if (moves.empty()) return -1;
 
     tt.clear();
-    timed_out = false;
+    exceeded_budget = false;
     chess::Move best = search_root(board, depth);
 
     std::string uci  = chess::uci::moveToUci(best);
@@ -152,25 +161,25 @@ int best_move_alpha_beta_time(const char* fen, int time_ms, char* out_move, int 
     if (moves.empty()) return -1;
 
     tt.clear();
-    timed_out = false;
+    exceeded_budget = false;
 
     using clock = std::chrono::steady_clock;
     auto deadline = clock::now() + std::chrono::milliseconds(time_ms);
 
     std::thread timer([deadline]() {
-        while (!timed_out && clock::now() < deadline)
+        while (!exceeded_budget && clock::now() < deadline)
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
-        timed_out = true;
+        exceeded_budget = true;
     });
 
     chess::Move best = moves[0];
-    for (int depth = 1; !timed_out; depth++) {
+    for (int depth = 1; !exceeded_budget; depth++) {
         chess::Move candidate = search_root(board, depth);
-        if (!timed_out) best = candidate;
+        if (!exceeded_budget) best = candidate;
         auto it = tt.find(board.hash()); // Forced mate should terminate early
         if (it != tt.end() && std::abs(it->second.score) > 15000) break;
     }
-    timed_out = true;
+    exceeded_budget = true;
     timer.join();
 
     std::string uci = chess::uci::moveToUci(best);
@@ -180,8 +189,9 @@ int best_move_alpha_beta_time(const char* fen, int time_ms, char* out_move, int 
 }
 
 
-int best_move_alpha_beta_flops(const char* fen, int flop_budget, char* out_move, int out_len) {
-    // TODO: count flops and stop when flop_budget is exhausted
+// Iterative Deepening: Each iteration seeds the TT with the best moves from
+// the previous depth — should nearly half the chess branching factor.
+int best_move_alpha_beta_flops(const char* fen, int megaflop_budget, char* out_move, int out_len) {
     chess::Board board;
     if (!board.setFen(fen)) return -2;
 
@@ -189,11 +199,36 @@ int best_move_alpha_beta_flops(const char* fen, int flop_budget, char* out_move,
     chess::movegen::legalmoves(moves, board);
     if (moves.empty()) return -1;
 
-    tt.clear();
-    timed_out = false;
-    chess::Move best = search_root(board, 4);
+    std::call_once(papi_init_flag, init_papi);
+    int event_set = PAPI_NULL;
+    PAPI_create_eventset(&event_set);
+    PAPI_add_event(event_set, PAPI_FP_OPS);
+    PAPI_start(event_set);
 
-    std::string uci  = chess::uci::moveToUci(best);
+    tt.clear();
+    exceeded_budget = false;
+
+    long long flop_budget = (long long)megaflop_budget * 1'000'000LL;
+    chess::Move best = moves[0];
+    for (int depth = 1; !exceeded_budget; depth++) {
+        chess::Move candidate = search_root(board, depth);
+        if (!exceeded_budget) best = candidate;
+
+        long long flops_used;
+        PAPI_read(event_set, &flops_used);
+        if (flops_used >= flop_budget) break;
+
+        auto it = tt.find(board.hash());
+        if (it != tt.end() && std::abs(it->second.score) > 15000) break;
+    }
+    exceeded_budget = true;
+
+    long long flops_used;
+    PAPI_stop(event_set, &flops_used);
+    PAPI_cleanup_eventset(event_set);
+    PAPI_destroy_eventset(&event_set);
+
+    std::string uci = chess::uci::moveToUci(best);
     std::strncpy(out_move, uci.c_str(), out_len);
     out_move[out_len-1] = '\0';
     return 0;

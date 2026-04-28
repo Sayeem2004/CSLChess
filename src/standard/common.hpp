@@ -22,7 +22,7 @@ extern "C" {
     int best_move_alpha_beta_time(const char* fen, int time_ms, char* out_move, int out_len);
 
     // Alpha-Beta pruning — flop-limited (searches within the given floating-point op budget).
-    int best_move_alpha_beta_flops(const char* fen, int flop_budget, char* out_move, int out_len);
+    int best_move_alpha_beta_flops(const char* fen, int megaflop_budget, char* out_move, int out_len);
 
     // Monte Carlo Tree Search — depth-limited (runs ~branching_factor^depth simulations).
     int best_move_monte_carlo_depth(const char* fen, int depth, char* out_move, int out_len);
@@ -31,5 +31,5 @@ extern "C" {
     int best_move_monte_carlo_time(const char* fen, int time_ms, char* out_move, int out_len);
 
     // Monte Carlo Tree Search — flop-limited (runs simulations within the given floating-point op budget).
-    int best_move_monte_carlo_flops(const char* fen, int flop_budget, char* out_move, int out_len);
+    int best_move_monte_carlo_flops(const char* fen, int megaflop_budget, char* out_move, int out_len);
 }

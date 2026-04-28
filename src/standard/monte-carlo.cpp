@@ -32,7 +32,7 @@ double rollout(chess::Board state, int max_depth = 5) {
     // If rollout truncated, we use evaluate function as a proxy
     int eval = engine_evaluate(state);
     if (state.sideToMove() != root_color) eval = -eval;
-    constexpr double k = 0.003; 
+    constexpr double k = 0.003;
     return 1.0 / (1.0 + std::exp(-k * eval));
 }
 
@@ -217,7 +217,7 @@ int best_move_monte_carlo_time(const char* fen, int time_ms, char* out_move, int
 }
 
 
-int best_move_monte_carlo_flops(const char* fen, int flop_budget, char* out_move, int out_len) {
+int best_move_monte_carlo_flops(const char* fen, int megaflop_budget, char* out_move, int out_len) {
     chess::Board board;
     if (!board.setFen(fen)) return -2; // Invalid FEN
 
@@ -225,7 +225,7 @@ int best_move_monte_carlo_flops(const char* fen, int flop_budget, char* out_move
     chess::movegen::legalmoves(moves, board);
     if (moves.empty()) return -1; // Checkmate or stalemate
 
-    // TODO: run simulations until flop_budget is exhausted
+    // TODO: run simulations until megaflop_budget is exhausted
     chess::Move best = monte_carlo_search(board);
     std::string uci  = chess::uci::moveToUci(best);
     std::strncpy(out_move, uci.c_str(), out_len);
