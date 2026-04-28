@@ -5,8 +5,8 @@ import sys
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-from benchmark import PHASES, DATA_DIR
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+from benchmark import PHASES, DATA_DIR
 from utils.load import load_perft
 
 
