@@ -10,7 +10,7 @@
 #include "evaluate.hpp"
 
 
-// Tools for enforcing time and flop limits.
+// Tools for enforcing time and cycle limits.
 static std::once_flag papi_init_flag;
 static void init_papi() {
     PAPI_library_init(PAPI_VER_CURRENT);
@@ -191,7 +191,7 @@ int best_move_alpha_beta_time(const char* fen, int time_ms, char* out_move, int 
 
 // Iterative Deepening: Each iteration seeds the TT with the best moves from
 // the previous depth — should nearly half the chess branching factor.
-int best_move_alpha_beta_flops(const char* fen, int megaflop_budget, char* out_move, int out_len) {
+int best_move_alpha_beta_cycles(const char* fen, int megacycle_budget, char* out_move, int out_len) {
     chess::Board board;
     if (!board.setFen(fen)) return -2;
 
@@ -202,29 +202,29 @@ int best_move_alpha_beta_flops(const char* fen, int megaflop_budget, char* out_m
     std::call_once(papi_init_flag, init_papi);
     int event_set = PAPI_NULL;
     PAPI_create_eventset(&event_set);
-    PAPI_add_event(event_set, PAPI_FP_OPS);
+    PAPI_add_event(event_set, PAPI_TOT_CYC);
     PAPI_start(event_set);
 
     tt.clear();
     exceeded_budget = false;
 
-    long long flop_budget = (long long)megaflop_budget * 1'000'000LL;
+    long long cycle_budget = (long long)megacycle_budget * 1'000'000LL;
     chess::Move best = moves[0];
     for (int depth = 1; !exceeded_budget; depth++) {
         chess::Move candidate = search_root(board, depth);
         if (!exceeded_budget) best = candidate;
 
-        long long flops_used;
-        PAPI_read(event_set, &flops_used);
-        if (flops_used >= flop_budget) break;
+        long long cycles_used;
+        PAPI_read(event_set, &cycles_used);
+        if (cycles_used >= cycle_budget) break;
 
         auto it = tt.find(board.hash());
         if (it != tt.end() && std::abs(it->second.score) > 15000) break;
     }
     exceeded_budget = true;
 
-    long long flops_used;
-    PAPI_stop(event_set, &flops_used);
+    long long cycles_used;
+    PAPI_stop(event_set, &cycles_used);
     PAPI_cleanup_eventset(event_set);
     PAPI_destroy_eventset(&event_set);
 

@@ -48,7 +48,7 @@ def _bind_fn(lib: ctypes.CDLL, fn_name: str):
     fn = getattr(lib, fn_name)
     fn.argtypes = [
         ctypes.c_char_p,  # fen
-        ctypes.c_int,     # budget (depth / time_ms / megaflop_budget)
+        ctypes.c_int,     # budget (depth / time_ms / megacycle_budget)
         ctypes.c_char_p,  # out_move buffer
         ctypes.c_int,     # out_len
     ]
@@ -58,27 +58,27 @@ def _bind_fn(lib: ctypes.CDLL, fn_name: str):
 
 def load_standard_alpha_beta() -> dict:
     """Compile and load the standard C++ alpha-beta engine.
-    Returns a dict with keys 'depth', 'time', 'flops' mapping to their ctypes fns."""
+    Returns a dict with keys 'depth', 'time', 'cycles' mapping to their ctypes fns."""
     src     = os.path.join(STANDARD_DIR, "alpha-beta.cpp")
     lib_out = os.path.join(STANDARD_DIR, "alpha-beta.so")
     lib = _compile_library(src, lib_out)
     return {
-        "depth": _bind_fn(lib, "best_move_alpha_beta_depth"),
-        "time":  _bind_fn(lib, "best_move_alpha_beta_time"),
-        "flops": _bind_fn(lib, "best_move_alpha_beta_flops"),
+        "depth":  _bind_fn(lib, "best_move_alpha_beta_depth"),
+        "time":   _bind_fn(lib, "best_move_alpha_beta_time"),
+        "cycles": _bind_fn(lib, "best_move_alpha_beta_cycles"),
     }
 
 
 def load_standard_monte_carlo() -> dict:
     """Compile and load the standard C++ MCTS engine.
-    Returns a dict with keys 'depth', 'time', 'flops' mapping to their ctypes fns."""
+    Returns a dict with keys 'depth', 'time', 'cycles' mapping to their ctypes fns."""
     src     = os.path.join(STANDARD_DIR, "monte-carlo.cpp")
     lib_out = os.path.join(STANDARD_DIR, "monte-carlo.so")
     lib = _compile_library(src, lib_out)
     return {
-        "depth": _bind_fn(lib, "best_move_monte_carlo_depth"),
-        "time":  _bind_fn(lib, "best_move_monte_carlo_time"),
-        "flops": _bind_fn(lib, "best_move_monte_carlo_flops"),
+        "depth":  _bind_fn(lib, "best_move_monte_carlo_depth"),
+        "time":   _bind_fn(lib, "best_move_monte_carlo_time"),
+        "cycles": _bind_fn(lib, "best_move_monte_carlo_cycles"),
     }
 
 
@@ -92,7 +92,7 @@ def load_perft():
         print_yellow("[build] compiling perft.cpp ...")
         cmd    = ["g++", "-O2", "-std=c++17", "-shared", "-fPIC", src, "-o", lib_out]
         result = subprocess.run(cmd, capture_output=True, text=True)
-        
+
         if result.returncode != 0:
             print_red(f"[build] failed:\n{result.stderr}")
             sys.exit(1)
@@ -102,7 +102,7 @@ def load_perft():
 
     lib_path = os.path.abspath(lib_out)
     lib      = ctypes.CDLL(lib_path, winmode=0) if hasattr(os, "add_dll_directory") else ctypes.CDLL(lib_path)
-    
+
     fn          = lib.count_nodes_depth
     fn.argtypes = [ctypes.c_char_p, ctypes.c_int]
     fn.restype  = ctypes.c_longlong

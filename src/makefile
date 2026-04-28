@@ -23,8 +23,8 @@ play-cpp-ab-depth:
 play-cpp-ab-time:
 	venv/bin/python main.py --algorithm cpp-alpha-beta --time 10 --num 100
 
-play-cpp-ab-flops:
-	venv/bin/python main.py --algorithm cpp-alpha-beta --flops 20 --num 100
+play-cpp-ab-cycles:
+	venv/bin/python main.py --algorithm cpp-alpha-beta --cycles 20 --num 100
 
 play-cpp-ab-depth-verbose:
 	venv/bin/python main.py --algorithm cpp-alpha-beta --depth 3 --verbose
@@ -32,8 +32,8 @@ play-cpp-ab-depth-verbose:
 play-cpp-ab-time-verbose:
 	venv/bin/python main.py --algorithm cpp-alpha-beta --time 10 --verbose
 
-play-cpp-ab-flops-verbose:
-	venv/bin/python main.py --algorithm cpp-alpha-beta --flops 20 --verbose
+play-cpp-ab-cycles-verbose:
+	venv/bin/python main.py --algorithm cpp-alpha-beta --cycles 20 --verbose
 
 
 play-cpp-mc-depth:
@@ -42,8 +42,8 @@ play-cpp-mc-depth:
 play-cpp-mc-time:
 	venv/bin/python main.py --algorithm cpp-monte-carlo --time 10 --num 100
 
-play-cpp-mc-flops:
-	venv/bin/python main.py --algorithm cpp-monte-carlo --flops 20 --num 100
+play-cpp-mc-cycles:
+	venv/bin/python main.py --algorithm cpp-monte-carlo --cycles 20 --num 100
 
 play-cpp-mc-depth-verbose:
 	venv/bin/python main.py --algorithm cpp-monte-carlo --depth 5 --verbose
@@ -51,13 +51,13 @@ play-cpp-mc-depth-verbose:
 play-cpp-mc-time-verbose:
 	venv/bin/python main.py --algorithm cpp-monte-carlo --time 10 --verbose
 
-play-cpp-mc-flops-verbose:
-	venv/bin/python main.py --algorithm cpp-monte-carlo --flops 20 --verbose
+play-cpp-mc-cycles-verbose:
+	venv/bin/python main.py --algorithm cpp-monte-carlo --cycles 20 --verbose
 
 
 .PHONY: venv install
 .PHONY: calibrate-stockfish count-nodes update-fen
-.PHONY: play-cpp-ab-depth play-cpp-ab-time play-cpp-ab-flops
-.PHONY: play-cpp-ab-depth-verbose play-cpp-ab-time-verbose play-cpp-ab-flops-verbose
-.PHONY: play-cpp-mc-depth play-cpp-mc-time play-cpp-mc-flops
-.PHONY: play-cpp-mc-depth-verbose play-cpp-mc-time-verbose play-cpp-mc-flops-verbose
+.PHONY: play-cpp-ab-depth play-cpp-ab-time play-cpp-ab-cycles
+.PHONY: play-cpp-ab-depth-verbose play-cpp-ab-time-verbose play-cpp-ab-cycles-verbose
+.PHONY: play-cpp-mc-depth play-cpp-mc-time play-cpp-mc-cycles
+.PHONY: play-cpp-mc-depth-verbose play-cpp-mc-time-verbose play-cpp-mc-cycles-verbose

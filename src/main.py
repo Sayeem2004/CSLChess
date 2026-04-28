@@ -4,7 +4,7 @@ The chosen algorithm is compiled/loaded automatically on startup.
 
 Usage:
     python main.py --algorithm {cpp-alpha-beta,cpp-monte-carlo,csl-alpha-beta,csl-monte-carlo}
-                   (--depth DEPTH | --time TIME_MS | --flops FLOPS)
+                   (--depth DEPTH | --time TIME_MS | --cycles CYCLES)
                    [--color {white,black}] [--num NUM] [--verbose]
 """
 import argparse
@@ -79,12 +79,12 @@ if __name__ == "__main__":
     budget = parser.add_mutually_exclusive_group(required=True)
     budget.add_argument("--depth", type=int, metavar="DEPTH",   help="Limit search by depth (alpha-beta, stockfish) or simulation count (MCTS)")
     budget.add_argument("--time",  type=int, metavar="TIME_MS", help="Limit search by time in milliseconds")
-    budget.add_argument("--flops", type=int, metavar="FLOPS",   help="Limit search by floating-point operation count")
+    budget.add_argument("--cycles", type=int, metavar="CYCLES", help="Limit search by cycle count")
     args = parser.parse_args()
 
     if args.depth is not None:  budget_type, budget_val = "depth", args.depth
     elif args.time is not None: budget_type, budget_val = "time",  args.time
-    else:                       budget_type, budget_val = "flops", args.flops
+    else:                       budget_type, budget_val = "cycles", args.cycles
 
     engine    = load_engine(args.algorithm)
     stockfish = load_stockfish()
