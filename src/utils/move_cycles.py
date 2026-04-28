@@ -22,7 +22,7 @@ def cpp_best_move_cycles(fn, board: chess.Board, megacycle_budget: int) -> chess
     return move if move in board.legal_moves else None
 
 
-STOCKFISH_CYCLES_PER_NODE = 5000 # TODO: Calibrate empirically
+STOCKFISH_CYCLES_PER_NODE = 1800 # Obtained from benchmark.calibrate-stockfish.py
 
 
 def stockfish_best_move_cycles(stockfish, board: chess.Board, megacycle_budget: int) -> chess.Move | None:

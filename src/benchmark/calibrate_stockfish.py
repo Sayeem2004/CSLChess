@@ -10,10 +10,11 @@ from benchmark import PHASES, DATA_DIR
 from utils.load import STOCKFISH_UNIX_BIN
 
 
-def run_stockfish_under_perf(fen: str, depth: int, sf_path: str, perf_event: str):
+def run_all_positions_under_perf(fens: list, depth: int, sf_path: str, perf_event: str):
     """
-    Spawns `perf stat -e <event> stockfish`, sends a fixed-depth search,
-    and returns (nodes, cycles). Returns (None, None) on parse failure.
+    Runs all positions in a single Stockfish process under one perf stat invocation.
+    Returns (total_nodes, total_cycles) across all positions.
+    Startup overhead is amortized across all searches, keeping cycles/node stable.
     """
     cmd  = ["perf", "stat", "-e", perf_event, sf_path]
     proc = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
@@ -25,32 +26,36 @@ def run_stockfish_under_perf(fen: str, depth: int, sf_path: str, perf_event: str
         if line.strip() == "readyok":
             break
 
-    proc.stdin.write(f"position fen {fen}\ngo depth {depth}\n")
-    proc.stdin.flush()
-
-    stdout_lines = []
-    for line in proc.stdout:
-        stdout_lines.append(line)
-        if line.startswith("bestmove"):
-            break
+    all_stdout = []
+    for fen in fens:
+        proc.stdin.write(f"position fen {fen}\ngo depth {depth}\n")
+        proc.stdin.flush()
+        for line in proc.stdout:
+            all_stdout.append(line)
+            if line.startswith("bestmove"):
+                break
 
     proc.stdin.write("quit\n")
     proc.stdin.flush()
     _, stderr = proc.communicate()
 
-    nodes = _parse_nodes("".join(stdout_lines))
-    cycles = _parse_perf_cycles(stderr, perf_event)
-    return nodes, cycles
+    total_nodes  = _parse_total_nodes("".join(all_stdout))
+    total_cycles = _parse_perf_cycles(stderr, perf_event)
+    return total_nodes, total_cycles
 
 
-def _parse_nodes(uci_output: str) -> int | None:
-    """Extract node count from the last 'info depth ... nodes N' line."""
-    nodes = None
+def _parse_total_nodes(uci_output: str) -> int:
+    """Sum node counts from all 'bestmove' preceding info lines across multiple searches."""
+    total  = 0
+    last   = 0
     for line in uci_output.splitlines():
         m = re.search(r"\bnodes\s+(\d+)", line)
         if m:
-            nodes = int(m.group(1))
-    return nodes
+            last = int(m.group(1))
+        if line.startswith("bestmove"):
+            total += last
+            last   = 0
+    return total
 
 
 def _parse_perf_cycles(perf_stderr: str, perf_event: str) -> int | None:
@@ -78,46 +83,30 @@ def calibrate(phase: str, depth: int, sf_path: str, perf_event: str):
     with open(in_path, newline="") as f:
         fens = [row["UpdatedFEN"] for row in csv.DictReader(f)]
 
-    print(f"[calibrate] {phase}: running {len(fens)} positions at depth {depth} ...")
+    print(f"[calibrate] {phase}: running {len(fens)} positions at depth {depth} in one process ...")
+    total_nodes, total_cycles = run_all_positions_under_perf(fens, depth, sf_path, perf_event)
 
-    rows            = []
-    total_nodes     = 0
-    total_cycles     = 0
-    failed          = 0
+    if total_nodes == 0:
+        print(f"[calibrate] {phase}: parse failed — no nodes counted")
+        return 0, 0
 
-    for i, fen in enumerate(fens):
-        nodes, cycles = run_stockfish_under_perf(fen, depth, sf_path, perf_event)
-        if nodes is None or cycles is None or nodes == 0:
-            print(f"  pos {i}: parse failed (nodes={nodes}, cycles={cycles})")
-            failed += 1
-            continue
-        fpn = cycles / nodes
-        rows.append({"FEN": fen, "nodes": nodes, "cycles": cycles, "cycles_per_node": f"{fpn:.2f}"})
-        total_nodes += nodes
-        total_cycles += cycles
-        print(f"  pos {i}: nodes={nodes:>12,}  cycles={cycles:>14,}  cycles/node={fpn:.2f}")
-
-    if rows:
-        overall_fpn = total_cycles / total_nodes
-        rows.append({"FEN": "AVERAGE", "nodes": total_nodes // len(rows),
-                     "cycles": total_cycles // len(rows),
-                     "cycles_per_node": f"{overall_fpn:.2f}"})
+    cpn = total_cycles / total_nodes
+    print(f"  total nodes={total_nodes:>14,}  total cycles={total_cycles:>16,}  cycles/node={cpn:.2f}")
 
     with open(out_path, "w", newline="") as f_out:
-        writer = csv.DictWriter(f_out, fieldnames=["FEN", "nodes", "cycles", "cycles_per_node"])
+        writer = csv.DictWriter(f_out, fieldnames=["phase", "depth", "total_nodes", "total_cycles", "cycles_per_node"])
         writer.writeheader()
-        writer.writerows(rows)
+        writer.writerow({"phase": phase, "depth": depth, "total_nodes": total_nodes,
+                         "total_cycles": total_cycles, "cycles_per_node": f"{cpn:.2f}"})
 
-    if rows:
-        print(f"[calibrate] {phase}: overall cycles/node = {overall_fpn:.2f}  "
-              f"({failed} positions failed)")
+    print(f"[calibrate] {phase}: cycles/node = {cpn:.2f}")
     print(f"[calibrate] {phase}: wrote {out_path}")
     return total_nodes, total_cycles
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--depth",      type=int, default=10)
+    parser.add_argument("--depth",      type=int, default=8)
     parser.add_argument("--stockfish",  default=STOCKFISH_UNIX_BIN)
     parser.add_argument("--perf-event", default="cycles",
                         help="perf hardware counter name (CPU-specific)")
