@@ -1,6 +1,7 @@
 import argparse
 import csv
 import os
+import platform
 import re
 import subprocess
 import sys
@@ -73,11 +74,14 @@ def _parse_perf_cycles(perf_stderr: str, perf_event: str) -> int | None:
 
 
 def calibrate(phase: str, depth: int, sf_path: str, perf_event: str):
-    in_path  = os.path.join(DATA_DIR, phase, "updatedFEN.csv")
-    out_path = os.path.join(DATA_DIR, phase, "stockfish_cycles_per_node.csv")
+    sys_subfolder = "darwin" if platform.system() == "Darwin" else "linux"
+    in_path       = os.path.join(DATA_DIR, phase, "puzzles.csv")
+    out_dir       = os.path.join(DATA_DIR, phase, sys_subfolder)
+    os.makedirs(out_dir, exist_ok=True)
+    out_path      = os.path.join(out_dir, "stockfish_calibration.csv")
 
     if not os.path.exists(in_path):
-        print(f"[calibrate] {phase}: updatedFEN.csv not found, run update_fen.py first")
+        print(f"[calibrate] {phase}: puzzles.csv not found")
         return 0, 0
 
     with open(in_path, newline="") as f:

@@ -18,10 +18,10 @@ def run_count_nodes(max_depth: int, num_threads: int):
         return {f"depth_{d}": count_nodes(fen.encode(), d) for d in range(max_depth + 1)}
 
     for phase in PHASES:
-        in_path  = os.path.join(DATA_DIR, phase, "updatedFEN.csv")
+        in_path  = os.path.join(DATA_DIR, phase, "puzzles.csv")
         out_path = os.path.join(DATA_DIR, phase, "node_counts.csv")
         if not os.path.exists(in_path):
-            print(f"[count_nodes] {phase}: updatedFEN.csv not found, run update_fen.py first")
+            print(f"[count_nodes] {phase}: puzzles.csv not found")
             continue
 
         with open(in_path, newline="") as f:

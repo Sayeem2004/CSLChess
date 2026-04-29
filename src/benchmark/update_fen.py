@@ -1,27 +1,27 @@
 import chess
 import csv
 import os
+import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 from benchmark import PHASES, DATA_DIR
 
 
 def update_fen(phase: str):
-    in_path  = os.path.join(DATA_DIR, phase, "puzzles.csv")
-    out_path = os.path.join(DATA_DIR, phase, "updatedFEN.csv")
+    path = os.path.join(DATA_DIR, phase, "puzzles.csv")
 
-    with open(in_path, newline="") as f_in, open(out_path, "w", newline="") as f_out:
-        reader = csv.DictReader(f_in)
-        writer = csv.DictWriter(f_out, fieldnames=["UpdatedFEN"])
+    with open(path, newline="") as f:
+        rows = list(csv.DictReader(f))
+
+    with open(path, "w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=["FEN", "FirstMove", "UpdatedFEN"])
         writer.writeheader()
-
-        for row in reader:
+        for row in rows:
             board = chess.Board(row["FEN"])
-            move  = chess.Move.from_uci(row["FirstMove"])
-            board.push(move)
-            writer.writerow({ "UpdatedFEN": board.fen() })
+            board.push(chess.Move.from_uci(row["FirstMove"]))
+            writer.writerow({"FEN": row["FEN"], "FirstMove": row["FirstMove"], "UpdatedFEN": board.fen()})
 
-    print(f"[update_fen] {phase}: wrote {out_path}")
+    print(f"[update_fen] {phase}: wrote {path}")
 
 
 if __name__ == "__main__":

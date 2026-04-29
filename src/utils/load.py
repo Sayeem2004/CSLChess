@@ -159,13 +159,16 @@ def _load_stockfish(skill_level: int, path: str):
     print_yellow(f"[stockfish] loaded at skill level {skill_level} (~{elo} ELO)\n")
     return Stockfish(path=path, parameters={"Skill Level": skill_level, "UCI_LimitStrength": True, "UCI_Elo": elo})
 
+
 def load_stockfish_linux(skill_level: int = 0, path: str = STOCKFISH_LINUX_BIN):
     """Return a Stockfish instance backed by the Linux binary."""
     return _load_stockfish(skill_level, path)
 
+
 def load_stockfish_mac(skill_level: int = 0, path: str = STOCKFISH_MAC_BIN):
     """Return a Stockfish instance backed by the macOS binary."""
     return _load_stockfish(skill_level, path)
+
 
 def load_stockfish_windows(skill_level: int = 0, path: str = STOCKFISH_WIN_EXE):
     """Return a Stockfish instance backed by the Windows binary."""

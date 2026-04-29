@@ -23,6 +23,9 @@ clean:
 calibrate-stockfish:
 	venv/bin/python benchmark/calibrate_stockfish.py
 
+compare-depths:
+	venv/bin/python benchmark/compare_depths.py
+
 count-nodes:
 	venv/bin/python benchmark/count_nodes.py
 
