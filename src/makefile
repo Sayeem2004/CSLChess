@@ -14,6 +14,11 @@ init_outputs:
 	mkdir -p outputs/cycles
 	mkdir -p outputs/hard
 
+clean:
+	rm -f standard/alpha-beta.so
+	rm -f standard/monte-carlo.so
+
+
 
 calibrate-stockfish:
 	venv/bin/python benchmark/calibrate_stockfish.py
@@ -26,51 +31,51 @@ update-fen:
 
 
 play-cpp-ab-depth: init_outputs
-	venv/bin/python main.py --algorithm cpp-alpha-beta --depth 3 --num 100 > outputs/depth/cpp-alpha-beta-depth.txt
+	venv/bin/python main.py --algorithm cpp-alpha-beta --depth 3 --num 100 > outputs/depth/cpp-alpha-beta-depth.txt 2>&1
 
 play-cpp-ab-time: init_outputs
-	venv/bin/python main.py --algorithm cpp-alpha-beta --time 10 --num 100 > outputs/time/cpp-alpha-beta-time.txt
+	venv/bin/python main.py --algorithm cpp-alpha-beta --time 10 --num 100 > outputs/time/cpp-alpha-beta-time.txt 2>&1
 
 play-cpp-ab-cycles: init_outputs
-	venv/bin/python main.py --algorithm cpp-alpha-beta --cycles 20 --num 100 > outputs/cycles/cpp-alpha-beta-cycles.txt
+	venv/bin/python main.py --algorithm cpp-alpha-beta --cycles 20 --num 100 > outputs/cycles/cpp-alpha-beta-cycles.txt 2>&1
 
 play-cpp-ab-depth-verbose: init_outputs
-	venv/bin/python main.py --algorithm cpp-alpha-beta --depth 3 --verbose > outputs/depth/cpp-alpha-beta-depth-verbose.txt
+	venv/bin/python main.py --algorithm cpp-alpha-beta --depth 3 --verbose > outputs/depth/cpp-alpha-beta-depth-verbose.txt 2>&1
 
 play-cpp-ab-time-verbose: init_outputs
-	venv/bin/python main.py --algorithm cpp-alpha-beta --time 10 --verbose > outputs/time/cpp-alpha-beta-time-verbose.txt
+	venv/bin/python main.py --algorithm cpp-alpha-beta --time 10 --verbose > outputs/time/cpp-alpha-beta-time-verbose.txt 2>&1
 
 play-cpp-ab-cycles-verbose: init_outputs
-	venv/bin/python main.py --algorithm cpp-alpha-beta --cycles 20 --verbose > outputs/cycles/cpp-alpha-beta-cycles-verbose.txt
+	venv/bin/python main.py --algorithm cpp-alpha-beta --cycles 20 --verbose > outputs/cycles/cpp-alpha-beta-cycles-verbose.txt 2>&1
 
 play-cpp-ab-hard: init_outputs
-	venv/bin/python -u main.py --algorithm cpp-alpha-beta --depth 3 --skill 0  --num 100 > outputs/hard/cpp-alpha-beta-skill-0.txt
-	venv/bin/python -u main.py --algorithm cpp-alpha-beta --depth 3 --skill 10 --num 100 > outputs/hard/cpp-alpha-beta-skill-10.txt
-	venv/bin/python -u main.py --algorithm cpp-alpha-beta --depth 3 --skill 20 --num 100 > outputs/hard/cpp-alpha-beta-skill-20.txt
+	venv/bin/python -u main.py --algorithm cpp-alpha-beta --depth 3 --skill 0  --num 100 > outputs/hard/cpp-alpha-beta-skill-0.txt 2>&1
+	venv/bin/python -u main.py --algorithm cpp-alpha-beta --depth 3 --skill 10 --num 100 > outputs/hard/cpp-alpha-beta-skill-10.txt 2>&1
+	venv/bin/python -u main.py --algorithm cpp-alpha-beta --depth 3 --skill 20 --num 100 > outputs/hard/cpp-alpha-beta-skill-20.txt 2>&1
 
 
 play-cpp-mc-depth: init_outputs
-	venv/bin/python main.py --algorithm cpp-monte-carlo --depth 5 --num 100 > outputs/depth/cpp-monte-carlo-depth.txt
+	venv/bin/python main.py --algorithm cpp-monte-carlo --depth 5 --num 100 > outputs/depth/cpp-monte-carlo-depth.txt 2>&1
 
 play-cpp-mc-time: init_outputs
-	venv/bin/python main.py --algorithm cpp-monte-carlo --time 10 --num 100 > outputs/time/cpp-monte-carlo-time.txt
+	venv/bin/python main.py --algorithm cpp-monte-carlo --time 10 --num 100 > outputs/time/cpp-monte-carlo-time.txt 2>&1
 
 play-cpp-mc-cycles: init_outputs
-	venv/bin/python main.py --algorithm cpp-monte-carlo --cycles 20 --num 100 > outputs/cycles/cpp-monte-carlo-cycles.txt
+	venv/bin/python main.py --algorithm cpp-monte-carlo --cycles 20 --num 100 > outputs/cycles/cpp-monte-carlo-cycles.txt 2>&1
 
 play-cpp-mc-depth-verbose: init_outputs
-	venv/bin/python main.py --algorithm cpp-monte-carlo --depth 5 --verbose > outputs/depth/cpp-monte-carlo-depth-verbose.txt
+	venv/bin/python main.py --algorithm cpp-monte-carlo --depth 5 --verbose > outputs/depth/cpp-monte-carlo-depth-verbose.txt 2>&1
 
 play-cpp-mc-time-verbose: init_outputs
-	venv/bin/python main.py --algorithm cpp-monte-carlo --time 10 --verbose > outputs/time/cpp-monte-carlo-time-verbose.txt
+	venv/bin/python main.py --algorithm cpp-monte-carlo --time 10 --verbose > outputs/time/cpp-monte-carlo-time-verbose.txt 2>&1
 
 play-cpp-mc-cycles-verbose: init_outputs
-	venv/bin/python main.py --algorithm cpp-monte-carlo --cycles 20 --verbose > outputs/cycles/cpp-monte-carlo-cycles-verbose.txt
+	venv/bin/python main.py --algorithm cpp-monte-carlo --cycles 20 --verbose > outputs/cycles/cpp-monte-carlo-cycles-verbose.txt 2>&1
 
 play-cpp-mc-hard: init_outputs
-	venv/bin/python -u main.py --algorithm cpp-monte-carlo --depth 5 --skill 0  --num 100 > outputs/hard/cpp-monte-carlo-skill-0.txt
-	venv/bin/python -u main.py --algorithm cpp-monte-carlo --depth 5 --skill 10 --num 100 > outputs/hard/cpp-monte-carlo-skill-10.txt
-	venv/bin/python -u main.py --algorithm cpp-monte-carlo --depth 5 --skill 20 --num 100 > outputs/hard/cpp-monte-carlo-skill-20.txt
+	venv/bin/python -u main.py --algorithm cpp-monte-carlo --depth 5 --skill 0  --num 100 > outputs/hard/cpp-monte-carlo-skill-0.txt 2>&1
+	venv/bin/python -u main.py --algorithm cpp-monte-carlo --depth 5 --skill 10 --num 100 > outputs/hard/cpp-monte-carlo-skill-10.txt 2>&1
+	venv/bin/python -u main.py --algorithm cpp-monte-carlo --depth 5 --skill 20 --num 100 > outputs/hard/cpp-monte-carlo-skill-20.txt 2>&1
 
 
 .PHONY: venv install

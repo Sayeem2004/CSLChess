@@ -194,6 +194,9 @@ int best_move_monte_carlo_depth(const char* fen, int depth, char* out_move, int 
     chess::movegen::legalmoves(moves, board);
     if (moves.empty()) return -1;
 
+    static bool printed = false;
+    if (!printed) { printed = true; fprintf(stderr, "[monte-carlo] threads: %d\n", omp_get_max_threads()); }
+    
     MCTSNode root(board);
     run_simulations(root, board, depth, 100000); // fixed number of simulations for depth-limited search
 
@@ -212,6 +215,8 @@ int best_move_monte_carlo_time(const char* fen, int time_ms,
     if (moves.empty()) return -1;
 
     exceeded_budget = false;
+    static bool printed = false;
+    if (!printed) { printed = true; fprintf(stderr, "[monte-carlo] threads: %d\n", omp_get_max_threads()); }
 
     using clock = std::chrono::steady_clock;
     auto deadline = clock::now() + std::chrono::milliseconds(time_ms);
@@ -247,6 +252,8 @@ int best_move_monte_carlo_cycles(const char* fen, int megacycle_budget,
     if (moves.empty()) return -1;
 
     exceeded_budget = false;
+    static bool printed = false;
+    if (!printed) { printed = true; fprintf(stderr, "[monte-carlo] threads: %d\n", omp_get_max_threads()); }
 
     #ifdef USE_PAPI
     std::call_once(papi_init_flag, init_papi);

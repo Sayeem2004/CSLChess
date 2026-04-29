@@ -1,0 +1,11 @@
+Alpha-Beta Pruning:
+- Implemented using negamax instead of two seperate functions for simplicity.
+- Time limited is done through iterative deepening which is hopefully made more efficient through transposition table.
+- Cycle limited is done through PAPI and also uses an iterative deepening approach.
+- Two potential methods to scale with OpenMP: From paper (Root Split + Beam Search), or stockfish (Lazy SMP)
+- Lazy SMP assigns a thread to each depth in iterative deepening, while root split assigns threads to each child
+- Since branch factor is about 32, we do a hybrid approach to see if one leads to better speedups than the other.
+- Only do global alpha checks at root to reduce mutex contention, which does lead to more work but probably fine.
+
+Monte-Carlo Tree Search Notes:
+- Currently using dynamic scheduling, should probably convert to static though?

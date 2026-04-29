@@ -34,7 +34,6 @@ def _compile_library(src: str, lib_out: str) -> ctypes.CDLL:
         # Attempt to get PAPI flags dynamically, fallback to default
         if platform.system() == "Linux":
             try:
-                import subprocess
                 papi_pkg = ' '.join(subprocess.check_output(["pkg-config", "--cflags", "--libs", "papi"], stderr=subprocess.DEVNULL, text=True).split())
                 if papi_pkg:
                     papi_flags = ["-DUSE_PAPI"] + papi_pkg.split()

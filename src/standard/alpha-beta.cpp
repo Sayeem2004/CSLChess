@@ -1,9 +1,10 @@
+#include <algorithm>
 #include <atomic>
 #include <chrono>
 #include <cstring>
-#include <mutex>
 #include <thread>
-#include <unordered_map>
+
+#include <omp.h>
 #ifdef USE_PAPI
 #include <papi.h>
 #endif
@@ -12,42 +13,49 @@
 #include "evaluate.hpp"
 
 
-// Tools for enforcing time and cycle limits.
-#ifdef USE_PAPI
-static std::once_flag papi_init_flag;
-static void init_papi() { PAPI_library_init(PAPI_VER_CURRENT); }
-#endif
 static std::atomic<bool> exceeded_budget{false};
+// Chess branching factor — sets the number of inner (root-parallel) threads per search_root call.
+// Outer thread count = omp_get_max_threads() / BRANCH_FACTOR, used for Lazy SMP staggering.
+static constexpr int BRANCH_FACTOR = 32;
 
 
-// Transposition Table (TT) for caching previously evaluated positions.
-enum TTFlag { TT_EXACT, TT_LOWER, TT_UPPER };
+// Fixed-size lock-free TT. Concurrent reads/writes cause benign races (at worst a missed entry).
+// `key` detects index collisions; `gen` invalidates stale entries without memset.
+enum TTFlag : uint8_t { TT_EXACT, TT_LOWER, TT_UPPER };
 struct TTEntry {
+    uint64_t    key;
     int         score;
-    int         depth;
+    int16_t     depth;
+    uint8_t     gen;
     TTFlag      flag;
     chess::Move best_move;
 };
-static std::unordered_map<uint64_t, TTEntry> tt;
+
+
+// 4M entries * (16B + ~32B best move) = ~200MB
+static constexpr int TT_SIZE = 1 << 22;
+static TTEntry tt[TT_SIZE];
+static uint8_t tt_gen = 0;
 
 
 // Returns a score in centipawns from the perspective of the side to move.
 // `alpha` - lower bound (best score the maximising side is guaranteed so far)
 // `beta`  - upper bound (best score the minimising side is guaranteed so far)
 static int negamax(chess::Board& board, int depth, int alpha, int beta) {
-    if (exceeded_budget) return 0; // Abort immediately — result will be discarded
+    if (exceeded_budget) return 0; // Abort immediately
     if (board.isRepetition(2) || board.isHalfMoveDraw()) return 0; // Draw
 
     const int alpha_orig = alpha;
-    uint64_t hash        = board.hash();
-    auto it              = tt.find(hash);
+    uint64_t  hash       = board.hash();
+    int       idx        = hash & (TT_SIZE - 1);
+    TTEntry&  e          = tt[idx];
+    bool      tt_valid   = (e.key == hash && e.gen == tt_gen);
 
-    if (it != tt.end() && it->second.depth >= depth) {
-        const TTEntry& e = it->second;
-        if (e.flag == TT_EXACT)                         return e.score;
-        if (e.flag == TT_LOWER && e.score > alpha)      alpha = e.score;
-        else if (e.flag == TT_UPPER && e.score < beta)  beta  = e.score;
-        if (alpha >= beta)                              return e.score;
+    if (tt_valid && e.depth >= depth) {
+        if (e.flag == TT_EXACT)                          return e.score;
+        if (e.flag == TT_LOWER && e.score > alpha)       alpha = e.score;
+        else if (e.flag == TT_UPPER && e.score < beta)   beta  = e.score;
+        if (alpha >= beta)                               return e.score;
     }
 
     if (depth == 0) {
@@ -65,10 +73,9 @@ static int negamax(chess::Board& board, int depth, int alpha, int beta) {
         return -20000 - (depth * 100); // Checkmate: prefer faster mates
     }
 
-    // Move ordering: try the TT best move first
-    if (it != tt.end()) {
+    if (tt_valid) {
         for (int i = 0; i < (int)moves.size(); i++) {
-            if (moves[i] == it->second.best_move) {
+            if (moves[i] == e.best_move) {
                 std::swap(moves[0], moves[i]);
                 break;
             }
@@ -76,7 +83,7 @@ static int negamax(chess::Board& board, int depth, int alpha, int beta) {
     }
 
     chess::Move best_move = moves[0];
-    int best = -1000000;
+    int         best      = -1000000;
 
     for (const auto& move : moves) {
         board.makeMove(move);
@@ -90,45 +97,55 @@ static int negamax(chess::Board& board, int depth, int alpha, int beta) {
 
     if (!exceeded_budget) {
         TTFlag flag = (best <= alpha_orig) ? TT_UPPER : (best >= beta) ? TT_LOWER : TT_EXACT;
-        tt[hash]    = {best, depth, flag, best_move};
+        tt[idx] = {hash, best, (int16_t)depth, tt_gen, flag, best_move};
     }
     return best;
 }
 
 
-// Root search: returns best move and score at the given depth.
-static chess::Move search_root(chess::Board& board, int depth) {
+// Root search with internal root parallelism: nthreads threads split the root moves.
+static chess::Move search_root(chess::Board& board, int depth, int nthreads) {
     chess::Movelist moves;
     chess::movegen::legalmoves(moves, board);
 
-    // Try TT best move first for move ordering
     uint64_t root_hash = board.hash();
-    auto it = tt.find(root_hash);
-    if (it != tt.end()) {
+    int      idx       = root_hash & (TT_SIZE - 1);
+    TTEntry& e         = tt[idx];
+    if (e.key == root_hash && e.gen == tt_gen) {
         for (int i = 0; i < (int)moves.size(); i++) {
-            if (moves[i] == it->second.best_move) {
+            if (moves[i] == e.best_move) {
                 std::swap(moves[0], moves[i]);
                 break;
             }
         }
     }
 
-    chess::Move best_move = moves[0];
-    int best_score = -1000000;
-    int alpha      = -1000000;
-    int beta       =  1000000;
+    chess::Move      best_move  = moves[0];
+    int              best_score = -1000000;
+    std::atomic<int> depth_alpha{-1000000};
 
-    for (const auto& move : moves) {
-        board.makeMove(move);
-        int score = -negamax(board, depth-1, -beta, -alpha);
-        board.unmakeMove(move);
+    // Each inner thread searches one root move; dynamic scheduling gives idle threads
+    // the next unstarted move, hopefully load balancing better than a static split.
+    #pragma omp parallel for num_threads(nthreads) schedule(dynamic, 1) \
+            shared(best_move, best_score, depth_alpha)
+    for (int i = 0; i < (int)moves.size(); i++) {
+        if (exceeded_budget) continue;
+        chess::Board local = board;
+        local.makeMove(moves[i]);
 
-        if (score > best_score) { best_score = score; best_move = move; }
-        if (score > alpha) alpha = score;
+        int alpha = depth_alpha.load();
+        int score = -negamax(local, depth-1, -1000000, -alpha);
+
+        #pragma omp critical
+        {
+            if (score > best_score) { best_score = score; best_move = moves[i]; }
+            int prev = depth_alpha.load();
+            while (score > prev && !depth_alpha.compare_exchange_weak(prev, score));
+        }
     }
 
-    // Store root in TT so the next iterative deepening depth orders moves correctly
-    if (!exceeded_budget) tt[root_hash] = {best_score, depth, TT_EXACT, best_move};
+    if (!exceeded_budget)
+        tt[idx] = {root_hash, best_score, (int16_t)depth, tt_gen, TT_EXACT, best_move};
     return best_move;
 }
 
@@ -136,51 +153,72 @@ static chess::Move search_root(chess::Board& board, int depth) {
 int best_move_alpha_beta_depth(const char* fen, int depth, char* out_move, int out_len) {
     chess::Board board;
     if (!board.setFen(fen)) return -2;
-
     chess::Movelist moves;
     chess::movegen::legalmoves(moves, board);
     if (moves.empty()) return -1;
 
-    tt.clear();
-    exceeded_budget = false;
-    chess::Move best = search_root(board, depth);
+    tt_gen++;
+    exceeded_budget  = false;
+    
+    static bool printed = false;
+    if (!printed) { printed = true; fprintf(stderr, "[alpha-beta] threads: %d (root-parallel)\n", omp_get_max_threads()); }
+    chess::Move best = search_root(board, depth, omp_get_max_threads());
 
-    std::string uci  = chess::uci::moveToUci(best);
+    std::string uci = chess::uci::moveToUci(best);
     std::strncpy(out_move, uci.c_str(), out_len);
     out_move[out_len-1] = '\0';
     return 0;
 }
 
 
-// Iterative Deepening: Each iteration seeds the TT with the best moves from
-// the previous depth — should nearly half the chess branching factor.
+// Hybrid Lazy SMP + Root Parallelism.
+// Outer threads = max_threads / BRANCH_FACTOR, each doing iterative deepening at staggered depths.
+// Inner threads = BRANCH_FACTOR, splitting root moves in parallel within each search_root call..
 int best_move_alpha_beta_time(const char* fen, int time_ms, char* out_move, int out_len) {
     chess::Board board;
     if (!board.setFen(fen)) return -2;
-
     chess::Movelist moves;
     chess::movegen::legalmoves(moves, board);
     if (moves.empty()) return -1;
 
-    tt.clear();
+    tt_gen++;
     exceeded_budget = false;
 
+    int outer_threads = std::max(1, omp_get_max_threads() / BRANCH_FACTOR);
+    int inner_threads = BRANCH_FACTOR;
+    
+    static bool printed = false;
+    if (!printed) { printed = true; fprintf(stderr, "[alpha-beta] threads: %d outer x %d inner = %d total\n", outer_threads, inner_threads, outer_threads * inner_threads); }
+    
     using clock = std::chrono::steady_clock;
     auto deadline = clock::now() + std::chrono::milliseconds(time_ms);
-
     std::thread timer([deadline]() {
         while (!exceeded_budget && clock::now() < deadline)
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
         exceeded_budget = true;
     });
-
     chess::Move best = moves[0];
-    for (int depth = 1; !exceeded_budget; depth++) {
-        chess::Move candidate = search_root(board, depth);
-        if (!exceeded_budget) best = candidate;
-        auto it = tt.find(board.hash()); // Forced mate should terminate early
-        if (it != tt.end() && std::abs(it->second.score) > 15000) break;
+
+    omp_set_nested(true);
+    omp_set_max_active_levels(2);
+    #pragma omp parallel num_threads(outer_threads) shared(best, exceeded_budget)
+    {
+        chess::Board local_board = board;
+        int my_depth = 1 + omp_get_thread_num(); // stagger: thread 0→1, thread 1→2, ...
+
+        while (!exceeded_budget) {
+            chess::Move candidate = search_root(local_board, my_depth, inner_threads);
+
+            if (omp_get_thread_num() == 0 && !exceeded_budget)
+                best = candidate;
+
+            my_depth += outer_threads;
+
+            int root_idx = local_board.hash() & (TT_SIZE - 1);
+            if (tt[root_idx].key == local_board.hash() && std::abs(tt[root_idx].score) > 15000) break;
+        }
     }
+
     exceeded_budget = true;
     timer.join();
 
@@ -191,50 +229,74 @@ int best_move_alpha_beta_time(const char* fen, int time_ms, char* out_move, int 
 }
 
 
-// Iterative Deepening: Each iteration seeds the TT with the best moves from
-// the previous depth — should nearly half the chess branching factor.
+// Same hybrid strategy with PAPI cycle counting.
+// Outer thread 0 owns the PAPI event set and sets exceeded_budget when over budget.
 int best_move_alpha_beta_cycles(const char* fen, int megacycle_budget, char* out_move, int out_len) {
     chess::Board board;
     if (!board.setFen(fen)) return -2;
-
     chess::Movelist moves;
     chess::movegen::legalmoves(moves, board);
     if (moves.empty()) return -1;
 
-    tt.clear();
+    tt_gen++;
     exceeded_budget = false;
 
-#ifdef USE_PAPI
-    std::call_once(papi_init_flag, init_papi);
-    int event_set = PAPI_NULL;
-    PAPI_create_eventset(&event_set);
-    PAPI_add_event(event_set, PAPI_TOT_CYC);
-    PAPI_start(event_set);
-    long long cycle_budget = (long long)megacycle_budget * 1'000'000LL;
-#endif
-
+    int outer_threads = std::max(1, omp_get_max_threads() / BRANCH_FACTOR);
+    int inner_threads = BRANCH_FACTOR;
+    
+    static bool printed = false;
+    if (!printed) { printed = true; fprintf(stderr, "[alpha-beta] threads: %d outer x %d inner = %d total\n", outer_threads, inner_threads, outer_threads * inner_threads); }
+    
     chess::Move best = moves[0];
-    for (int depth = 1; !exceeded_budget; depth++) {
-        chess::Move candidate = search_root(board, depth);
-        if (!exceeded_budget) best = candidate;
+    omp_set_nested(true);
+    omp_set_max_active_levels(2);
 
-#ifdef USE_PAPI
-        long long cycles_used;
-        PAPI_read(event_set, &cycles_used);
-        if (cycles_used >= cycle_budget) break;
-#endif
+    #pragma omp parallel num_threads(outer_threads) shared(best, exceeded_budget)
+    {
+        chess::Board local_board = board;
+        int my_depth = 1 + omp_get_thread_num();
 
-        auto it = tt.find(board.hash());
-        if (it != tt.end() && std::abs(it->second.score) > 15000) break;
+        #ifdef USE_PAPI
+        int       event_set   = PAPI_NULL;
+        long long cycle_budget = (long long)megacycle_budget * 1'000'000LL;
+        if (omp_get_thread_num() == 0) {
+            PAPI_library_init(PAPI_VER_CURRENT);
+            PAPI_create_eventset(&event_set);
+            PAPI_add_event(event_set, PAPI_TOT_CYC);
+            PAPI_start(event_set);
+        }
+        #endif
+
+        while (!exceeded_budget) {
+            chess::Move candidate = search_root(local_board, my_depth, inner_threads);
+
+            if (omp_get_thread_num() == 0 && !exceeded_budget) {
+                best = candidate;
+                #ifdef USE_PAPI
+                long long cycles_used;
+                PAPI_read(event_set, &cycles_used);
+                if (cycles_used >= cycle_budget) exceeded_budget = true;
+                #endif
+            }
+
+            my_depth += outer_threads;
+
+            // All threads check for forced mate so any thread can trigger early exit
+            int root_idx = local_board.hash() & (TT_SIZE - 1);
+            if (tt[root_idx].key == local_board.hash() && std::abs(tt[root_idx].score) > 15000) break;
+        }
+
+        #ifdef USE_PAPI
+        if (omp_get_thread_num() == 0 && event_set != PAPI_NULL) {
+            long long cycles_used;
+            PAPI_stop(event_set, &cycles_used);
+            PAPI_cleanup_eventset(event_set);
+            PAPI_destroy_eventset(&event_set);
+        }
+        #endif
     }
-    exceeded_budget = true;
 
-#ifdef USE_PAPI
-    long long cycles_used;
-    PAPI_stop(event_set, &cycles_used);
-    PAPI_cleanup_eventset(event_set);
-    PAPI_destroy_eventset(&event_set);
-#endif
+    exceeded_budget = true;
 
     std::string uci = chess::uci::moveToUci(best);
     std::strncpy(out_move, uci.c_str(), out_len);
