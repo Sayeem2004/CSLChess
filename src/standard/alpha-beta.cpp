@@ -22,17 +22,18 @@ static constexpr int BRANCH_FACTOR = 32;
 // Fixed-size lock-free TT. Concurrent reads/writes cause benign races (at worst a missed entry).
 // `key` detects index collisions; `gen` invalidates stale entries without memset.
 enum TTFlag : uint8_t { TT_EXACT, TT_LOWER, TT_UPPER };
-struct TTEntry {
-    uint64_t    key;
-    int         score;
-    int16_t     depth;
-    uint8_t     gen;
-    TTFlag      flag;
-    chess::Move best_move;
+struct alignas(32) TTEntry {
+    uint64_t    key;       //  8
+    int         score;     //  4
+    int16_t     depth;     //  2
+    uint8_t     gen;       //  1
+    TTFlag      flag;      //  1
+    chess::Move best_move; //  2
+    // uint8_t     _pad[14];  // 14  → total 32 bytes
 };
 
 
-// 4M entries * (16B + ~32B best move) = ~200MB
+// 4M entries * 32 bytes = 128MB
 static constexpr int TT_SIZE = 1 << 22;
 static TTEntry tt[TT_SIZE];
 static uint8_t tt_gen = 0;
@@ -42,7 +43,7 @@ static uint8_t tt_gen = 0;
 // `alpha` - lower bound (best score the maximising side is guaranteed so far)
 // `beta`  - upper bound (best score the minimising side is guaranteed so far)
 static int negamax(chess::Board& board, int depth, int alpha, int beta) {
-    if (exceeded_budget) return 0; // Abort immediately
+    if (exceeded_budget.load(std::memory_order_relaxed)) return 0; // Abort immediately
     if (board.isRepetition(2) || board.isHalfMoveDraw()) return 0; // Draw
 
     const int alpha_orig = alpha;
@@ -95,7 +96,7 @@ static int negamax(chess::Board& board, int depth, int alpha, int beta) {
         if (alpha >= beta) break; // Pruning cutoff
     }
 
-    if (!exceeded_budget) {
+    if (!exceeded_budget.load(std::memory_order_relaxed)) {
         TTFlag flag = (best <= alpha_orig) ? TT_UPPER : (best >= beta) ? TT_LOWER : TT_EXACT;
         tt[idx] = {hash, best, (int16_t)depth, tt_gen, flag, best_move};
     }
@@ -129,22 +130,27 @@ static chess::Move search_root(chess::Board& board, int depth, int nthreads) {
     #pragma omp parallel for num_threads(nthreads) schedule(dynamic, 1) \
             shared(best_move, best_score, depth_alpha)
     for (int i = 0; i < (int)moves.size(); i++) {
-        if (exceeded_budget) continue;
+        if (exceeded_budget.load(std::memory_order_relaxed)) continue;
         chess::Board local = board;
         local.makeMove(moves[i]);
 
-        int alpha = depth_alpha.load();
+        int alpha = depth_alpha.load(std::memory_order_relaxed);
         int score = -negamax(local, depth-1, -1000000, -alpha);
 
+        // Update shared alpha lower-bound lock-free (no critical needed — already atomic).
+        int prev = depth_alpha.load(std::memory_order_relaxed);
+        while (score > prev &&
+               !depth_alpha.compare_exchange_weak(prev, score,
+                   std::memory_order_relaxed, std::memory_order_relaxed));
+
+        // Only best_score/best_move (non-atomic pair) needs mutual exclusion.
         #pragma omp critical
         {
             if (score > best_score) { best_score = score; best_move = moves[i]; }
-            int prev = depth_alpha.load();
-            while (score > prev && !depth_alpha.compare_exchange_weak(prev, score));
         }
     }
 
-    if (!exceeded_budget)
+    if (!exceeded_budget.load(std::memory_order_relaxed))
         tt[idx] = {root_hash, best_score, (int16_t)depth, tt_gen, TT_EXACT, best_move};
     return best_move;
 }
@@ -159,7 +165,7 @@ int best_move_alpha_beta_depth(const char* fen, int depth, char* out_move, int o
 
     tt_gen++;
     exceeded_budget  = false;
-    
+
     static bool printed = false;
     if (!printed) { printed = true; fprintf(stderr, "[alpha-beta] threads: %d (root-parallel)\n", omp_get_max_threads()); }
     chess::Move best = search_root(board, depth, omp_get_max_threads());
@@ -186,10 +192,10 @@ int best_move_alpha_beta_time(const char* fen, int time_ms, char* out_move, int 
 
     int outer_threads = std::max(1, omp_get_max_threads() / BRANCH_FACTOR);
     int inner_threads = BRANCH_FACTOR;
-    
+
     static bool printed = false;
     if (!printed) { printed = true; fprintf(stderr, "[alpha-beta] threads: %d outer x %d inner = %d total\n", outer_threads, inner_threads, outer_threads * inner_threads); }
-    
+
     using clock = std::chrono::steady_clock;
     auto deadline = clock::now() + std::chrono::milliseconds(time_ms);
     std::thread timer([deadline]() {
@@ -243,10 +249,10 @@ int best_move_alpha_beta_cycles(const char* fen, int megacycle_budget, char* out
 
     int outer_threads = std::max(1, omp_get_max_threads() / BRANCH_FACTOR);
     int inner_threads = BRANCH_FACTOR;
-    
+
     static bool printed = false;
     if (!printed) { printed = true; fprintf(stderr, "[alpha-beta] threads: %d outer x %d inner = %d total\n", outer_threads, inner_threads, outer_threads * inner_threads); }
-    
+
     chess::Move best = moves[0];
     omp_set_nested(true);
     omp_set_max_active_levels(2);

@@ -6,6 +6,7 @@ Alpha-Beta Pruning:
 - Lazy SMP assigns a thread to each depth in iterative deepening, while root split assigns threads to each child
 - Since branch factor is about 32, we do a hybrid approach to see if one leads to better speedups than the other.
 - Only do global alpha checks at root to reduce mutex contention, which does lead to more work but probably fine.
+- Try to move things out of omp critical section and also try padding to see if TT false sharing is reduced.
 
 Monte-Carlo Tree Search Notes:
 - Currently using dynamic scheduling, should probably convert to static though?
