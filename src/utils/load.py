@@ -107,30 +107,24 @@ def load_standard_monte_carlo() -> dict:
 
 
 def load_perft():
-    """Compile and load the standalone performance test functions
-    Returns a ctypes function: count_nodes_depth(fen, depth) -> long long."""
+    """Compile and load perft + alpha-beta node counter.
+    Returns a dict with:
+      'perft':      count_nodes_depth(fen, depth) -> long long
+      'alpha_beta': count_nodes_alpha_beta_depth(fen, depth) -> long long
+    """
     src     = os.path.join(STANDARD_DIR, "perft.cpp")
     lib_out = os.path.join(STANDARD_DIR, "perft.so")
+    lib = _compile_library(src, lib_out)
 
-    if not os.path.exists(lib_out):
-        print_yellow("[build] compiling perft.cpp ...")
-        cmd    = ["g++", "-O2", "-std=c++17", "-shared", "-fPIC", src, "-o", lib_out]
-        result = subprocess.run(cmd, capture_output=True, text=True)
+    perft_fn          = lib.count_nodes_depth
+    perft_fn.argtypes = [ctypes.c_char_p, ctypes.c_int]
+    perft_fn.restype  = ctypes.c_longlong
 
-        if result.returncode != 0:
-            print_red(f"[build] failed:\n{result.stderr}")
-            sys.exit(1)
-        print_green(f"[build] succeeded at {os.path.relpath(lib_out)}\n")
-    else:
-        print_yellow("[build] perft.so already exists, skipping compilation\n")
+    ab_fn          = lib.count_nodes_alpha_beta_depth
+    ab_fn.argtypes = [ctypes.c_char_p, ctypes.c_int]
+    ab_fn.restype  = ctypes.c_longlong
 
-    lib_path = os.path.abspath(lib_out)
-    lib      = ctypes.CDLL(lib_path, winmode=0) if hasattr(os, "add_dll_directory") else ctypes.CDLL(lib_path)
-
-    fn          = lib.count_nodes_depth
-    fn.argtypes = [ctypes.c_char_p, ctypes.c_int]
-    fn.restype  = ctypes.c_longlong
-    return fn
+    return {"perft": perft_fn, "alpha_beta": ab_fn}
 
 
 def load_csl_alpha_beta() -> dict:

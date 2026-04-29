@@ -6,7 +6,6 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 from benchmark import PHASES, DATA_DIR
-from utils.load import load_perft
 
 
 def plot_chess_log2_bars(phase_data_dict):

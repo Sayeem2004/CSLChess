@@ -11,7 +11,7 @@ from utils.load import load_perft
 
 
 def run_count_nodes(max_depth: int, num_threads: int):
-    count_nodes = load_perft()
+    count_nodes = load_perft()["perft"]
     depth_cols  = [f"depth_{d}" for d in range(max_depth + 1)]
 
     def count_position(fen: str) -> dict:

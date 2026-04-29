@@ -86,7 +86,7 @@ def compare_phase(phase, max_depth, max_positions, sf_path, sys_subfolder):
         return
     print(f"[compare_depths] {phase}: {len(fens)} positions, depths 1-{max_depth}")
 
-    perft_fn = load_perft()
+    perft_fn = load_perft()["perft"]
     ab_fn    = load_standard_alpha_beta()["depth"]
 
     fieldnames = [

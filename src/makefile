@@ -38,6 +38,9 @@ compare-depths:
 count-nodes:
 	venv/bin/python benchmark/count_nodes.py
 
+count-nodes-ab:
+	venv/bin/python benchmark/count_nodes_ab.py
+
 update-fen:
 	venv/bin/python benchmark/update_fen.py
 
