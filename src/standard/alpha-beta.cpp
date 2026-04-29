@@ -19,6 +19,15 @@ static std::atomic<bool> exceeded_budget{false};
 static constexpr int BRANCH_FACTOR = 32;
 
 
+#ifdef USE_PAPI
+// Thread-local PAPI state so negamax can poll cycles without cross-thread access.
+// Only the thread that calls PAPI_start sets tl_event_set != PAPI_NULL; others skip the check.
+static thread_local int       tl_event_set    = PAPI_NULL;
+static thread_local long long tl_cycle_budget = 0;
+static thread_local int       tl_node_count   = 0;
+static constexpr int PAPI_CHECK_NODES = 5000;
+#endif
+
 // Fixed-size lock-free TT. Concurrent reads/writes cause benign races (at worst a missed entry).
 // `key` detects index collisions; `gen` invalidates stale entries without memset.
 enum TTFlag : uint8_t { TT_EXACT, TT_LOWER, TT_UPPER };
@@ -43,6 +52,17 @@ static uint8_t tt_gen = 0;
 // `beta`  - upper bound (best score the minimising side is guaranteed so far)
 static int negamax(chess::Board& board, int depth, int alpha, int beta) {
     if (exceeded_budget.load(std::memory_order_relaxed)) return 0; // Abort immediately
+
+    #ifdef USE_PAPI
+    // Poll cycle counter every PAPI_CHECK_NODES nodes on the thread that owns the event set.
+    if (tl_event_set != PAPI_NULL && ++tl_node_count >= PAPI_CHECK_NODES) {
+        tl_node_count = 0;
+        long long cycles_used;
+        PAPI_read(tl_event_set, &cycles_used);
+        if (cycles_used >= tl_cycle_budget) exceeded_budget = true;
+    }
+    #endif
+
     if (board.isRepetition(2) || board.isHalfMoveDraw()) return 0; // Draw
 
     const int alpha_orig = alpha;
@@ -202,11 +222,13 @@ int best_move_alpha_beta_time(const char* fen, int time_ms, char* out_move, int 
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
         exceeded_budget = true;
     });
-    chess::Move best = moves[0];
+
+    chess::Move best       = moves[0];
+    int         best_depth = 0;
 
     omp_set_nested(true);
     omp_set_max_active_levels(2);
-    #pragma omp parallel num_threads(outer_threads) shared(best, exceeded_budget)
+    #pragma omp parallel num_threads(outer_threads) shared(best, best_depth, exceeded_budget)
     {
         chess::Board local_board = board;
         int my_depth = 1 + omp_get_thread_num(); // stagger: thread 0→1, thread 1→2, ...
@@ -214,8 +236,15 @@ int best_move_alpha_beta_time(const char* fen, int time_ms, char* out_move, int 
         while (!exceeded_budget) {
             chess::Move candidate = search_root(local_board, my_depth, inner_threads);
 
-            if (omp_get_thread_num() == 0 && !exceeded_budget)
-                best = candidate;
+            // Any thread may update best — take the result from the deepest completed search.
+            if (!exceeded_budget) {
+                #pragma omp critical
+                {
+                    if (my_depth > best_depth) {
+                        best_depth = my_depth; best = candidate;
+                    }
+                }
+            }
 
             my_depth += outer_threads;
 
@@ -252,36 +281,36 @@ int best_move_alpha_beta_cycles(const char* fen, int megacycle_budget, char* out
     static bool printed = false;
     if (!printed) { printed = true; fprintf(stderr, "[alpha-beta] threads: %d outer x %d inner = %d total\n", outer_threads, inner_threads, outer_threads * inner_threads); }
 
-    chess::Move best = moves[0];
+    chess::Move best       = moves[0];
+    int         best_depth = 0;
     omp_set_nested(true);
     omp_set_max_active_levels(2);
 
-    #pragma omp parallel num_threads(outer_threads) shared(best, exceeded_budget)
+    #pragma omp parallel num_threads(outer_threads) shared(best, best_depth, exceeded_budget)
     {
         chess::Board local_board = board;
         int my_depth = 1 + omp_get_thread_num();
 
         #ifdef USE_PAPI
-        int       event_set   = PAPI_NULL;
-        long long cycle_budget = (long long)megacycle_budget * 1'000'000LL;
         if (omp_get_thread_num() == 0) {
+            tl_cycle_budget = (long long)megacycle_budget * 1'000'000LL;
+            tl_node_count   = 0;
+            tl_event_set    = PAPI_NULL;
             PAPI_library_init(PAPI_VER_CURRENT);
-            PAPI_create_eventset(&event_set);
-            PAPI_add_event(event_set, PAPI_TOT_CYC);
-            PAPI_start(event_set);
+            PAPI_create_eventset(&tl_event_set);
+            PAPI_add_event(tl_event_set, PAPI_TOT_CYC);
+            PAPI_start(tl_event_set);
         }
         #endif
 
         while (!exceeded_budget) {
             chess::Move candidate = search_root(local_board, my_depth, inner_threads);
 
-            if (omp_get_thread_num() == 0 && !exceeded_budget) {
-                best = candidate;
-                #ifdef USE_PAPI
-                long long cycles_used;
-                PAPI_read(event_set, &cycles_used);
-                if (cycles_used >= cycle_budget) exceeded_budget = true;
-                #endif
+            if (!exceeded_budget) {
+                #pragma omp critical
+                {
+                    if (my_depth > best_depth) { best_depth = my_depth; best = candidate; }
+                }
             }
 
             my_depth += outer_threads;
@@ -292,11 +321,12 @@ int best_move_alpha_beta_cycles(const char* fen, int megacycle_budget, char* out
         }
 
         #ifdef USE_PAPI
-        if (omp_get_thread_num() == 0 && event_set != PAPI_NULL) {
+        if (tl_event_set != PAPI_NULL) {
             long long cycles_used;
-            PAPI_stop(event_set, &cycles_used);
-            PAPI_cleanup_eventset(event_set);
-            PAPI_destroy_eventset(&event_set);
+            PAPI_stop(tl_event_set, &cycles_used);
+            PAPI_cleanup_eventset(tl_event_set);
+            PAPI_destroy_eventset(&tl_event_set);
+            tl_event_set = PAPI_NULL;
         }
         #endif
     }
