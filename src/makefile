@@ -1,5 +1,7 @@
 PYTHON := $(shell command -v python3.10 || command -v python3 || command -v python)
 # export CXX=g++-15 to get commands working on macOS
+# salloc --nodes=1 --ntasks-per-node=1 --cpus-per-task=128 --qos=interactive --time=01:00:00 --constraint=cpu --account=m4341
+# source venv/bin/activate
 
 venv:
 	$(PYTHON) -m venv venv
@@ -21,7 +23,7 @@ clean:
 
 calibrate-alpha-beta-depth: clean
 	venv/bin/python benchmark/calibrate_alpha_beta_depth.py \
-	> outputs/calibrate/alpha-beta-depth.txt 2>&1
+	> outputs/calibrate/alpha-beta/alpha-beta-depth.txt 2>&1
 
 calibrate-stockfish:
 	venv/bin/python benchmark/calibrate_stockfish.py

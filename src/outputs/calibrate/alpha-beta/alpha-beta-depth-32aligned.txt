@@ -1,0 +1,38 @@
+[93m[build] compiling alpha-beta.cpp with g++ ...[00m
+[92m[build] succeeded at standard/alpha-beta.so
+[00m
+[alpha-beta] threads: 1 (root-parallel)
+[93m[build] alpha-beta.so already exists, skipping compilation
+[00m
+[alpha-beta] threads: 256 (root-parallel)
+[calibrate_alpha_beta_depth] running single-thread  (OMP_NUM_THREADS=1) ...
+[calibrate_alpha_beta_depth] running multi-thread   (OMP_NUM_THREADS=256) ...
+
+=== Depth 1 ===
+Phase          Single (1T) avg ± std      Multi (256T) avg ± std   Speedup
+--------------------------------------------------------------------------
+early              0.55ms ±   4.47ms          12.78ms ± 115.96ms     0.04x
+mid                0.08ms ±   0.02ms           0.20ms ±   0.27ms     0.39x
+late               0.04ms ±   0.02ms           0.08ms ±   0.06ms     0.59x
+
+=== Depth 2 ===
+Phase          Single (1T) avg ± std      Multi (256T) avg ± std   Speedup
+--------------------------------------------------------------------------
+early              1.04ms ±   0.56ms           1.33ms ±   0.50ms     0.78x
+mid                0.91ms ±   0.54ms           0.30ms ±   0.34ms     3.06x
+late               0.37ms ±   0.31ms           0.20ms ±   0.58ms     1.89x
+
+=== Depth 3 ===
+Phase          Single (1T) avg ± std      Multi (256T) avg ± std   Speedup
+--------------------------------------------------------------------------
+early             17.26ms ±  13.76ms          13.89ms ±   8.30ms     1.24x
+mid               17.56ms ±  14.31ms           3.30ms ±   1.08ms     5.32x
+late               5.71ms ±   6.63ms           1.28ms ±   0.93ms     4.47x
+
+=== Depth 4 ===
+Phase          Single (1T) avg ± std      Multi (256T) avg ± std   Speedup
+--------------------------------------------------------------------------
+early            170.18ms ± 172.20ms          66.48ms ±  34.56ms     2.56x
+mid              160.03ms ± 170.49ms          63.00ms ±  30.78ms     2.54x
+late              49.61ms ±  86.32ms          19.61ms ±  20.61ms     2.53x
+

@@ -23,17 +23,16 @@ static constexpr int BRANCH_FACTOR = 32;
 // `key` detects index collisions; `gen` invalidates stale entries without memset.
 enum TTFlag : uint8_t { TT_EXACT, TT_LOWER, TT_UPPER };
 struct alignas(32) TTEntry {
-    uint64_t    key;       //  8
-    int         score;     //  4
-    int16_t     depth;     //  2
-    uint8_t     gen;       //  1
-    TTFlag      flag;      //  1
-    chess::Move best_move; //  2
-    // uint8_t     _pad[14];  // 14  → total 32 bytes
+    uint64_t    key;
+    int         score;
+    int16_t     depth;
+    uint8_t     gen;
+    TTFlag      flag;
+    chess::Move best_move;
 };
 
 
-// 4M entries * 32 bytes = 128MB
+// 4M entries * 18 bytes (aligned to 32) ≈ 128MB
 static constexpr int TT_SIZE = 1 << 22;
 static TTEntry tt[TT_SIZE];
 static uint8_t tt_gen = 0;

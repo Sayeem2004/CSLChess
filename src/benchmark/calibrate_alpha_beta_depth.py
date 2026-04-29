@@ -150,7 +150,7 @@ def run_comparison(max_depth, max_positions, single_threads, multi_threads):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--max-depth",     type=int, default=4)
+    parser.add_argument("--max-depth",     type=int, default=5)
     parser.add_argument("--max-positions", type=int, default=None,
                         help="cap FENs per phase (default: all)")
     parser.add_argument("--single-threads", type=int, default=1,

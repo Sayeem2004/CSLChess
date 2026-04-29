@@ -1,0 +1,45 @@
+[93m[build] compiling alpha-beta.cpp with g++ ...[00m
+[92m[build] succeeded at standard/alpha-beta.so
+[00m
+[alpha-beta] threads: 1 (root-parallel)
+[93m[build] alpha-beta.so already exists, skipping compilation
+[00m
+[alpha-beta] threads: 256 (root-parallel)
+[calibrate_alpha_beta_depth] running single-thread  (OMP_NUM_THREADS=1) ...
+[calibrate_alpha_beta_depth] running multi-thread   (OMP_NUM_THREADS=256) ...
+
+=== Depth 1 ===
+Phase          Single (1T) avg ± std      Multi (256T) avg ± std   Speedup
+--------------------------------------------------------------------------
+early              0.53ms ±   4.30ms          12.08ms ± 111.59ms     0.04x
+mid                0.08ms ±   0.02ms           0.18ms ±   0.81ms     0.43x
+late               0.05ms ±   0.02ms           0.06ms ±   0.04ms     0.79x
+
+=== Depth 2 ===
+Phase          Single (1T) avg ± std      Multi (256T) avg ± std   Speedup
+--------------------------------------------------------------------------
+early              1.04ms ±   0.56ms           1.07ms ±   0.65ms     0.97x
+mid                0.90ms ±   0.53ms           0.36ms ±   0.22ms     2.51x
+late               0.37ms ±   0.31ms           0.12ms ±   0.05ms     2.96x
+
+=== Depth 3 ===
+Phase          Single (1T) avg ± std      Multi (256T) avg ± std   Speedup
+--------------------------------------------------------------------------
+early             17.16ms ±  13.71ms           8.26ms ±   4.62ms     2.08x
+mid               16.73ms ±  13.20ms           3.67ms ±   1.55ms     4.55x
+late               5.64ms ±   6.52ms           1.52ms ±   1.08ms     3.72x
+
+=== Depth 4 ===
+Phase          Single (1T) avg ± std      Multi (256T) avg ± std   Speedup
+--------------------------------------------------------------------------
+early            167.27ms ± 167.90ms          66.69ms ±  33.77ms     2.51x
+mid              157.20ms ± 168.00ms          65.16ms ±  33.13ms     2.41x
+late              48.85ms ±  85.50ms          19.64ms ±  21.92ms     2.49x
+
+=== Depth 5 ===
+Phase          Single (1T) avg ± std      Multi (256T) avg ± std   Speedup
+--------------------------------------------------------------------------
+early          2157.04ms ± 2010.90ms         468.33ms ± 237.79ms     4.61x
+mid            2163.75ms ± 2267.53ms         433.43ms ± 244.23ms     4.99x
+late             507.66ms ± 787.84ms         137.12ms ± 162.46ms     3.70x
+
