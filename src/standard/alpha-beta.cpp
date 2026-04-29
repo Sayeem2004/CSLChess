@@ -209,8 +209,8 @@ int best_move_alpha_beta_time(const char* fen, int time_ms, char* out_move, int 
     tt_gen++;
     exceeded_budget = false;
 
-    int outer_threads = std::max(1, omp_get_max_threads() / BRANCH_FACTOR);
-    int inner_threads = BRANCH_FACTOR;
+    int inner_threads = std::min(BRANCH_FACTOR, omp_get_max_threads());
+    int outer_threads = std::max(1, omp_get_max_threads() / inner_threads);
 
     static bool printed = false;
     if (!printed) { printed = true; fprintf(stderr, "[alpha-beta] threads: %d outer x %d inner = %d total\n", outer_threads, inner_threads, outer_threads * inner_threads); }
@@ -273,8 +273,8 @@ int best_move_alpha_beta_cycles(const char* fen, int megacycle_budget, char* out
     tt_gen++;
     exceeded_budget = false;
 
-    int outer_threads = std::max(1, omp_get_max_threads() / BRANCH_FACTOR);
-    int inner_threads = BRANCH_FACTOR;
+    int inner_threads = std::min(BRANCH_FACTOR, omp_get_max_threads());
+    int outer_threads = std::max(1, omp_get_max_threads() / inner_threads);
 
     static bool printed = false;
     if (!printed) { printed = true; fprintf(stderr, "[alpha-beta] threads: %d outer x %d inner = %d total\n", outer_threads, inner_threads, outer_threads * inner_threads); }

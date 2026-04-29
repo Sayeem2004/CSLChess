@@ -27,12 +27,20 @@ static void init_stockfish() {
 }
 
 
+// Assign each OS thread a unique stable index for Stockfish's thread pool.
+// omp_get_thread_num() is team-relative; with nested OMP every inner team has its own
+// thread 0/1/2, so multiple outer threads collide on the same Stockfish Thread object.
+static std::atomic<int> next_sf_thread_id{0};
+static thread_local int sf_thread_id = next_sf_thread_id++;
+
+
 int engine_evaluate(const chess::Board& board) {
     std::call_once(sf_init_flag, init_stockfish);
 
     Position pos;
     StateInfo si;
-    pos.set(board.getFen(), false, &si, Threads[omp_get_thread_num()]);
+    int tid = sf_thread_id % (int)Threads.size();
+    pos.set(board.getFen(), false, &si, Threads[tid]);
 
     // Stockfish's Eval::evaluate() asserts !pos.checkers(), so fall back to
     // simple material counting when the side to move is in check.

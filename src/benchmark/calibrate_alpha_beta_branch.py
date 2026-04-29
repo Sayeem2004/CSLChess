@@ -3,6 +3,7 @@ import csv
 import ctypes
 import json
 import os
+import re
 import signal
 import statistics
 import subprocess
@@ -90,8 +91,15 @@ def spawn_worker(threads, budgets, max_positions):
         print("---------------------------------------------------------", file=sys.stderr)
         sys.exit(1)
 
+    # Parse hybrid schema from the C++ stderr line:
+    # "[alpha-beta] threads: 2 outer x 32 inner = 64 total"
+    schema = f"{threads}T"
+    m = re.search(r"(\d+) outer x (\d+) inner", proc.stderr)
+    if m:
+        schema = f"{m.group(1)}x{m.group(2)}"
+
     try:
-        return json.loads(proc.stdout)
+        return json.loads(proc.stdout), schema
     except json.JSONDecodeError:
         print(f"Error: Worker sent invalid JSON: {proc.stdout}", file=sys.stderr)
         sys.exit(1)
@@ -101,10 +109,14 @@ def run_comparison(budgets, max_positions, single_t, multi_t):
     print(f"[calibrate] Single-thread ({single_t}T) vs Multi-thread ({multi_t}T Hybrid)")
     print(f"[calibrate] Budgets: {budgets} ms\n")
 
-    single = spawn_worker(single_t, budgets, max_positions)
-    multi  = spawn_worker(multi_t, budgets, max_positions)
+    single, single_schema = spawn_worker(single_t, budgets, max_positions)
+    multi,  multi_schema  = spawn_worker(multi_t,  budgets, max_positions)
 
-    header = f"{'Phase':<8}  {'{single_t}T Avg Depth':>15}  {'{multi_t}T Avg Depth':>18}  {'Depth Gain':>12}"
+    print(f"[calibrate] Schemas — single: {single_schema}  multi: {multi_schema}\n")
+
+    s_label = f"{single_schema} Avg Depth"
+    m_label = f"{multi_schema} Avg Depth"
+    header = f"{'Phase':<8}  {s_label:>18}  {m_label:>18}  {'Depth Gain':>12}"
     sep = "-" * len(header)
 
     for t in budgets:
@@ -117,7 +129,7 @@ def run_comparison(budgets, max_positions, single_t, multi_t):
             if not s or not m: continue
 
             gain = m['avg'] - s['avg']
-            print(f"{phase:<8}  {s['avg']:15.2f}  {m['avg']:18.2f}  {gain:>+11.2f}")
+            print(f"{phase:<8}  {s['avg']:18.2f}  {m['avg']:18.2f}  {gain:>+11.2f}")
         print()
 
 
@@ -125,7 +137,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--budgets", type=str, default="10,50,100,500", help="Comma-separated ms limits")
     parser.add_argument("--max-positions", type=int, default=10)
-    parser.add_argument("--threads", type=int, default=os.cpu_count())
+    parser.add_argument("--single-threads", type=int, default=1)
+    parser.add_argument("--multi-threads",  type=int,
+                        default=int(os.environ.get("OMP_NUM_THREADS", os.cpu_count())))
     parser.add_argument("--worker", action="store_true")
     args = parser.parse_args()
 
@@ -134,4 +148,4 @@ if __name__ == "__main__":
     if args.worker:
         run_worker(budgets, args.max_positions)
     else:
-        run_comparison(budgets, args.max_positions, 32, args.threads)
+        run_comparison(budgets, args.max_positions, args.single_threads, args.multi_threads)
