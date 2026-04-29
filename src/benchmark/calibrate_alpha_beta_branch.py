@@ -135,8 +135,8 @@ def run_comparison(budgets, max_positions, single_t, multi_t):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--budgets", type=str, default="10,50,100,500", help="Comma-separated ms limits")
-    parser.add_argument("--max-positions", type=int, default=10)
+    parser.add_argument("--budgets", type=str, default="10,100,500", help="Comma-separated ms limits")
+    parser.add_argument("--max-positions", type=int, default=None, help="cap FENs per phase (default: all)")
     parser.add_argument("--single-threads", type=int, default=1)
     parser.add_argument("--multi-threads",  type=int,
                         default=int(os.environ.get("OMP_NUM_THREADS", os.cpu_count())))

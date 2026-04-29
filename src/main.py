@@ -69,7 +69,7 @@ def play_game(algorithm: str, our_color: chess.Color, budget_type: str, budget: 
 
 
 if __name__ == "__main__":
-    algorithms = ["cpp-alpha-beta", "cpp-monte-carlo", "csl-alpha-beta", "csl-monte-carlo"]
+    algorithms = ["cpp-alpha-beta", "cpp-mc", "cpp-mc-rp", "csl-alpha-beta", "csl-monte-carlo"]
     parser = argparse.ArgumentParser(description="CSLChess Engine vs Stockfish")
     parser.add_argument("--algorithm", required=True, choices=algorithms,                    help="Search algorithm to use")
     parser.add_argument("--color", choices=["white", "black"], default=None,                 help="Color our engine plays (default: random per game)")

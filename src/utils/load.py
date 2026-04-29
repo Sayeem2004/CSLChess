@@ -106,6 +106,19 @@ def load_standard_monte_carlo() -> dict:
     }
 
 
+def load_standard_monte_carlo_rp() -> dict:
+    """Compile and load the standard C++ MCTS engine (root parallel).
+    Returns a dict with keys 'depth', 'time', 'cycles' mapping to their ctypes fns."""
+    src     = os.path.join(STANDARD_DIR, "monte-carlo-rp.cpp")
+    lib_out = os.path.join(STANDARD_DIR, "monte-carlo-rp.so")
+    lib = _compile_library(src, lib_out)
+    return {
+        "depth":  _bind_fn(lib, "best_move_monte_carlo_depth"),
+        "time":   _bind_fn(lib, "best_move_monte_carlo_time"),
+        "cycles": _bind_fn(lib, "best_move_monte_carlo_cycles"),
+    }
+
+
 def load_perft():
     """Compile and load perft + alpha-beta node counter.
     Returns a dict with:
@@ -172,7 +185,8 @@ def load_stockfish_windows(skill_level: int = 0, path: str = STOCKFISH_WIN_EXE):
 def load_engine(algorithm: str) -> dict:
     """Return a dict of {budget_type: ctypes_fn} for the chosen algorithm."""
     if algorithm == "cpp-alpha-beta":  return load_standard_alpha_beta()
-    if algorithm == "cpp-monte-carlo": return load_standard_monte_carlo()
+    if algorithm == "cpp-mc": return load_standard_monte_carlo()
+    if algorithm == "cpp-mc-rp": return load_standard_monte_carlo_rp()
     if algorithm == "csl-alpha-beta":  return load_csl_alpha_beta()
     if algorithm == "csl-monte-carlo": return load_csl_monte_carlo()
 

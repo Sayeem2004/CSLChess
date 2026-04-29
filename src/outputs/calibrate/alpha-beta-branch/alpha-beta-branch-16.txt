@@ -1,0 +1,26 @@
+[calibrate] Single-thread (1T) vs Multi-thread (256T Hybrid)
+[calibrate] Budgets: [10, 100, 500] ms
+
+[calibrate] Schemas — single: 1x1  multi: 16x16
+
+--- Budget: 10ms ---
+Phase          1x1 Avg Depth     16x16 Avg Depth    Depth Gain
+--------------------------------------------------------------
+early                   2.22                0.22        -2.00
+mid                     2.10                0.13        -1.97
+late                    3.09                4.10        +1.01
+
+--- Budget: 100ms ---
+Phase          1x1 Avg Depth     16x16 Avg Depth    Depth Gain
+--------------------------------------------------------------
+early                   3.06                3.53        +0.47
+mid                     3.10                3.67        +0.57
+late                    4.50                5.36        +0.86
+
+--- Budget: 500ms ---
+Phase          1x1 Avg Depth     16x16 Avg Depth    Depth Gain
+--------------------------------------------------------------
+early                   3.55                4.43        +0.88
+mid                     3.67                4.76        +1.09
+late                    5.46                6.28        +0.82
+
