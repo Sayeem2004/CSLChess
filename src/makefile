@@ -42,6 +42,10 @@ update-fen:
 	venv/bin/python benchmark/update_fen.py
 
 
+graph-search-space:
+	venv/bin/python graphs/search_space.py
+
+
 play-cpp-ab-depth: init_outputs
 	venv/bin/python main.py --algorithm cpp-alpha-beta --depth 3 --num 100 > outputs/depth/cpp-alpha-beta-depth.txt 2>&1
 
