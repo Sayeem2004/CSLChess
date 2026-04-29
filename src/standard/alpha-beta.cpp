@@ -192,7 +192,7 @@ int best_move_alpha_beta_depth(const char* fen, int depth, char* out_move, int o
     std::string uci = chess::uci::moveToUci(best);
     std::strncpy(out_move, uci.c_str(), out_len);
     out_move[out_len-1] = '\0';
-    return 0;
+    return depth;
 }
 
 
@@ -259,7 +259,7 @@ int best_move_alpha_beta_time(const char* fen, int time_ms, char* out_move, int 
     std::string uci = chess::uci::moveToUci(best);
     std::strncpy(out_move, uci.c_str(), out_len);
     out_move[out_len-1] = '\0';
-    return 0;
+    return best_depth;
 }
 
 
@@ -336,5 +336,5 @@ int best_move_alpha_beta_cycles(const char* fen, int megacycle_budget, char* out
     std::string uci = chess::uci::moveToUci(best);
     std::strncpy(out_move, uci.c_str(), out_len);
     out_move[out_len-1] = '\0';
-    return 0;
+    return best_depth;
 }

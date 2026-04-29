@@ -10,7 +10,7 @@
 // All functions accept a FEN string representing the current position and
 // write the best move in UCI notation (e.g. "e2e4", "e7e8q") into out_move.
 //
-// Returns  0 on success.
+// Returns  0 on success (alpha-beta returns depth actually searched).
 // Returns -1 if no legal move exists (checkmate / stalemate).
 // Returns -2 if the FEN string is invalid.
 // ---------------------------------------------------------------------------

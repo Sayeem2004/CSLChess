@@ -21,9 +21,13 @@ clean:
 	rm -f standard/monte-carlo.so
 
 
+calibrate-alpha-beta-branch: clean
+	venv/bin/python benchmark/calibrate_alpha_beta_branch.py \
+	> outputs/calibrate/alpha-beta-branch/alpha-beta-branch.txt 2>&1
+
 calibrate-alpha-beta-depth: clean
 	venv/bin/python benchmark/calibrate_alpha_beta_depth.py \
-	> outputs/calibrate/alpha-beta/alpha-beta-depth.txt 2>&1
+	> outputs/calibrate/alpha-beta-depth/alpha-beta-depth.txt 2>&1
 
 calibrate-stockfish:
 	venv/bin/python benchmark/calibrate_stockfish.py

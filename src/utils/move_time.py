@@ -15,7 +15,7 @@ def cpp_best_move_time(fn, board: chess.Board, time_ms: int) -> chess.Move | Non
     buf       = ctypes.create_string_buffer(MOVE_BUF_LEN)
     rc        = fn(fen_bytes, time_ms, buf, MOVE_BUF_LEN)
 
-    if rc != 0: return None
+    if rc < 0: return None
     uci_str = buf.value.decode().strip()
     try: move = chess.Move.from_uci(uci_str)
     except chess.InvalidMoveError: return None

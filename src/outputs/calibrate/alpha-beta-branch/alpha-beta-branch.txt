@@ -1,0 +1,8 @@
+Worker failed: [93m[build] compiling alpha-beta.cpp with g++-15 ...[00m
+[92m[build] succeeded at standard/alpha-beta.so
+[00m
+[alpha-beta] threads: 1 outer x 32 inner = 32 total
+
+[calibrate] Single-thread (1T) vs Multi-thread (8T Hybrid)
+[calibrate] Budgets: [10, 50, 100, 500] ms
+

@@ -15,7 +15,7 @@ def cpp_best_move_depth(fn, board: chess.Board, depth: int) -> chess.Move | None
     buf       = ctypes.create_string_buffer(MOVE_BUF_LEN)
     rc        = fn(fen_bytes, depth, buf, MOVE_BUF_LEN)
 
-    if rc != 0: return None
+    if rc < 0: return None
     uci_str = buf.value.decode().strip()
     try: move = chess.Move.from_uci(uci_str)
     except chess.InvalidMoveError: return None

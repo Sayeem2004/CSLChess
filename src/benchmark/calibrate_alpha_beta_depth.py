@@ -30,8 +30,6 @@ from utils.load import load_standard_alpha_beta
 MOVE_BUF_LEN = 8
 
 
-# ─────────────────────────── helpers ────────────────────────────────────────
-
 def load_fens(phase, max_positions=None):
     path = os.path.join(DATA_DIR, phase, "puzzles.csv")
     if not os.path.exists(path):
@@ -51,10 +49,8 @@ def time_alpha_beta_depth(ab_fn, fens, depth):
     return times
 
 
-# ─────────────────────────── worker mode ────────────────────────────────────
 # Invoked as a subprocess with OMP_NUM_THREADS already set in env.
 # Prints a JSON dict to stdout.
-
 def run_worker(max_depth, max_positions):
     # Redirect stdout → stderr during library load so build messages don't corrupt the JSON.
     real_stdout = sys.stdout
@@ -81,8 +77,6 @@ def run_worker(max_depth, max_positions):
     sys.stdout.write(json.dumps(results) + "\n")
     sys.stdout.flush()
 
-
-# ─────────────────────────── main mode ──────────────────────────────────────
 
 def spawn_worker(threads, max_depth, max_positions):
     env = os.environ.copy()
@@ -145,8 +139,6 @@ def run_comparison(max_depth, max_positions, single_threads, multi_threads):
             print(f"{phase:<8}  {fmt(s['avg'], s['std']):>26}  {fmt(m['avg'], m['std']):>26}  {speedup:>7.2f}x")
     print()
 
-
-# ─────────────────────────── entry point ────────────────────────────────────
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
