@@ -225,8 +225,6 @@ int best_move_alpha_beta_time(const char* fen, int time_ms, char* out_move, int 
 
     chess::Move best       = moves[0];
     int         best_depth = 0;
-
-    omp_set_nested(true);
     omp_set_max_active_levels(2);
     #pragma omp parallel num_threads(outer_threads) shared(best, best_depth, exceeded_budget)
     {
@@ -283,9 +281,7 @@ int best_move_alpha_beta_cycles(const char* fen, int megacycle_budget, char* out
 
     chess::Move best       = moves[0];
     int         best_depth = 0;
-    omp_set_nested(true);
     omp_set_max_active_levels(2);
-
     #pragma omp parallel num_threads(outer_threads) shared(best, best_depth, exceeded_budget)
     {
         chess::Board local_board = board;

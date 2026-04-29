@@ -1,8 +1,11 @@
-Worker failed: [93m[build] compiling alpha-beta.cpp with g++-15 ...[00m
-[92m[build] succeeded at standard/alpha-beta.so
-[00m
-[alpha-beta] threads: 1 outer x 32 inner = 32 total
 
-[calibrate] Single-thread (1T) vs Multi-thread (8T Hybrid)
+[CRITICAL] Worker failed: Signal SIGABRT (e.g. Segfault)
+--- WORKER STDERR (Look for PAPI or OpenMP errors here) ---
+[93m[build] alpha-beta.so already exists, skipping compilation
+[00m
+[alpha-beta] threads: 8 outer x 32 inner = 256 total
+python: /global/u1/m/msk295/CSLChess/src/../stockfish/stockfish-11-src/evaluate.cpp:592: Score {anonymous}::Evaluation<T>::passed() const [with Color Us = WHITE; Trace::Tracing T = Trace::NO_TRACE]: Assertion `!(pos.pieces(Them, PAWN) & forward_file_bb(Us, s + Up))' failed.
+---------------------------------------------------------
+[calibrate] Single-thread (32T) vs Multi-thread (256T Hybrid)
 [calibrate] Budgets: [10, 50, 100, 500] ms
 

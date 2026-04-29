@@ -3,10 +3,11 @@ import csv
 import ctypes
 import json
 import os
+import signal
 import statistics
 import subprocess
 import sys
-import time
+
 
 # Ensure benchmark and utils are in path
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
@@ -69,29 +70,41 @@ def run_worker(time_budgets, max_positions):
 def spawn_worker(threads, budgets, max_positions):
     env = os.environ.copy()
     env["OMP_NUM_THREADS"] = str(threads)
-    cmd = [
-        sys.executable, __file__,
-        "--worker",
-        "--budgets", ",".join(map(str, budgets))
-    ]
+    cmd = [sys.executable, __file__, "--worker", "--budgets", ",".join(map(str, budgets))]
     if max_positions:
         cmd += ["--max-positions", str(max_positions)]
 
     proc = subprocess.run(cmd, capture_output=True, text=True, env=env)
     if proc.returncode != 0:
-        print(f"Worker failed: {proc.stderr}", file=sys.stderr)
+        # Decode the failure
+        status = f"Exit Code {proc.returncode}"
+        if proc.returncode < 0:
+            try:
+                status = f"Signal {signal.Signals(-proc.returncode).name} (e.g. Segfault)"
+            except ValueError:
+                status = f"Signal {-proc.returncode}"
+
+        print(f"\n[CRITICAL] Worker failed: {status}", file=sys.stderr)
+        print("--- WORKER STDERR (Look for PAPI or OpenMP errors here) ---", file=sys.stderr)
+        print(proc.stderr.strip() or "[No stderr output recorded]", file=sys.stderr)
+        print("---------------------------------------------------------", file=sys.stderr)
         sys.exit(1)
-    return json.loads(proc.stdout)
+
+    try:
+        return json.loads(proc.stdout)
+    except json.JSONDecodeError:
+        print(f"Error: Worker sent invalid JSON: {proc.stdout}", file=sys.stderr)
+        sys.exit(1)
 
 
 def run_comparison(budgets, max_positions, single_t, multi_t):
-    print(f"[calibrate] Single-thread (1T) vs Multi-thread ({multi_t}T Hybrid)")
+    print(f"[calibrate] Single-thread ({single_t}T) vs Multi-thread ({multi_t}T Hybrid)")
     print(f"[calibrate] Budgets: {budgets} ms\n")
 
     single = spawn_worker(single_t, budgets, max_positions)
     multi  = spawn_worker(multi_t, budgets, max_positions)
 
-    header = f"{'Phase':<8}  {'1T Avg Depth':>15}  {'Multi Avg Depth':>18}  {'Depth Gain':>12}"
+    header = f"{'Phase':<8}  {'{single_t}T Avg Depth':>15}  {'{multi_t}T Avg Depth':>18}  {'Depth Gain':>12}"
     sep = "-" * len(header)
 
     for t in budgets:
@@ -121,4 +134,4 @@ if __name__ == "__main__":
     if args.worker:
         run_worker(budgets, args.max_positions)
     else:
-        run_comparison(budgets, args.max_positions, 1, args.threads)
+        run_comparison(budgets, args.max_positions, 32, args.threads)
