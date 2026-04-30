@@ -45,6 +45,12 @@ update-fen:
 	venv/bin/python benchmark/update_fen.py
 
 
+graph-alpha-beta-branch:
+	venv/bin/python graphs/alpha_beta_branch.py --budget 500
+
+graph-alpha-beta-depth:
+	venv/bin/python graphs/alpha_beta_depth.py --depth 5
+
 graph-search-space:
 	venv/bin/python graphs/search_space.py
 
