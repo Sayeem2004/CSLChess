@@ -25,7 +25,7 @@ import time
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 from benchmark import PHASES, DATA_DIR
-from utils.load import load_standard_monte_carlo
+from utils.load import load_standard_monte_carlo, load_standard_monte_carlo_rp
 
 MOVE_BUF_LEN = 8
 
@@ -51,12 +51,15 @@ def time_monte_carlo_depth(mc_fn, fens, depth):
 
 # Invoked as a subprocess with OMP_NUM_THREADS already set in env.
 # Prints a JSON dict to stdout.
-def run_worker(max_depth, max_positions):
+def run_worker(max_depth, max_positions, rp):
     # Redirect stdout → stderr during library load so build messages don't corrupt the JSON.
     real_stdout = sys.stdout
     sys.stdout = sys.stderr
     try:
-        mc_fn = load_standard_monte_carlo()["depth"]
+        if rp:
+            mc_fn = load_standard_monte_carlo_rp()["depth"]
+        else:
+            mc_fn = load_standard_monte_carlo()["depth"]
     finally:
         sys.stdout = real_stdout
 
@@ -78,7 +81,7 @@ def run_worker(max_depth, max_positions):
     sys.stdout.flush()
 
 
-def spawn_worker(threads, max_depth, max_positions):
+def spawn_worker(threads, max_depth, max_positions, rp):
     env = os.environ.copy()
     env["OMP_NUM_THREADS"] = str(threads)
     cmd = [
@@ -88,6 +91,8 @@ def spawn_worker(threads, max_depth, max_positions):
     ]
     if max_positions is not None:
         cmd += ["--max-positions", str(max_positions)]
+    if rp:
+        cmd += ["--rp"]
     proc = subprocess.run(cmd, capture_output=True, text=True, env=env)
     if proc.returncode != 0:
         print(f"[calibrate_monte_carlo_depth] worker (threads={threads}) failed "
@@ -112,12 +117,12 @@ def fmt(avg_s, std_s):
     return f"{avg_ms:8.2f}ms ± {std_ms:6.2f}ms"
 
 
-def run_comparison(max_depth, max_positions, single_threads, multi_threads):
+def run_comparison(max_depth, max_positions, single_threads, multi_threads, rp):
     print(f"[calibrate_monte_carlo_depth] running single-thread  (OMP_NUM_THREADS={single_threads}) ...")
-    single = spawn_worker(single_threads, max_depth, max_positions)
+    single = spawn_worker(single_threads, max_depth, max_positions, rp)
 
     print(f"[calibrate_monte_carlo_depth] running multi-thread   (OMP_NUM_THREADS={multi_threads}) ...")
-    multi  = spawn_worker(multi_threads,  max_depth, max_positions)
+    multi  = spawn_worker(multi_threads,  max_depth, max_positions, rp)
 
     header = (f"{'Phase':<8}  {'Single (1T) avg ± std':>26}  "
               f"{'Multi (' + str(multi_threads) + 'T) avg ± std':>26}  {'Speedup':>8}")
@@ -152,10 +157,12 @@ if __name__ == "__main__":
                         help="thread count for parallel run (default: cpu count)")
     parser.add_argument("--worker", action="store_true",
                         help="internal: run as timing subprocess, print JSON")
+    parser.add_argument("--rp", action="store_true",
+                        help="use load_standard_monte_carlo_rp variant")
     args = parser.parse_args()
 
     if args.worker:
-        run_worker(args.max_depth, args.max_positions)
+        run_worker(args.max_depth, args.max_positions, args.rp)
     else:
         run_comparison(args.max_depth, args.max_positions,
-                       args.single_threads, args.multi_threads)
+                       args.single_threads, args.multi_threads, args.rp)
