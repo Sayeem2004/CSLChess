@@ -194,7 +194,7 @@ int best_move_monte_carlo_depth(const char* fen, int depth, char* out_move, int 
     if (moves.empty()) return -1;
     
     MCTSNode root(board);
-    run_simulations(root, board, depth, 100000); // fixed number of simulations for depth-limited search
+    run_simulations(root, board, depth, 1000000); // fixed number of simulations for depth-limited search
 
     chess::Move best = pick_best(root);
     std::strncpy(out_move, chess::uci::moveToUci(best).c_str(), out_len);

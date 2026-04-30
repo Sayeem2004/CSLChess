@@ -71,7 +71,7 @@ struct MCTSNode {
     bool is_terminal() const { return untried_moves.empty() && children.empty(); }
     bool fully_expanded() const { return untried_moves.empty(); }
 
-    MCTSNode* best_child(double c = std::sqrt(2.0)) const {
+    MCTSNode* best_child(double c = std::sqrt(0.0)) const {
         MCTSNode* best    = nullptr;
         double best_score = -1e18;
         double log_visits = std::log((double)visits);
@@ -151,11 +151,11 @@ static chess::Move pick_best(std::vector<std::unique_ptr<MCTSNode>>& roots) {
         }
     }
 
-    printf("MCTS prefers move %s with %s rate %.2f%% (%d visits)\n",
+    /*printf("MCTS prefers move %s with %s rate %.2f%% (%d visits)\n",
            chess::uci::moveToUci(best_move).c_str(),
            expected_win_rate >= 0.5 ? "win" : "loss",
            std::max(expected_win_rate, 1.0 - expected_win_rate) * 100.0,
-           best_visits);
+           best_visits);*/
 
     return best_move;
 }
@@ -230,12 +230,14 @@ int best_move_monte_carlo_time(const char* fen, int time_ms,
 
     constexpr int SEARCH_DEPTH = 6;
 
-    #pragma omp parallel for schedule(static,1)
+    #pragma omp parallel for
     for (int t = 0; t < num_threads; ++t) {
         while (!exceeded_budget) {
             chess::Board local_board = board;
             MCTSNode* leaf = tree_descend(roots[t].get(), local_board);
+            if (exceeded_budget) break;          // ← check before expensive rollout
             double result = rollout(local_board, SEARCH_DEPTH);
+            if (exceeded_budget) break;          // ← check before backprop
             backprop(leaf, result);
         }
     }
@@ -286,7 +288,7 @@ int best_move_monte_carlo_cycles(const char* fen, int megacycle_budget,
 
     constexpr int SEARCH_DEPTH = 6;
 
-    #pragma omp parallel for schedule(static,1)
+    #pragma omp parallel for
     for (int t = 0; t < num_threads; ++t) {
         while (!exceeded_budget) {
             chess::Board local_board = board;
