@@ -1,11 +1,11 @@
 import matplotlib.pyplot as plt
 
-columns = ['Time (1ms)', 'Time (10ms)', '1 MCycle', '10 MCycle', '100 MCycle']
-rows = ['Leaf Parallel', 'Root Parallel', 'Alpha-Beta']
+columns = ['Time (1ms)', 'Time (10ms)', 'Cycle (1 MC)', 'Cycle (10 MC)', 'Cycle (100 MC)']
+rows = ['Leaf Parallel MCTS', 'Root Parallel MCTS', 'Hybrid Alpha-Beta']
 data = [
     [ (1,3,96), (1,5,94), (0,0,100), (0,3,97), (6,29,65) ],
     [ (12,7,81), (24,11,65), (0,0,100), (0,0,100), (0,0,100) ],
-    [ ('-','-','-'), ('-','-','-'), ('-','-','-'), ('-','-','-'), ('-','-','-') ]
+    [ (41,7,52), (15,0,85), (44,4,52), (21,5,74), (71,1,28) ]
 ]
 
 fig, ax = plt.subplots(figsize=(12, 3))
@@ -34,9 +34,9 @@ for i, row_data in enumerate(data):
     for j, cell in enumerate(row_data):
         x_center = j + 1.5
         y_center = 2.5 - i
-        
+
         w, t, l = cell
-        
+
         # Position the W | T | L numbers manually within the cell
         ax.text(x_center - 0.25, y_center, str(w), color=colors[0], ha='center', va='center', weight='bold', fontsize=12)
         ax.text(x_center - 0.12, y_center, '|', color='black', ha='center', va='center', fontsize=12)

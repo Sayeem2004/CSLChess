@@ -11,10 +11,11 @@ install: venv
 	venv/bin/pip install -r requirements.txt
 
 init_outputs:
-	mkdir -p outputs/depth
-	mkdir -p outputs/time
+	mkdir -p outputs/competitive
 	mkdir -p outputs/cycles
+	mkdir -p outputs/depth
 	mkdir -p outputs/hard
+	mkdir -p outputs/time
 
 clean:
 	rm -f standard/alpha-beta.so
@@ -78,6 +79,12 @@ play-cpp-ab-hard: init_outputs
 	venv/bin/python -u main.py --algorithm cpp-alpha-beta --depth 3 --skill 10 --num 100 > outputs/hard/cpp-alpha-beta-skill-10.txt 2>&1
 	venv/bin/python -u main.py --algorithm cpp-alpha-beta --depth 3 --skill 20 --num 100 > outputs/hard/cpp-alpha-beta-skill-20.txt 2>&1
 
+play-cpp-ab-competitive: init_outputs
+	venv/bin/python -u main.py --algorithm cpp-alpha-beta --time 1 --num 100 > outputs/competitive/cpp-alpha-beta-1ms.txt 2>&1
+	venv/bin/python -u main.py --algorithm cpp-alpha-beta --time 10 --num 100 > outputs/competitive/cpp-alpha-beta-10ms.txt 2>&1
+	venv/bin/python -u main.py --algorithm cpp-alpha-beta --cycles 1 --num 100 > outputs/competitive/cpp-alpha-beta-1MC.txt 2>&1
+	venv/bin/python -u main.py --algorithm cpp-alpha-beta --cycles 10 --num 100 > outputs/competitive/cpp-alpha-beta-10MC.txt 2>&1
+	venv/bin/python -u main.py --algorithm cpp-alpha-beta --cycles 100 --num 100 > outputs/competitive/cpp-alpha-beta-100MC.txt 2>&1
 
 play-cpp-mc-depth: init_outputs
 	venv/bin/python main.py --algorithm cpp-monte-carlo --depth 5 --num 100 > outputs/depth/cpp-monte-carlo-depth.txt 2>&1
