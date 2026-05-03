@@ -235,9 +235,9 @@ int best_move_monte_carlo_time(const char* fen, int time_ms,
         while (!exceeded_budget) {
             chess::Board local_board = board;
             MCTSNode* leaf = tree_descend(roots[t].get(), local_board);
-            if (exceeded_budget) break;          // ← check before expensive rollout
+            if (exceeded_budget) break;
             double result = rollout(local_board, SEARCH_DEPTH);
-            if (exceeded_budget) break;          // ← check before backprop
+            if (exceeded_budget) break;
             backprop(leaf, result);
         }
     }
