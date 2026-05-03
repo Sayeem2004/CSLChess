@@ -1,0 +1,73 @@
+poster session scaling:
+=== Depth 1 ===
+Phase          Single (1T) avg ± std      Multi (256T) avg ± std   Speedup
+--------------------------------------------------------------------------
+early            278.77ms ± 173.45ms         235.74ms ± 107.70ms     1.18x
+mid              283.93ms ± 152.05ms         228.28ms ±  42.59ms     1.24x
+late             243.17ms ± 117.65ms         209.00ms ±  34.95ms     1.16x
+
+=== Depth 2 ===
+Phase          Single (1T) avg ± std      Multi (256T) avg ± std   Speedup
+--------------------------------------------------------------------------
+early            294.52ms ± 186.05ms         221.73ms ±  43.15ms     1.33x
+mid              299.07ms ± 162.88ms         225.73ms ±  41.34ms     1.32x
+late             253.50ms ± 125.14ms         209.56ms ±  35.00ms     1.21x
+
+=== Depth 3 ===
+Phase          Single (1T) avg ± std      Multi (256T) avg ± std   Speedup
+--------------------------------------------------------------------------
+early            309.46ms ± 197.09ms         221.78ms ±  43.41ms     1.40x
+mid              313.06ms ± 171.48ms         226.58ms ±  41.39ms     1.38x
+late             264.67ms ± 131.55ms         209.78ms ±  35.27ms     1.26x
+
+=== Depth 4 ===
+Phase          Single (1T) avg ± std      Multi (256T) avg ± std   Speedup
+--------------------------------------------------------------------------
+early            326.24ms ± 209.37ms         220.73ms ±  43.73ms     1.48x
+mid              328.01ms ± 181.80ms         226.89ms ±  41.54ms     1.45x
+late             274.21ms ± 137.16ms         210.02ms ±  35.38ms     1.31x
+
+=== Depth 5 ===
+Phase          Single (1T) avg ± std      Multi (256T) avg ± std   Speedup
+--------------------------------------------------------------------------
+early            341.48ms ± 221.06ms         220.40ms ±  43.60ms     1.55x
+mid              342.74ms ± 190.60ms         226.75ms ±  41.95ms     1.51x
+late             284.86ms ± 143.65ms         208.94ms ±  34.82ms     1.36x
+
+
+05/03/26 morning scaling results:
+
+=== Depth 1 ===
+Phase          Single (1T) avg ± std      Multi (256T) avg ± std   Speedup
+--------------------------------------------------------------------------
+early            273.68ms ± 171.88ms         106.10ms ± 104.74ms     2.58x
+mid              278.14ms ± 150.97ms          98.99ms ±  26.70ms     2.81x
+late             239.00ms ± 117.66ms         101.09ms ±  26.22ms     2.36x
+
+=== Depth 2 ===
+Phase          Single (1T) avg ± std      Multi (256T) avg ± std   Speedup
+--------------------------------------------------------------------------
+early            289.64ms ± 184.48ms          94.14ms ±  32.06ms     3.08x
+mid              294.63ms ± 162.21ms         102.31ms ±  32.95ms     2.88x
+late             250.90ms ± 125.63ms         101.92ms ±  27.32ms     2.46x
+
+=== Depth 3 ===
+Phase          Single (1T) avg ± std      Multi (256T) avg ± std   Speedup
+--------------------------------------------------------------------------
+early            306.62ms ± 197.02ms          92.56ms ±  29.12ms     3.31x
+mid              309.74ms ± 171.59ms          97.83ms ±  25.74ms     3.17x
+late             261.77ms ± 131.96ms         100.71ms ±  26.93ms     2.60x
+
+=== Depth 4 ===
+Phase          Single (1T) avg ± std      Multi (256T) avg ± std   Speedup
+--------------------------------------------------------------------------
+early            322.57ms ± 208.80ms          93.86ms ±  29.85ms     3.44x
+mid              324.79ms ± 181.63ms          98.50ms ±  26.33ms     3.30x
+late             271.96ms ± 138.78ms         100.33ms ±  25.46ms     2.71x
+
+=== Depth 5 ===
+Phase          Single (1T) avg ± std      Multi (256T) avg ± std   Speedup
+--------------------------------------------------------------------------
+early            339.44ms ± 221.11ms          93.88ms ±  30.18ms     3.62x
+mid              339.67ms ± 191.23ms          98.57ms ±  24.70ms     3.45x
+late             282.70ms ± 145.25ms         101.49ms ±  27.44ms     2.79x
