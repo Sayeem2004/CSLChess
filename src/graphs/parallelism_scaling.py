@@ -5,7 +5,7 @@ import seaborn as sns
 import re
 
 data = """
-Here is my leaf parallel algorithm:
+Here is my tree parallel algorithm:
 
 === Depth 1 ===
 Phase          Single (1T) avg ± std      Multi (256T) avg ± std   Speedup
@@ -88,8 +88,8 @@ current_depth = None
 for line in data.split('\n'):
     line = line.strip()
     # Identify the algorithm type
-    if 'leaf parallel' in line.lower():
-        current_algo = 'Leaf Parallel'
+    if 'tree parallel' in line.lower():
+        current_algo = 'Tree Parallel'
     elif 'root parallel' in line.lower():
         current_algo = 'Root Parallel'
     # Extract the depth using regex
@@ -128,16 +128,16 @@ df = pd.DataFrame(records)
 sns.set_theme(style="whitegrid")
 fig, axes = plt.subplots(1, 2, figsize=(16, 6))
 
-df_leaf = df[df['Algorithm'] == 'Leaf Parallel']
+df_tree = df[df['Algorithm'] == 'Tree Parallel']
 df_root = df[df['Algorithm'] == 'Root Parallel']
 
-# Leaf Parallel Subplot
+# Tree Parallel Subplot
 sns.lineplot(
-    data=df_leaf, x='Depth', y='Time (ms)', 
+    data=df_tree, x='Depth', y='Time (ms)', 
     hue='Thread Count', style='Phase', 
     markers=True, dashes=True, ax=axes[0]
 )
-axes[0].set_title('Leaf Parallel: Execution Time vs Depth')
+axes[0].set_title('Tree Parallel: Execution Time vs Depth')
 axes[0].set_xticks([1, 2, 3, 4, 5])
 axes[0].set_ylabel('Execution Time (ms)')
 

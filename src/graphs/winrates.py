@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 
 columns = ['Time (1ms)', 'Time (10ms)', 'Cycle (1 MC)', 'Cycle (10 MC)', 'Cycle (100 MC)']
-rows = ['Leaf Parallel MCTS', 'Root Parallel MCTS', 'Hybrid Alpha-Beta']
+rows = ['Tree Parallel MCTS', 'Root Parallel MCTS', 'Hybrid Alpha-Beta']
 data = [
     [ (1,3,96), (1,5,94), (0,0,100), (0,3,97), (6,29,65) ],
     [ (12,7,81), (24,11,65), (0,0,100), (0,0,100), (0,0,100) ],

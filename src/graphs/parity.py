@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Data extracted from the image
-algorithms = ['RP-100K', 'RP-1M', 'LP-100K']
+algorithms = ['RP-100K', 'RP-1M', 'TP-100K']
 wins = np.array([1, 10, 4])
 ties = np.array([5, 5, 6])
 losses = np.array([14, 5, 10])

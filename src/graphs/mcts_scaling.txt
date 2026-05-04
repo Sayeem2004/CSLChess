@@ -107,3 +107,40 @@ Phase          Single (1T) avg ± std      Multi (256T) avg ± std   Speedup
 early            365.77ms ± 235.11ms          61.49ms ±  22.36ms     5.95x
 mid              417.94ms ± 214.41ms         108.69ms ±  46.32ms     3.85x
 late             389.19ms ± 167.85ms          90.56ms ±  30.86ms     4.30x
+
+
+improved scaling (05/04) thread local node pool/lock-free expansion:
+=== Depth 1 ===
+Phase          Single (1T) avg ± std      Multi (256T) avg ± std   Speedup
+--------------------------------------------------------------------------
+early            258.54ms ± 159.10ms          74.55ms ± 106.79ms     3.47x
+mid              262.24ms ± 139.65ms          55.12ms ±  15.77ms     4.76x
+late             221.69ms ± 107.23ms          57.83ms ±  15.18ms     3.83x
+
+=== Depth 2 ===
+Phase          Single (1T) avg ± std      Multi (256T) avg ± std   Speedup
+--------------------------------------------------------------------------
+early            275.13ms ± 171.96ms          65.72ms ±  24.07ms     4.19x
+mid              279.36ms ± 150.90ms          56.90ms ±  17.01ms     4.91x
+late             232.88ms ± 114.34ms          56.55ms ±  19.44ms     4.12x
+
+=== Depth 3 ===
+Phase          Single (1T) avg ± std      Multi (256T) avg ± std   Speedup
+--------------------------------------------------------------------------
+early            290.80ms ± 183.91ms          65.97ms ±  25.32ms     4.41x
+mid              294.36ms ± 160.38ms          57.33ms ±  16.89ms     5.13x
+late             244.43ms ± 120.65ms          53.94ms ±  13.01ms     4.53x
+
+=== Depth 4 ===
+Phase          Single (1T) avg ± std      Multi (256T) avg ± std   Speedup
+--------------------------------------------------------------------------
+early            307.57ms ± 196.33ms          62.18ms ±  24.67ms     4.95x
+mid              309.54ms ± 170.51ms          56.88ms ±  16.79ms     5.44x
+late             254.95ms ± 127.66ms          55.13ms ±  13.91ms     4.62x
+
+=== Depth 5 ===
+Phase          Single (1T) avg ± std      Multi (256T) avg ± std   Speedup
+--------------------------------------------------------------------------
+early            322.95ms ± 207.78ms          56.23ms ±  21.22ms     5.74x
+mid              324.59ms ± 180.09ms          57.62ms ±  16.48ms     5.63x
+late             265.13ms ± 134.01ms          55.45ms ±  14.08ms     4.78x

@@ -92,7 +92,86 @@ struct alignas(64) MCTSNode {
     }
 };
 
-static MCTSNode* tree_descend(MCTSNode* node, chess::Board& board) {
+struct NodePool {
+    static constexpr size_t CHUNK_SIZE = 1 << 16;
+
+    struct Chunk {
+        alignas(64) MCTSNode* data;
+        std::atomic<size_t> used;
+
+        Chunk() : used(0) {
+            // SAFE aligned allocation (C++-correct)
+            data = static_cast<MCTSNode*>(
+                ::operator new(
+                    CHUNK_SIZE * sizeof(MCTSNode),
+                    std::align_val_t(64)
+                )
+            );
+        }
+
+        ~Chunk() {
+            ::operator delete(
+                data,
+                std::align_val_t(64)
+            );
+        }
+    };
+
+    std::vector<Chunk*> chunks;
+    std::atomic<size_t> current{0};
+    std::mutex grow_mutex;
+
+    NodePool() {
+        chunks.reserve(32);
+        chunks.push_back(new Chunk());
+    }
+
+    MCTSNode* allocate(const chess::Board& b,
+                       chess::Move m,
+                       MCTSNode* parent)
+    {
+        size_t idx_chunk = current.load(std::memory_order_relaxed);
+        Chunk* c = chunks[idx_chunk];
+
+        // fast path: atomic bump inside chunk
+        size_t idx = c->used.fetch_add(1, std::memory_order_relaxed);
+
+        if (idx < CHUNK_SIZE) {
+            return new (&c->data[idx]) MCTSNode(b, m, parent);
+        }
+
+        // slow path: need new chunk
+        std::lock_guard<std::mutex> lock(grow_mutex);
+
+        idx_chunk = current.load(std::memory_order_relaxed);
+
+        if (idx_chunk + 1 >= chunks.size()) {
+            chunks.push_back(new Chunk());
+        }
+
+        current.store(idx_chunk + 1, std::memory_order_relaxed);
+        c = chunks[idx_chunk + 1];
+
+        size_t new_idx = c->used.fetch_add(1, std::memory_order_relaxed);
+
+        return new (&c->data[new_idx]) MCTSNode(b, m, parent);
+    }
+
+    void reset() {
+        for (Chunk* c : chunks) {
+            c->used.store(0, std::memory_order_relaxed);
+        }
+        current.store(0, std::memory_order_relaxed);
+    }
+
+    ~NodePool() {
+        for (Chunk* c : chunks) {
+            delete c;
+        }
+    }
+};
+
+static MCTSNode* tree_descend(MCTSNode* node, chess::Board& board, NodePool& pool) {
     while (true) {
         node->virtual_loss.fetch_add(1, std::memory_order_relaxed);
 
@@ -109,7 +188,7 @@ static MCTSNode* tree_descend(MCTSNode* node, chess::Board& board) {
         if (idx < node->untried_moves.size()) {
             chess::Move m = node->untried_moves[idx];
             board.makeMove(m);
-            MCTSNode* child = new MCTSNode(board, m, node);
+            MCTSNode* child = pool.allocate(board, m, node);
             node->children[idx] = child;
             if (idx + 1 == node->untried_moves.size()) {
                 node->is_stable.store(true, std::memory_order_release);
@@ -132,22 +211,22 @@ static void backprop(MCTSNode* node, double result) {
     }
 }
 
-static void run_simulations(MCTSNode& root, const chess::Board& board, int max_depth, int num_simulations) {
+static void run_simulations(MCTSNode& root, const chess::Board& board, int max_depth, int num_simulations, NodePool& pool) {
     #pragma omp parallel for schedule(static, 16)
     for (int i = 0; i < num_simulations; ++i) {
         chess::Board local_board = board;
-        MCTSNode* leaf = tree_descend(&root, local_board);
+        MCTSNode* leaf = tree_descend(&root, local_board, pool);
         double result = rollout(local_board, max_depth);
         backprop(leaf, result);
     }
 }
 
-static void run_simulations_persistent(MCTSNode& root, const chess::Board& board, int max_depth) {
+static void run_simulations_persistent(MCTSNode& root, const chess::Board& board, int max_depth, NodePool& pool) {
     #pragma omp parallel
     {
         while (!exceeded_budget.load(std::memory_order_relaxed)) {
             chess::Board local_board = board;
-            MCTSNode* leaf = tree_descend(&root, local_board);
+            MCTSNode* leaf = tree_descend(&root, local_board, pool);
             double result = rollout(local_board, max_depth);
             backprop(leaf, result);
         }
@@ -178,7 +257,8 @@ static chess::Move pick_best(MCTSNode& root) {
 
 chess::Move monte_carlo_search(const chess::Board& board, int max_depth, int num_simulations) {
     MCTSNode root(board);
-    run_simulations(root, board, max_depth, num_simulations);
+    static thread_local NodePool pool;
+    run_simulations(root, board, max_depth, num_simulations, pool);
     return pick_best(root);
 }
 
@@ -189,8 +269,10 @@ int best_move_monte_carlo_depth(const char* fen, int depth, char* out_move, int 
     chess::movegen::legalmoves(moves, board);
     if (moves.empty()) return -1;
 
+    static thread_local NodePool pool;
     MCTSNode root(board);
-    run_simulations(root, board, depth, 100000);
+
+    run_simulations(root, board, depth, 100000, pool);
 
     chess::Move best = pick_best(root);
     std::strncpy(out_move, chess::uci::moveToUci(best).c_str(), out_len);
@@ -216,8 +298,9 @@ int best_move_monte_carlo_time(const char* fen, int time_ms, char* out_move, int
     });
 
     constexpr int SEARCH_DEPTH = 6;
+    static thread_local NodePool pool;
     MCTSNode root(board);
-    run_simulations_persistent(root, board, SEARCH_DEPTH);
+    run_simulations_persistent(root, board, SEARCH_DEPTH, pool);
     timer.join();
 
     chess::Move best = pick_best(root);
@@ -248,9 +331,10 @@ int best_move_monte_carlo_cycles(const char* fen, int megacycle_budget, char* ou
         exceeded_budget = true;
     });
 
-    constexpr int SEARCH_DEPTH    = 6;
+    constexpr int SEARCH_DEPTH = 6;
     constexpr int PAPI_CHECK_SIMS = 64;
 
+    static thread_local NodePool pool;
     MCTSNode root(board);
 
     #pragma omp parallel
@@ -275,7 +359,7 @@ int best_move_monte_carlo_cycles(const char* fen, int megacycle_budget, char* ou
 
         while (!exceeded_budget.load(std::memory_order_relaxed)) {
             chess::Board local_board = board;
-            MCTSNode* leaf = tree_descend(&root, local_board);
+            MCTSNode* leaf = tree_descend(&root, local_board, pool);
             double result  = rollout(local_board, SEARCH_DEPTH);
             backprop(leaf, result);
 
