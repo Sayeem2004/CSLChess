@@ -247,11 +247,11 @@ static chess::Move pick_best(MCTSNode& root) {
         }
     }
 
-    // printf("MCTS prefers move %s with %s rate %.2f%% (%d visits)\n",
-    //        chess::uci::moveToUci(best_move).c_str(),
-    //        expected_win_rate >= 0.5 ? "win" : "loss",
-    //        std::max(expected_win_rate, 1.0 - expected_win_rate) * 100.0,
-    //        most_visits);
+    printf("MCTS prefers move %s with %s rate %.2f%% (%d visits)\n",
+           chess::uci::moveToUci(best_move).c_str(),
+           expected_win_rate >= 0.5 ? "win" : "loss",
+           std::max(expected_win_rate, 1.0 - expected_win_rate) * 100.0,
+           most_visits);
     return best_move;
 }
 
@@ -272,7 +272,7 @@ int best_move_monte_carlo_depth(const char* fen, int depth, char* out_move, int 
     static thread_local NodePool pool;
     MCTSNode root(board);
 
-    run_simulations(root, board, depth, 100000, pool);
+    run_simulations(root, board, depth, 1000000, pool);
 
     chess::Move best = pick_best(root);
     std::strncpy(out_move, chess::uci::moveToUci(best).c_str(), out_len);
@@ -318,75 +318,61 @@ int best_move_monte_carlo_cycles(const char* fen, int megacycle_budget, char* ou
 
     exceeded_budget.store(false, std::memory_order_relaxed);
 
-    #ifdef USE_PAPI
+#ifdef USE_PAPI
     std::call_once(papi_init_flag, init_papi);
-    #endif
 
+    // Spawn a PAPI monitor thread that sets exceeded_budget when cycles are exhausted.
+    // run_simulations_persistent will see it and stop naturally.
+    long long cycle_budget = (long long)megacycle_budget * 1'000'000LL;
+    std::thread papi_monitor([cycle_budget]() {
+        PAPI_thread_init(pthread_self);
+        int event_set = PAPI_NULL;
+        bool ok = (PAPI_create_eventset(&event_set) == PAPI_OK)
+               && (PAPI_add_event(event_set, PAPI_TOT_CYC) == PAPI_OK)
+               && (PAPI_start(event_set) == PAPI_OK);
+        if (!ok) {
+            // Fall back: just let the deadline timer handle it
+            if (event_set != PAPI_NULL) {
+                PAPI_cleanup_eventset(event_set);
+                PAPI_destroy_eventset(&event_set);
+            }
+            PAPI_unregister_thread();
+            return;
+        }
+        while (!exceeded_budget.load(std::memory_order_relaxed)) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            long long cycles_used;
+            if (PAPI_read(event_set, &cycles_used) == PAPI_OK && cycles_used >= cycle_budget) {
+                exceeded_budget.store(true, std::memory_order_relaxed);
+                break;
+            }
+        }
+        long long cycles_used;
+        PAPI_stop(event_set, &cycles_used);
+        PAPI_cleanup_eventset(event_set);
+        PAPI_destroy_eventset(&event_set);
+        PAPI_unregister_thread();
+    });
+#endif
+
+    // Deadline timer as fallback (same as before, guards against PAPI failure)
     long long time_ms = std::max(1LL, (long long)megacycle_budget);
     using clock = std::chrono::steady_clock;
     auto deadline = clock::now() + std::chrono::milliseconds(time_ms);
     std::thread timer([deadline]() {
-        while (!exceeded_budget && clock::now() < deadline)
-            std::this_thread::sleep_for(std::chrono::milliseconds(10));
-        exceeded_budget = true;
+        std::this_thread::sleep_until(deadline);
+        exceeded_budget.store(true, std::memory_order_relaxed);
     });
 
     constexpr int SEARCH_DEPTH = 6;
-    constexpr int PAPI_CHECK_SIMS = 64;
-
     static thread_local NodePool pool;
     MCTSNode root(board);
+    run_simulations_persistent(root, board, SEARCH_DEPTH, pool);
 
-    #pragma omp parallel
-    {
-    #ifdef USE_PAPI
-        PAPI_thread_init(pthread_self);
-
-        int my_event_set    = PAPI_NULL;
-        long long my_cycle_budget = (long long)megacycle_budget * 1'000'000LL;
-        int my_sim_count    = 0;
-
-        bool papi_ok = (PAPI_create_eventset(&my_event_set) == PAPI_OK) &&
-                       (PAPI_add_event(my_event_set, PAPI_TOT_CYC) == PAPI_OK) &&
-                       (PAPI_start(my_event_set) == PAPI_OK);
-
-        if (!papi_ok && my_event_set != PAPI_NULL) {
-            PAPI_cleanup_eventset(my_event_set);
-            PAPI_destroy_eventset(&my_event_set);
-            my_event_set = PAPI_NULL;
-        }
-    #endif
-
-        while (!exceeded_budget.load(std::memory_order_relaxed)) {
-            chess::Board local_board = board;
-            MCTSNode* leaf = tree_descend(&root, local_board, pool);
-            double result  = rollout(local_board, SEARCH_DEPTH);
-            backprop(leaf, result);
-
-    #ifdef USE_PAPI
-            if (my_event_set != PAPI_NULL && ++my_sim_count >= PAPI_CHECK_SIMS) {
-                my_sim_count = 0;
-                long long cycles_used;
-                if (PAPI_read(my_event_set, &cycles_used) == PAPI_OK)
-                    if (cycles_used >= my_cycle_budget)
-                        exceeded_budget.store(true, std::memory_order_relaxed);
-            }
-    #endif
-        }
-
-    #ifdef USE_PAPI
-        if (my_event_set != PAPI_NULL) {
-            long long cycles_used;
-            PAPI_stop(my_event_set, &cycles_used);
-            PAPI_cleanup_eventset(my_event_set);
-            PAPI_destroy_eventset(&my_event_set);
-            my_event_set = PAPI_NULL;
-        }
-        PAPI_unregister_thread();
-    #endif
-    }
-
-    exceeded_budget = true;
+#ifdef USE_PAPI
+    exceeded_budget.store(true, std::memory_order_relaxed); // unblock monitor if still running
+    papi_monitor.join();
+#endif
     timer.join();
 
     chess::Move best = pick_best(root);
