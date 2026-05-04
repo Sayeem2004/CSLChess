@@ -47,39 +47,37 @@ struct alignas(64) MCTSNode {
     std::atomic<int> virtual_loss{0};
 
     std::vector<chess::Move> untried_moves;
-    std::vector<std::unique_ptr<MCTSNode>> children;
-    
+    std::vector<MCTSNode*> children;
+
     std::atomic<size_t> next_untried_idx{0};
     std::atomic<bool> is_stable{false};
-    
+
     MCTSNode* parent = nullptr;
-    std::mutex expansion_mtx;
 
     explicit MCTSNode(const chess::Board& b, chess::Move m = chess::Move::NO_MOVE, MCTSNode* p = nullptr)
         : move(m), parent(p) {
         chess::Movelist ml;
         chess::movegen::legalmoves(ml, b);
-        
-        untried_moves.reserve(ml.size());
-        for (int i = 0; i < (int)ml.size(); ++i) untried_moves.push_back(ml[i]);
 
-        children.reserve(untried_moves.size());
+        untried_moves.assign(ml.begin(), ml.end());
+        children.resize(untried_moves.size(), nullptr);
 
-        if (untried_moves.empty()) is_stable.store(true, std::memory_order_release);
+        if (untried_moves.empty())
+            is_stable.store(true, std::memory_order_release);
     }
 
     MCTSNode* best_child(double c = 1.414) const {
         MCTSNode* best = nullptr;
         double best_score = -1e18;
 
-        int p_v = visits.load(std::memory_order_relaxed) + virtual_loss.load(std::memory_order_relaxed);
+        int p_v = visits.load(std::memory_order_relaxed) +
+                  virtual_loss.load(std::memory_order_relaxed);
         double log_v = std::log(std::max(1.0, (double)p_v));
 
         for (const auto& child : children) {
-            int cv = child->visits.load(std::memory_order_relaxed) + 
-                     child->virtual_loss.load(std::memory_order_relaxed);
-            
-            if (cv == 0) return child.get();
+            if (!child) continue;
+            int cv = child->visits.load(std::memory_order_relaxed) + child->virtual_loss.load(std::memory_order_relaxed);
+            if (cv == 0) return child;
 
             double q = 1.0 - (child->wins.load(std::memory_order_relaxed) / cv);
             double u = c * std::sqrt(log_v / cv);
@@ -87,7 +85,7 @@ struct alignas(64) MCTSNode {
 
             if (score > best_score) {
                 best_score = score;
-                best = child.get();
+                best = child;
             }
         }
         return best;
@@ -99,45 +97,36 @@ static MCTSNode* tree_descend(MCTSNode* node, chess::Board& board) {
         node->virtual_loss.fetch_add(1, std::memory_order_relaxed);
 
         if (node->is_stable.load(std::memory_order_acquire)) {
-            if (node->children.empty()) return node; // Terminal
+            if (node->children.empty()) return node;
             MCTSNode* best = node->best_child();
             board.makeMove(best->move);
             node = best;
             continue;
         }
 
-        {
-            std::unique_lock<std::mutex> lock(node->expansion_mtx);
-            
-            if (!node->is_stable.load(std::memory_order_relaxed)) {
-                size_t idx = node->next_untried_idx.load(std::memory_order_relaxed);
-                
-                if (idx < node->untried_moves.size()) {
-                    chess::Move m = node->untried_moves[idx];
-                    node->next_untried_idx.store(idx + 1, std::memory_order_relaxed);
-                    
-                    board.makeMove(m);
-                    node->children.push_back(std::make_unique<MCTSNode>(board, m, node));
-                    
-                    if (node->next_untried_idx.load() == node->untried_moves.size()) {
-                        node->is_stable.store(true, std::memory_order_release);
-                    }
+        size_t idx = node->next_untried_idx.fetch_add(1, std::memory_order_relaxed);
 
-                    MCTSNode* leaf = node->children.back().get();
-                    leaf->virtual_loss.fetch_add(1, std::memory_order_relaxed);
-                    return leaf;
-                }
+        if (idx < node->untried_moves.size()) {
+            chess::Move m = node->untried_moves[idx];
+            board.makeMove(m);
+            MCTSNode* child = new MCTSNode(board, m, node);
+            node->children[idx] = child;
+            if (idx + 1 == node->untried_moves.size()) {
+                node->is_stable.store(true, std::memory_order_release);
             }
+
+            child->virtual_loss.fetch_add(1, std::memory_order_relaxed);
+            return child;
         }
     }
 }
 
 static void backprop(MCTSNode* node, double result) {
     while (node != nullptr) {
-        node->visits++;
+        node->visits.fetch_add(1, std::memory_order_relaxed);
         double old = node->wins.load(std::memory_order_relaxed);
         while (!node->wins.compare_exchange_weak(old, old + result, std::memory_order_relaxed));
-        node->virtual_loss--;
+        node->virtual_loss.fetch_sub(1, std::memory_order_relaxed);
         result = 1.0 - result;
         node = node->parent;
     }
