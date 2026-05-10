@@ -2,6 +2,7 @@
 #include <atomic>
 #include <chrono>
 #include <cstring>
+#include <mutex>
 #include <thread>
 
 #include <omp.h>
@@ -14,6 +15,8 @@
 
 
 static std::atomic<bool> exceeded_budget{false};
+static std::once_flag omp_init_flag;
+static void init_omp() { omp_set_max_active_levels(2); }
 // Chess branching factor — sets the number of inner (root-parallel) threads per search_root call.
 // Outer thread count = omp_get_max_threads() / BRANCH_FACTOR, used for Lazy SMP staggering.
 static constexpr int BRANCH_FACTOR = 32;
@@ -183,17 +186,52 @@ int best_move_alpha_beta_depth(const char* fen, int depth, char* out_move, int o
     chess::movegen::legalmoves(moves, board);
     if (moves.empty()) return -1;
 
-    tt_gen++;
+    // Increment to reduce memset frequency
+    if (++tt_gen == 0) std::memset(tt, 0, sizeof(tt)); 
     exceeded_budget  = false;
 
-    static bool printed = false;
-    if (!printed) { printed = true; fprintf(stderr, "[alpha-beta] threads: %d (root-parallel)\n", omp_get_max_threads()); }
-    chess::Move best = search_root(board, depth, omp_get_max_threads());
+    int inner_threads = std::min(BRANCH_FACTOR, omp_get_max_threads());
+    int outer_threads = std::max(1, omp_get_max_threads() / inner_threads);
 
+    static bool printed = false;
+    if (!printed) { printed = true; fprintf(stderr, "[alpha-beta] threads: %d outer x %d inner = %d total\n", outer_threads, inner_threads, outer_threads * inner_threads); }
+
+    chess::Move best       = moves[0];
+    int         best_depth = 0;
+    std::call_once(omp_init_flag, init_omp);
+    #pragma omp parallel num_threads(outer_threads) shared(best, best_depth, exceeded_budget)
+    {
+        chess::Board local_board = board;
+        int my_depth = 1 + omp_get_thread_num();
+
+        while (!exceeded_budget && my_depth <= depth) {
+            chess::Move candidate = search_root(local_board, my_depth, inner_threads);
+
+            // Any thread may update best — take the result from the deepest completed search.
+            if (!exceeded_budget) {
+                #pragma omp critical
+                {
+                    if (my_depth > best_depth) {
+                        best_depth = my_depth;
+                        best = candidate;
+                        if (best_depth >= depth) exceeded_budget = true;
+                    }
+                }
+            }
+            my_depth += outer_threads;
+
+            // All threads check for forced mate so any thread can trigger early exit
+            int root_idx = local_board.hash() & (TT_SIZE - 1);
+            if (tt[root_idx].key == local_board.hash() && std::abs(tt[root_idx].score) > 15000) break;
+        }
+    }
+
+    exceeded_budget = false;
+    
     std::string uci = chess::uci::moveToUci(best);
     std::strncpy(out_move, uci.c_str(), out_len);
     out_move[out_len-1] = '\0';
-    return depth;
+    return best_depth;
 }
 
 
@@ -207,7 +245,8 @@ int best_move_alpha_beta_time(const char* fen, int time_ms, char* out_move, int 
     chess::movegen::legalmoves(moves, board);
     if (moves.empty()) return -1;
 
-    tt_gen++;
+    // Increment to reduce memset frequency
+    if (++tt_gen == 0) std::memset(tt, 0, sizeof(tt));
     exceeded_budget = false;
 
     int inner_threads = std::min(BRANCH_FACTOR, omp_get_max_threads());
@@ -226,11 +265,11 @@ int best_move_alpha_beta_time(const char* fen, int time_ms, char* out_move, int 
 
     chess::Move best       = moves[0];
     int         best_depth = 0;
-    omp_set_max_active_levels(2);
+    std::call_once(omp_init_flag, init_omp);
     #pragma omp parallel num_threads(outer_threads) shared(best, best_depth, exceeded_budget)
     {
         chess::Board local_board = board;
-        int my_depth = 1 + omp_get_thread_num(); // stagger: thread 0→1, thread 1→2, ...
+        int my_depth = 1 + omp_get_thread_num();
 
         while (!exceeded_budget) {
             chess::Move candidate = search_root(local_board, my_depth, inner_threads);
@@ -244,9 +283,9 @@ int best_move_alpha_beta_time(const char* fen, int time_ms, char* out_move, int 
                     }
                 }
             }
-
             my_depth += outer_threads;
 
+            // All threads check for forced mate so any thread can trigger early exit
             int root_idx = local_board.hash() & (TT_SIZE - 1);
             if (tt[root_idx].key == local_board.hash() && std::abs(tt[root_idx].score) > 15000) break;
         }
@@ -271,7 +310,8 @@ int best_move_alpha_beta_cycles(const char* fen, int megacycle_budget, char* out
     chess::movegen::legalmoves(moves, board);
     if (moves.empty()) return -1;
 
-    tt_gen++;
+    // Increment to reduce memset frequency
+    if (++tt_gen == 0) std::memset(tt, 0, sizeof(tt));
     exceeded_budget = false;
 
     int inner_threads = std::min(BRANCH_FACTOR, omp_get_max_threads());
@@ -298,7 +338,7 @@ int best_move_alpha_beta_cycles(const char* fen, int megacycle_budget, char* out
     PAPI_library_init(PAPI_VER_CURRENT);
     #endif
 
-    omp_set_max_active_levels(2);
+    std::call_once(omp_init_flag, init_omp);
     #pragma omp parallel num_threads(outer_threads) shared(best, best_depth, exceeded_budget)
     {
         chess::Board local_board = board;
@@ -328,13 +368,13 @@ int best_move_alpha_beta_cycles(const char* fen, int megacycle_budget, char* out
         while (!exceeded_budget) {
             chess::Move candidate = search_root(local_board, my_depth, inner_threads);
 
+            // Any thread may update best — take the result from the deepest completed search.
             if (!exceeded_budget) {
                 #pragma omp critical
                 {
                     if (my_depth > best_depth) { best_depth = my_depth; best = candidate; }
                 }
             }
-
             my_depth += outer_threads;
 
             // All threads check for forced mate so any thread can trigger early exit

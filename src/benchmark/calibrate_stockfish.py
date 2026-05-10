@@ -8,7 +8,10 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 from benchmark import PHASES, DATA_DIR
-from utils.load import STOCKFISH_UNIX_BIN
+from utils.load import STOCKFISH_LINUX_BIN, STOCKFISH_MAC_BIN
+
+
+STOCKFISH_UNIX_BIN = STOCKFISH_MAC_BIN if platform.system() == "Darwin" else STOCKFISH_LINUX_BIN
 
 
 def run_all_positions_under_perf(fens: list, depth: int, sf_path: str, perf_event: str):
