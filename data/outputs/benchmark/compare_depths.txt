@@ -1,0 +1,70 @@
+[compare_depths] early: 100 positions, depths 1-4
+[93m[build] perft.so already exists, skipping compilation
+[00m
+[93m[build] alpha-beta.so already exists, skipping compilation
+[00m
+  depth 1/4 ...
+[alpha-beta] threads: 1 outer x 8 inner = 8 total
+    perft:      avg=    0.57ms  std=   4.69ms
+    alpha-beta: avg=    0.77ms  std=   4.79ms
+    stockfish:  avg=    0.33ms  std=   0.34ms
+  depth 2/4 ...
+    perft:      avg=    1.13ms  std=   0.65ms
+    alpha-beta: avg=    0.70ms  std=   0.38ms
+    stockfish:  avg=    0.35ms  std=   0.07ms
+  depth 3/4 ...
+    perft:      avg=   19.29ms  std=  15.48ms
+    alpha-beta: avg=    3.07ms  std=   2.81ms
+    stockfish:  avg=    0.37ms  std=   0.08ms
+  depth 4/4 ...
+    perft:      avg=  232.17ms  std= 251.02ms
+    alpha-beta: avg=   29.76ms  std=  49.18ms
+    stockfish:  avg=    0.42ms  std=   0.15ms
+[compare_depths] early: wrote /Users/Najmoon/Coding/Cornell/CornellCS/Year 4/CS5220/Projects/CSLChess/src/benchmark/../../data/early/darwin/compare_depths.csv
+
+[compare_depths] mid: 100 positions, depths 1-4
+[93m[build] perft.so already exists, skipping compilation
+[00m
+[93m[build] alpha-beta.so already exists, skipping compilation
+[00m
+  depth 1/4 ...
+    perft:      avg=    0.10ms  std=   0.03ms
+    alpha-beta: avg=    0.25ms  std=   0.02ms
+    stockfish:  avg=    0.29ms  std=   0.05ms
+  depth 2/4 ...
+    perft:      avg=    1.06ms  std=   0.61ms
+    alpha-beta: avg=    0.77ms  std=   1.46ms
+    stockfish:  avg=    0.32ms  std=   0.06ms
+  depth 3/4 ...
+    perft:      avg=   18.56ms  std=  14.51ms
+    alpha-beta: avg=    3.74ms  std=   2.58ms
+    stockfish:  avg=    0.38ms  std=   0.11ms
+  depth 4/4 ...
+    perft:      avg=  222.20ms  std= 268.88ms
+    alpha-beta: avg=   40.73ms  std=  51.35ms
+    stockfish:  avg=    0.49ms  std=   0.25ms
+[compare_depths] mid: wrote /Users/Najmoon/Coding/Cornell/CornellCS/Year 4/CS5220/Projects/CSLChess/src/benchmark/../../data/mid/darwin/compare_depths.csv
+
+[compare_depths] late: 100 positions, depths 1-4
+[93m[build] perft.so already exists, skipping compilation
+[00m
+[93m[build] alpha-beta.so already exists, skipping compilation
+[00m
+  depth 1/4 ...
+    perft:      avg=    0.05ms  std=   0.02ms
+    alpha-beta: avg=    0.23ms  std=   0.02ms
+    stockfish:  avg=    0.26ms  std=   0.05ms
+  depth 2/4 ...
+    perft:      avg=    0.41ms  std=   0.34ms
+    alpha-beta: avg=    0.54ms  std=   0.15ms
+    stockfish:  avg=    0.29ms  std=   0.06ms
+  depth 3/4 ...
+    perft:      avg=    7.30ms  std=  10.09ms
+    alpha-beta: avg=    2.30ms  std=   2.18ms
+    stockfish:  avg=    0.32ms  std=   0.07ms
+  depth 4/4 ...
+    perft:      avg=   71.26ms  std= 135.90ms
+    alpha-beta: avg=    8.35ms  std=  11.85ms
+    stockfish:  avg=    0.40ms  std=   0.11ms
+[compare_depths] late: wrote /Users/Najmoon/Coding/Cornell/CornellCS/Year 4/CS5220/Projects/CSLChess/src/benchmark/../../data/late/darwin/compare_depths.csv
+

@@ -60,9 +60,9 @@ def time_stockfish(sf_path, fens, depth):
 
     times = []
     for fen in fens:
+        t0 = time.perf_counter()
         proc.stdin.write(f"position fen {fen}\ngo depth {depth}\n")
         proc.stdin.flush()
-        t0 = time.perf_counter()
         for line in proc.stdout:
             if line.startswith("bestmove"):
                 break
@@ -86,7 +86,7 @@ def compare_phase(phase, max_depth, max_positions, sf_path, sys_subfolder):
         return
     print(f"[compare_depths] {phase}: {len(fens)} positions, depths 1-{max_depth}")
 
-    perft_fn = load_perft()["perft"]
+    perft_fn = load_perft()["alpha_beta"]
     ab_fn    = load_standard_alpha_beta()["depth"]
 
     fieldnames = [
@@ -141,7 +141,7 @@ if __name__ == "__main__":
     sf_default = STOCKFISH_MAC_BIN if platform.system() == "Darwin" else STOCKFISH_LINUX_BIN
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--max-depth",     type=int, default=5,
+    parser.add_argument("--max-depth",     type=int, default=4,
                         help="max depth to test (default: 5)")
     parser.add_argument("--max-positions", type=int, default=None,
                         help="cap number of FENs across all phases (default: all)")
