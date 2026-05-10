@@ -36,11 +36,3 @@ def stockfish_best_move_time(stockfish, board: chess.Board, time_ms: int) -> che
     try: move = chess.Move.from_uci(best_uci)
     except chess.InvalidMoveError: return None
     return move if move in board.legal_moves else None
-
-
-def csl_best_move_time(fn, board: chess.Board, time_ms: int) -> chess.Move | None:
-    """
-    Query the CSL engine for the best move within a time limit.
-    Not yet implemented.
-    """
-    pass

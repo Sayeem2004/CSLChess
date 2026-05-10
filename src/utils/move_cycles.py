@@ -49,13 +49,3 @@ def stockfish_best_move_cycles(stockfish, board: chess.Board, megacycle_budget: 
     try: move = chess.Move.from_uci(best_uci)
     except chess.InvalidMoveError: return None
     return move if move in board.legal_moves else None
-
-
-def csl_best_move_cycles(fn, board: chess.Board, megacycle_budget: int) -> chess.Move | None:
-    """
-    Query the CSL engine for the best move within a cycle budget.
-    `fn`              - CSL engine handle returned by load_csl_alpha_beta / load_csl_monte_carlo.
-    `megacycle_budget` - floating-point operation budget.
-    Not yet implemented.
-    """
-    pass

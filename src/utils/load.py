@@ -140,16 +140,6 @@ def load_perft():
     return {"perft": perft_fn, "alpha_beta": ab_fn}
 
 
-def load_csl_alpha_beta() -> dict:
-    """Load the CSL alpha-beta engine. Not yet implemented."""
-    pass
-
-
-def load_csl_monte_carlo() -> dict:
-    """Load the CSL MCTS engine. Not yet implemented."""
-    pass
-
-
 # Maps Skill Level (0-20) to approximate UCI_Elo
 SKILL_TO_ELO = {
     0: 1320, 1: 1380, 2: 1440, 3: 1500, 4: 1560, 5: 1620,
@@ -184,11 +174,9 @@ def load_stockfish_windows(skill_level: int = 0, path: str = STOCKFISH_WIN_EXE):
 
 def load_engine(algorithm: str) -> dict:
     """Return a dict of {budget_type: ctypes_fn} for the chosen algorithm."""
-    if algorithm == "cpp-alpha-beta":  return load_standard_alpha_beta()
-    if algorithm == "cpp-mc": return load_standard_monte_carlo()
-    if algorithm == "cpp-mc-rp": return load_standard_monte_carlo_rp()
-    if algorithm == "csl-alpha-beta":  return load_csl_alpha_beta()
-    if algorithm == "csl-monte-carlo": return load_csl_monte_carlo()
+    if algorithm == "cpp-alpha-beta":     return load_standard_alpha_beta()
+    if algorithm == "cpp-monte-carlo":    return load_standard_monte_carlo()
+    if algorithm == "cpp-monte-carlo-rp": return load_standard_monte_carlo_rp()
 
 
 def load_stockfish(skill_level: int = 0):

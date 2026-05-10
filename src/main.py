@@ -3,7 +3,7 @@ Plays one or more chess games where our engine faces Stockfish.
 The chosen algorithm is compiled/loaded automatically on startup.
 
 Usage:
-    python main.py --algorithm {cpp-alpha-beta,cpp-monte-carlo,csl-alpha-beta,csl-monte-carlo}
+    python main.py --algorithm {cpp-alpha-beta,cpp-monte-carlo}
                    (--depth DEPTH | --time TIME_MS | --cycles CYCLES)
                    [--color {white,black}] [--num NUM] [--verbose]
 """
@@ -69,8 +69,8 @@ def play_game(algorithm: str, our_color: chess.Color, budget_type: str, budget: 
 
 
 if __name__ == "__main__":
-    algorithms = ["cpp-alpha-beta", "cpp-mc", "cpp-mc-rp", "csl-alpha-beta", "csl-monte-carlo"]
-    parser = argparse.ArgumentParser(description="CSLChess Engine vs Stockfish")
+    algorithms = ["cpp-alpha-beta", "cpp-monte-carlo", "cpp-monte-carlo-rp"]
+    parser = argparse.ArgumentParser(description="Our Chess Engine vs Stockfish")
     parser.add_argument("--algorithm", required=True, choices=algorithms,                    help="Search algorithm to use")
     parser.add_argument("--color", choices=["white", "black"], default=None,                 help="Color our engine plays (default: random per game)")
     parser.add_argument("--num", type=int, default=1,                                        help="Number of games to play (default: 1)")

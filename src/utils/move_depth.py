@@ -37,11 +37,3 @@ def stockfish_best_move_depth(stockfish, board: chess.Board, depth: int) -> ches
     try: move = chess.Move.from_uci(best_uci)
     except chess.InvalidMoveError: return None
     return move if move in board.legal_moves else None
-
-
-def csl_best_move_depth(fn, board: chess.Board, depth: int) -> chess.Move | None:
-    """
-    Query the CSL engine for the best move with a depth limit.
-    Not yet implemented.
-    """
-    pass

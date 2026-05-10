@@ -1,1 +1,1 @@
-# CSLChess
+# Chess Parallelism
