@@ -53,12 +53,12 @@ def run_alpha_beta(time_fn, count_fn, fens, depth):
     return times, counts
 
 
-def run_stockfish(sf_path, fens, depth):
+def run_stockfish(sf_path, fens, depth, threads=1):
     """Returns (times, node_counts) for Stockfish across all fens.
     Node count is taken from the last 'info' line before bestmove."""
     proc = subprocess.Popen([sf_path], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                             stderr=subprocess.DEVNULL, text=True)
-    proc.stdin.write("uci\nisready\n")
+    proc.stdin.write(f"uci\nsetoption name Threads value {threads}\nisready\n")
     proc.stdin.flush()
     for line in proc.stdout:
         if line.strip() == "readyok":
@@ -93,11 +93,11 @@ def summarize(vals):
     return avg, std
 
 
-def compare_phase(phase, max_depth, max_positions, sf_path, sys_subfolder):
+def compare_phase(phase, max_depth, max_positions, sf_path, sys_subfolder, sf_threads=1):
     fens = load_phase_fens(phase, max_positions)
     if not fens:
         return
-    print(f"[compare_depths] {phase}: {len(fens)} positions, depths 1-{max_depth}")
+    print(f"[compare_depths] {phase}: {len(fens)} positions, depths 1-{max_depth}, stockfish threads={sf_threads}")
 
     ab_time_fn  = load_standard_alpha_beta()["depth"]
     ab_count_fn = load_perft()["alpha_beta"]
@@ -119,7 +119,7 @@ def compare_phase(phase, max_depth, max_positions, sf_path, sys_subfolder):
 
         perft_times               = time_perft(perft_fn, fens, depth)
         ab_times, ab_nodes        = run_alpha_beta(ab_time_fn, ab_count_fn, fens, depth)
-        sf_times, sf_nodes        = run_stockfish(sf_path, fens, depth)
+        sf_times, sf_nodes        = run_stockfish(sf_path, fens, depth, sf_threads)
 
         perft_avg, perft_std      = summarize(perft_times)
         ab_avg,    ab_std         = summarize(ab_times)
@@ -159,9 +159,9 @@ def compare_phase(phase, max_depth, max_positions, sf_path, sys_subfolder):
     print(f"[compare_depths] {phase}: wrote {out_path}\n")
 
 
-def compare_depths(max_depth, max_positions, sf_path, sys_subfolder):
+def compare_depths(max_depth, max_positions, sf_path, sys_subfolder, sf_threads=1):
     for phase in PHASES:
-        compare_phase(phase, max_depth, max_positions, sf_path, sys_subfolder)
+        compare_phase(phase, max_depth, max_positions, sf_path, sys_subfolder, sf_threads)
 
 
 if __name__ == "__main__":
@@ -172,9 +172,12 @@ if __name__ == "__main__":
                         help="max depth to test (default: 4)")
     parser.add_argument("--max-positions", type=int, default=None,
                         help="cap number of FENs across all phases (default: all)")
-    parser.add_argument("--stockfish",     default=sf_default,
+    parser.add_argument("--stockfish",        default=sf_default,
                         help="path to Stockfish binary")
+    parser.add_argument("--stockfish-threads", type=int,
+                        default=int(os.environ.get("OMP_NUM_THREADS", os.cpu_count())),
+                        help="threads to give Stockfish (default: OMP_NUM_THREADS or cpu_count)")
     args = parser.parse_args()
 
     sys_subfolder = "darwin" if platform.system() == "Darwin" else "linux"
-    compare_depths(args.max_depth, args.max_positions, args.stockfish, sys_subfolder)
+    compare_depths(args.max_depth, args.max_positions, args.stockfish, sys_subfolder, args.stockfish_threads)
