@@ -3,6 +3,7 @@ import csv
 import ctypes
 import os
 import platform
+import re
 import statistics
 import subprocess
 import sys
@@ -38,18 +39,23 @@ def time_perft(fn, fens, depth):
     return times
 
 
-def time_alpha_beta(fn, fens, depth):
+def run_alpha_beta(time_fn, count_fn, fens, depth):
+    """Returns (times, node_counts) for alpha-beta across all fens."""
     buf   = ctypes.create_string_buffer(MOVE_BUF_LEN)
-    times = []
+    times  = []
+    counts = []
     for fen in fens:
+        enc = fen.encode()
         t0 = time.perf_counter()
-        fn(fen.encode(), depth, buf, MOVE_BUF_LEN)
+        time_fn(enc, depth, buf, MOVE_BUF_LEN)
         times.append(time.perf_counter() - t0)
-    return times
+        counts.append(int(count_fn(enc, depth)))
+    return times, counts
 
 
-def time_stockfish(sf_path, fens, depth):
-    """Run all positions in one persistent Stockfish process to amortize startup overhead."""
+def run_stockfish(sf_path, fens, depth):
+    """Returns (times, node_counts) for Stockfish across all fens.
+    Node count is taken from the last 'info' line before bestmove."""
     proc = subprocess.Popen([sf_path], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                             stderr=subprocess.DEVNULL, text=True)
     proc.stdin.write("uci\nisready\n")
@@ -58,25 +64,32 @@ def time_stockfish(sf_path, fens, depth):
         if line.strip() == "readyok":
             break
 
-    times = []
+    node_re = re.compile(r"\bnodes\s+(\d+)")
+    times  = []
+    counts = []
     for fen in fens:
         t0 = time.perf_counter()
         proc.stdin.write(f"position fen {fen}\ngo depth {depth}\n")
         proc.stdin.flush()
+        last_nodes = 0
         for line in proc.stdout:
+            m = node_re.search(line)
+            if m:
+                last_nodes = int(m.group(1))
             if line.startswith("bestmove"):
                 break
         times.append(time.perf_counter() - t0)
+        counts.append(last_nodes)
 
     proc.stdin.write("quit\n")
     proc.stdin.flush()
     proc.communicate()
-    return times
+    return times, counts
 
 
-def summarize(times):
-    avg = statistics.mean(times)
-    std = statistics.stdev(times) if len(times) > 1 else 0.0
+def summarize(vals):
+    avg = statistics.mean(vals)
+    std = statistics.stdev(vals) if len(vals) > 1 else 0.0
     return avg, std
 
 
@@ -86,40 +99,54 @@ def compare_phase(phase, max_depth, max_positions, sf_path, sys_subfolder):
         return
     print(f"[compare_depths] {phase}: {len(fens)} positions, depths 1-{max_depth}")
 
-    perft_fn = load_perft()["alpha_beta"]
-    ab_fn    = load_standard_alpha_beta()["depth"]
+    ab_time_fn  = load_standard_alpha_beta()["depth"]
+    ab_count_fn = load_perft()["alpha_beta"]
+    perft_fn    = load_perft()["perft"]
 
     fieldnames = [
         "depth",
-        "perft_avg_s",      "perft_std_s",
-        "alpha_beta_avg_s", "alpha_beta_std_s",
-        "stockfish_avg_s",  "stockfish_std_s",
+        "perft_avg_s",          "perft_std_s",
+        "alpha_beta_avg_s",     "alpha_beta_std_s",
+        "alpha_beta_avg_nodes", "alpha_beta_std_nodes",
+        "stockfish_avg_s",      "stockfish_std_s",
+        "stockfish_avg_nodes",  "stockfish_std_nodes",
     ]
     rows = []
+
 
     for depth in range(1, max_depth + 1):
         print(f"  depth {depth}/{max_depth} ...")
 
-        perft_times = time_perft(perft_fn, fens, depth)
-        ab_times    = time_alpha_beta(ab_fn, fens, depth)
-        sf_times    = time_stockfish(sf_path, fens, depth)
+        perft_times               = time_perft(perft_fn, fens, depth)
+        ab_times, ab_nodes        = run_alpha_beta(ab_time_fn, ab_count_fn, fens, depth)
+        sf_times, sf_nodes        = run_stockfish(sf_path, fens, depth)
 
-        perft_avg, perft_std = summarize(perft_times)
-        ab_avg,    ab_std    = summarize(ab_times)
-        sf_avg,    sf_std    = summarize(sf_times)
+        perft_avg, perft_std      = summarize(perft_times)
+        ab_avg,    ab_std         = summarize(ab_times)
+        ab_n_avg,  ab_n_std       = summarize(ab_nodes)
+        sf_avg,    sf_std         = summarize(sf_times)
+        sf_n_avg,  sf_n_std       = summarize(sf_nodes)
 
+        sf_scaled_ms = (sf_avg / sf_n_avg * ab_n_avg * 1000) if sf_n_avg > 0 else float("nan")
         print(f"    perft:      avg={perft_avg*1000:8.2f}ms  std={perft_std*1000:7.2f}ms")
-        print(f"    alpha-beta: avg={ab_avg*1000:8.2f}ms  std={ab_std*1000:7.2f}ms")
-        print(f"    stockfish:  avg={sf_avg*1000:8.2f}ms  std={sf_std*1000:7.2f}ms")
+        print(f"    alpha-beta: avg={ab_avg*1000:8.2f}ms  std={ab_std*1000:7.2f}ms  "
+              f"nodes avg={ab_n_avg:>10.0f}  std={ab_n_std:>10.0f}")
+        print(f"    stockfish:  avg={sf_avg*1000:8.2f}ms  std={sf_std*1000:7.2f}ms  "
+              f"nodes avg={sf_n_avg:>10.0f}  std={sf_n_std:>10.0f}  "
+              f"scaled to our nodes={sf_scaled_ms:8.2f}ms")
 
         rows.append({
-            "depth":              depth,
-            "perft_avg_s":        f"{perft_avg:.6f}",
-            "perft_std_s":        f"{perft_std:.6f}",
-            "alpha_beta_avg_s":   f"{ab_avg:.6f}",
-            "alpha_beta_std_s":   f"{ab_std:.6f}",
-            "stockfish_avg_s":    f"{sf_avg:.6f}",
-            "stockfish_std_s":    f"{sf_std:.6f}",
+            "depth":                depth,
+            "perft_avg_s":          f"{perft_avg:.6f}",
+            "perft_std_s":          f"{perft_std:.6f}",
+            "alpha_beta_avg_s":     f"{ab_avg:.6f}",
+            "alpha_beta_std_s":     f"{ab_std:.6f}",
+            "alpha_beta_avg_nodes": f"{ab_n_avg:.1f}",
+            "alpha_beta_std_nodes": f"{ab_n_std:.1f}",
+            "stockfish_avg_s":      f"{sf_avg:.6f}",
+            "stockfish_std_s":      f"{sf_std:.6f}",
+            "stockfish_avg_nodes":  f"{sf_n_avg:.1f}",
+            "stockfish_std_nodes":  f"{sf_n_std:.1f}",
         })
 
     out_dir  = os.path.join(DATA_DIR, phase, sys_subfolder)
@@ -142,7 +169,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--max-depth",     type=int, default=4,
-                        help="max depth to test (default: 5)")
+                        help="max depth to test (default: 4)")
     parser.add_argument("--max-positions", type=int, default=None,
                         help="cap number of FENs across all phases (default: all)")
     parser.add_argument("--stockfish",     default=sf_default,

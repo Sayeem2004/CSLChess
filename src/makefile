@@ -28,23 +28,23 @@ calibrate-alpha-beta-depth: clean
 	venv/bin/python -u benchmark/calibrate_alpha_beta_depth.py \
 		> ../data/outputs/calibrate/alpha-beta-depth/alpha-beta-depth.txt 2>&1
 
-calibrate-stockfish:
+calibrate-stockfish: clean
 	venv/bin/python -u benchmark/calibrate_stockfish.py \
 		> ../data/outputs/calibrate/stockfish/stockfish.txt 2>&1
 
-compare-depths:
+compare-depths: clean
 	venv/bin/python -u benchmark/compare_depths.py \
 		> ../data/outputs/benchmark/compare_depths.txt 2>&1
 
-count-nodes:
+count-nodes: clean
 	venv/bin/python -u benchmark/count_nodes.py \
 		> ../data/outputs/benchmark/count_nodes.txt 2>&1
 
-count-nodes-ab:
+count-nodes-ab: clean
 	venv/bin/python -u benchmark/count_nodes_ab.py \
 		> ../data/outputs/benchmark/count_nodes_ab.txt 2>&1
 
-update-fen:
+update-fen: clean
 	venv/bin/python -u benchmark/update_fen.py \
 		> ../data/outputs/benchmark/update_fen.txt 2>&1
 
