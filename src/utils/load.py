@@ -140,36 +140,32 @@ def load_perft():
     return {"perft": perft_fn, "alpha_beta": ab_fn}
 
 
-# Maps Skill Level (0-20) to approximate UCI_Elo
-SKILL_TO_ELO = {
-    0: 1320, 1: 1380, 2: 1440, 3: 1500, 4: 1560, 5: 1620,
-    6: 1700, 7: 1800, 8: 1900, 9: 1950, 10: 2000, 11: 2100,
-    12: 2200, 13: 2300, 14: 2400, 15: 2450, 16: 2500, 17: 2600,
-    18: 2700, 19: 2900, 20: 3190,
-}
+# Stockfish 11 UCI_Elo range: 1350–2850 (from `uci` command output).
+# Skill Level (0-20) has no official ELO mapping; use --elo for precise ELO targeting.
+SF_ELO_MIN = 1350
+SF_ELO_MAX = 2850
 
 
-def _load_stockfish(skill_level: int, path: str):
+def _load_stockfish(elo: int, path: str):
     from stockfish import Stockfish
-    elo = SKILL_TO_ELO.get(skill_level, 1320)
-    if elo == 1320: skill_level = 0  # Avoid printing unsupported skill levels
-    print_yellow(f"[stockfish] loaded at skill level {skill_level} (~{elo} ELO)\n")
-    return Stockfish(path=path, parameters={"Skill Level": skill_level, "UCI_LimitStrength": True, "UCI_Elo": elo})
+    elo = max(SF_ELO_MIN, min(SF_ELO_MAX, elo))
+    print_yellow(f"[stockfish] loaded at {elo} ELO (UCI_LimitStrength)\n")
+    return Stockfish(path=path, parameters={"UCI_LimitStrength": True, "UCI_Elo": elo})
 
 
-def load_stockfish_linux(skill_level: int = 0, path: str = STOCKFISH_LINUX_BIN):
+def load_stockfish_linux(elo: int = SF_ELO_MIN, path: str = STOCKFISH_LINUX_BIN):
     """Return a Stockfish instance backed by the Linux binary."""
-    return _load_stockfish(skill_level, path)
+    return _load_stockfish(elo, path)
 
 
-def load_stockfish_mac(skill_level: int = 0, path: str = STOCKFISH_MAC_BIN):
+def load_stockfish_mac(elo: int = SF_ELO_MIN, path: str = STOCKFISH_MAC_BIN):
     """Return a Stockfish instance backed by the macOS binary."""
-    return _load_stockfish(skill_level, path)
+    return _load_stockfish(elo, path)
 
 
-def load_stockfish_windows(skill_level: int = 0, path: str = STOCKFISH_WIN_EXE):
+def load_stockfish_windows(elo: int = SF_ELO_MIN, path: str = STOCKFISH_WIN_EXE):
     """Return a Stockfish instance backed by the Windows binary."""
-    return _load_stockfish(skill_level, path)
+    return _load_stockfish(elo, path)
 
 
 def load_engine(algorithm: str) -> dict:
@@ -179,8 +175,8 @@ def load_engine(algorithm: str) -> dict:
     if algorithm == "cpp-monte-carlo-rp": return load_standard_monte_carlo_rp()
 
 
-def load_stockfish(skill_level: int = 0):
+def load_stockfish(elo: int = SF_ELO_MIN):
     """Load Stockfish using the platform-appropriate binary."""
-    if platform.system() == "Windows": return load_stockfish_windows(skill_level)
-    if platform.system() == "Darwin":  return load_stockfish_mac(skill_level)
-    return load_stockfish_linux(skill_level)
+    if platform.system() == "Windows": return load_stockfish_windows(elo)
+    if platform.system() == "Darwin":  return load_stockfish_mac(elo)
+    return load_stockfish_linux(elo)

@@ -12,7 +12,7 @@ import random
 import chess
 
 from utils import print_green, print_yellow, print_red, engine_best_move, stockfish_best_move
-from utils.load import load_engine, load_stockfish
+from utils.load import load_engine, load_stockfish, SF_ELO_MIN, SF_ELO_MAX
 
 
 def play_game(algorithm: str, our_color: chess.Color, budget_type: str, budget: int,
@@ -71,11 +71,16 @@ def play_game(algorithm: str, our_color: chess.Color, budget_type: str, budget: 
 if __name__ == "__main__":
     algorithms = ["cpp-alpha-beta", "cpp-monte-carlo", "cpp-monte-carlo-rp"]
     parser = argparse.ArgumentParser(description="Our Chess Engine vs Stockfish")
-    parser.add_argument("--algorithm", required=True, choices=algorithms,                    help="Search algorithm to use")
-    parser.add_argument("--color", choices=["white", "black"], default=None,                 help="Color our engine plays (default: random per game)")
-    parser.add_argument("--num", type=int, default=1,                                        help="Number of games to play (default: 1)")
-    parser.add_argument("--skill", type=int, default=0, choices=range(21), metavar="[0-20]", help="Stockfish skill 0-20 (default: 0, ~1320 ELO)")
-    parser.add_argument("--verbose", action="store_true",                                    help="Print board and move output each turn")
+    parser.add_argument("--algorithm", required=True, choices=algorithms,
+                        help="Search algorithm to use")
+    parser.add_argument("--color", choices=["white", "black"], default=None,
+                        help="Color our engine plays (default: random per game)")
+    parser.add_argument("--num", type=int, default=1,
+                        help="Number of games to play (default: 1)")
+    parser.add_argument("--elo", type=int, default=SF_ELO_MIN, metavar=f"[{SF_ELO_MIN}-{SF_ELO_MAX}]",
+                        help=f"Stockfish target ELO via UCI_LimitStrength (default: {SF_ELO_MIN})")
+    parser.add_argument("--verbose", action="store_true",
+                        help="Print board and move output each turn")
 
     budget = parser.add_mutually_exclusive_group(required=True)
     budget.add_argument("--depth",  type=int, metavar="DEPTH",   help="Limit search by depth (alpha-beta, stockfish) or simulation count (MCTS)")
@@ -88,7 +93,7 @@ if __name__ == "__main__":
     else:                       budget_type, budget_val = "cycles", args.cycles
 
     engine    = load_engine(args.algorithm)
-    stockfish = load_stockfish(args.skill)
+    stockfish = load_stockfish(args.elo)
     wins, losses, draws = 0, 0, 0
 
     for i in range(args.num):
@@ -108,6 +113,7 @@ if __name__ == "__main__":
     print_yellow(f"  Algorithm : {args.algorithm}")
     print_yellow(f"  Budget    : {budget_type}={budget_val}")
     print_yellow(f"  Games     : {args.num}")
+    print_yellow(f"  Opponent  : Stockfish {args.elo} ELO")
     print_yellow(f"  Color     : {args.color or 'random'}")
     print_yellow(f"{'='*60}")
     print_green( f"  Wins  : {wins}")
