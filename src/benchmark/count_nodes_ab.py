@@ -3,19 +3,14 @@ import csv
 import os
 import sys
 
-from concurrent.futures import ThreadPoolExecutor, as_completed
-
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 from benchmark import PHASES, DATA_DIR
 from utils.load import load_perft
 
 
-def run_count_nodes_alpha_beta(max_depth: int, num_threads: int):
+def run_count_nodes_alpha_beta(max_depth: int):
     count_fn  = load_perft()["alpha_beta"]
-    depth_cols = [f"depth_{d}" for d in range(1, max_depth + 1)]  # depth 0 = 1 node always
-
-    def count_position(fen: str) -> dict:
-        return {f"depth_{d}": count_fn(fen.encode(), d) for d in range(1, max_depth + 1)}
+    depth_cols = [f"depth_{d}" for d in range(1, max_depth + 1)]
 
     for phase in PHASES:
         in_path  = os.path.join(DATA_DIR, phase, "puzzles.csv")
@@ -27,12 +22,10 @@ def run_count_nodes_alpha_beta(max_depth: int, num_threads: int):
         with open(in_path, newline="") as f:
             fens = [row["UpdatedFEN"] for row in csv.DictReader(f)]
 
-        print(f"[count_nodes_ab] {phase}: counting alpha-beta nodes up to depth {max_depth} across {num_threads} threads ...")
-        results = [None] * len(fens)
-        with ThreadPoolExecutor(max_workers=num_threads) as pool:
-            futures = {pool.submit(count_position, fen): i for i, fen in enumerate(fens)}
-            for future in as_completed(futures):
-                results[futures[future]] = future.result()
+        print(f"[count_nodes_ab] {phase}: counting alpha-beta nodes up to depth {max_depth} ...")
+        results = []
+        for fen in fens:
+            results.append({f"depth_{d}": count_fn(fen.encode(), d) for d in range(1, max_depth + 1)})
 
         totals = {col: sum(r[col] for r in results) for col in depth_cols}
         n_pos  = len(fens)
@@ -52,9 +45,9 @@ def run_count_nodes_alpha_beta(max_depth: int, num_threads: int):
                 prev_avg = avgs[i - 1] if i > 0 else 1.0
                 bf = f"{avgs[i] / prev_avg:.2f}" if prev_avg > 0 else ""
                 writer.writerow({
-                    "depth":                    col,
-                    "sum":                      totals[col],
-                    "average":                  f"{avgs[i]:.1f}",
+                    "depth":                     col,
+                    "sum":                       totals[col],
+                    "average":                   f"{avgs[i]:.1f}",
                     "effective_branching_factor": bf,
                 })
 
@@ -68,7 +61,6 @@ def run_count_nodes_alpha_beta(max_depth: int, num_threads: int):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--max-depth", type=int, default=5)
-    parser.add_argument("--threads",   type=int, default=os.cpu_count())
+    parser.add_argument("--max-depth", type=int, default=7)
     args = parser.parse_args()
-    run_count_nodes_alpha_beta(args.max_depth, args.threads)
+    run_count_nodes_alpha_beta(args.max_depth)
