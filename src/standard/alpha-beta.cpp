@@ -277,7 +277,7 @@ int best_move_alpha_beta_time(const char* fen, int time_ms, char* out_move, int 
     auto deadline = clock::now() + std::chrono::milliseconds(time_ms);
     std::thread timer([deadline]() {
         while (!exceeded_budget && clock::now() < deadline)
-            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            std::this_thread::sleep_for(std::chrono::milliseconds(min(10, time_ms)));
         exceeded_budget = true;
     });
 
@@ -311,6 +311,7 @@ int best_move_alpha_beta_time(const char* fen, int time_ms, char* out_move, int 
 
     exceeded_budget = true;
     timer.join();
+    exceeded_budget = false;
 
     std::string uci = chess::uci::moveToUci(best);
     std::strncpy(out_move, uci.c_str(), out_len);

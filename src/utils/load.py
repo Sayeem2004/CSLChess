@@ -158,3 +158,71 @@ def load_stockfish(elo: int = SF_ELO_MIN):
     if platform.system() == "Windows": return load_stockfish_windows(elo)
     if platform.system() == "Darwin":  return load_stockfish_mac(elo)
     return load_stockfish_linux(elo)
+
+
+MPI_DIR = os.path.join(SRC_DIR, "mpi")
+MPI_BIN = os.path.join(MPI_DIR, "alpha-beta-mpi")
+MPICXX  = os.environ.get("MPICXX", "mpicxx")
+
+
+def _compile_mpi_binary(src: str, bin_out: str):
+    if os.path.exists(bin_out):
+        print_yellow(f"[build] {os.path.basename(bin_out)} already exists, skipping compilation\n")
+        return
+
+    evaluate_src = os.path.join(STANDARD_DIR, "evaluate.cpp")
+    sf_sources   = glob.glob(os.path.join(STOCKFISH_SRC_DIR, "*.cpp")) + \
+                   glob.glob(os.path.join(STOCKFISH_SRC_DIR, "syzygy", "*.cpp"))
+    sf_sources   = [f for f in sf_sources if os.path.basename(f) != "main.cpp"]
+
+    print_yellow(f"[build] compiling {os.path.basename(src)} with {MPICXX} ...\n")
+    cmd = [MPICXX, "-O2", "-DNDEBUG", "-std=c++17", "-fopenmp", f"-I{STANDARD_DIR}",
+           src, evaluate_src, *sf_sources, "-o", bin_out]
+
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    if result.returncode != 0:
+        print_red(f"[build] failed:\n{result.stderr}")
+        sys.exit(1)
+    print_green(f"[build] succeeded at {os.path.relpath(bin_out)}\n")
+
+
+class MpiEngine:
+    """Persistent MPI engine process. Talks to rank 0 via stdin/stdout.
+    The binary must accept lines of the form '<mode> <budget> <fen>' and reply with a UCI move."""
+
+    def __init__(self, src: str, bin_out: str, nranks: int = 2, launcher: str = None):
+        _compile_mpi_binary(src, bin_out)
+        if launcher is None:
+            launcher = "mpirun" if platform.system() == "Darwin" else "srun"
+        cmd = [launcher, "-n", str(nranks), bin_out]
+        self.proc = subprocess.Popen(cmd, stdin=subprocess.PIPE,
+                                     stdout=subprocess.PIPE,
+                                     stderr=None, text=True)
+
+    def _query(self, mode: str, budget: int, fen: str) -> str:
+        self.proc.stdin.write(f"{mode} {budget} {fen}\n")
+        self.proc.stdin.flush()
+        return self.proc.stdout.readline().strip()
+
+    def depth(self, fen: str, depth: int)       -> str: return self._query("depth",  depth,      fen)
+    def time(self, fen: str, time_ms: int)      -> str: return self._query("time",   time_ms,    fen)
+    def cycles(self, fen: str, megacycles: int) -> str: return self._query("cycles", megacycles, fen)
+
+    def close(self):
+        self.proc.stdin.write("quit\n")
+        self.proc.stdin.flush()
+        self.proc.communicate()
+
+
+def load_mpi_alpha_beta(nranks: int = 2, launcher: str = None) -> MpiEngine:
+    """Compile (if needed) and launch the MPI alpha-beta engine."""
+    src     = os.path.join(MPI_DIR, "alpha-beta-mpi.cpp")
+    bin_out = os.path.join(MPI_DIR, "alpha-beta-mpi")
+    return MpiEngine(src=src, bin_out=bin_out, nranks=nranks, launcher=launcher)
+
+
+def load_mpi_monte_carlo(nranks: int = 2, launcher: str = None) -> MpiEngine:
+    """Compile (if needed) and launch the MPI MCTS engine."""
+    src     = os.path.join(MPI_DIR, "monte-carlo-mpi.cpp")
+    bin_out = os.path.join(MPI_DIR, "monte-carlo-mpi")
+    return MpiEngine(src=src, bin_out=bin_out, nranks=nranks, launcher=launcher)

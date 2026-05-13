@@ -16,6 +16,7 @@ clean:
 	rm -f standard/alpha-beta.so
 	rm -f standard/monte-carlo.so
 	rm -f standard/perft.so
+	rm -f mpi/alpha-beta-mpi
 
 
 # Benchmarking scripts
