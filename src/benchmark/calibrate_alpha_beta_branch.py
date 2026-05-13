@@ -86,7 +86,7 @@ def spawn_worker(threads, budgets, max_positions):
                 status = f"Signal {-proc.returncode}"
 
         print(f"\n[CRITICAL] Worker failed: {status}", file=sys.stderr)
-        print("--- WORKER STDERR (Look for PAPI or OpenMP errors here) ---", file=sys.stderr)
+        print("--- WORKER STDERR (Look for OpenMP errors here) ---", file=sys.stderr)
         print(proc.stderr.strip() or "[No stderr output recorded]", file=sys.stderr)
         print("---------------------------------------------------------", file=sys.stderr)
         sys.exit(1)

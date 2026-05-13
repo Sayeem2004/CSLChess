@@ -6,15 +6,24 @@
 #include <mutex>
 #include <thread>
 
+#ifdef __x86_64__
+#include <x86intrin.h>
+static inline uint64_t read_cycles() { return __rdtsc(); }
+#else
+static inline uint64_t read_cycles() {
+    return (uint64_t)std::chrono::duration_cast<std::chrono::nanoseconds>(
+        std::chrono::steady_clock::now().time_since_epoch()).count();
+}
+#endif
+static inline uint64_t budget_to_cycles(int megacycles) { return (uint64_t)megacycles * 1'000'000ULL; }
+
 #include "common.hpp"
 #include "evaluate.hpp"
 
-#ifdef USE_PAPI
-#include <papi.h>
-static std::once_flag papi_init_flag;
-static void init_papi() { PAPI_library_init(PAPI_VER_CURRENT); }
-#endif
+
 static std::atomic<bool> exceeded_budget{false};
+static uint64_t g_cycle_start  = 0;
+static uint64_t g_cycle_budget = 0;
 
 
 // rollout() simulates a random playout from the given state until a terminal state is reached or a maximum depth is exceeded.
@@ -42,7 +51,7 @@ double rollout(chess::Board state, int max_depth = 5) {
     // If rollout truncated, we use evaluate function as a proxy
     int eval = engine_evaluate(state);
     if (state.sideToMove() != root_color) eval = -eval;
-    constexpr double k = 0.003; 
+    constexpr double k = 0.003;
     return 1.0 / (1.0 + std::exp(-k * eval));
 }
 
@@ -119,6 +128,7 @@ static void backprop(MCTSNode* node, double result) {
     }
 }
 
+
 static void run_simulations(MCTSNode& root, const chess::Board& board, int max_depth, int num_simulations) {
     for (int i = 0; i < num_simulations; ++i) {
         chess::Board local_board = board;
@@ -127,6 +137,7 @@ static void run_simulations(MCTSNode& root, const chess::Board& board, int max_d
         backprop(leaf, result);
     }
 }
+
 
 static chess::Move pick_best(std::vector<std::unique_ptr<MCTSNode>>& roots) {
     std::unordered_map<uint16_t, std::pair<int,double>> stats;
@@ -160,6 +171,7 @@ static chess::Move pick_best(std::vector<std::unique_ptr<MCTSNode>>& roots) {
     return best_move;
 }
 
+
 chess::Move monte_carlo_search(const chess::Board& board, int max_depth = 5, int num_simulations = 1000) {
     int num_threads = omp_get_max_threads();
 
@@ -179,6 +191,7 @@ chess::Move monte_carlo_search(const chess::Board& board, int max_depth = 5, int
     return pick_best(roots);
 }
 
+
 int best_move_monte_carlo_depth(const char* fen, int depth, char* out_move, int out_len) {
     chess::Board board;
     if (!board.setFen(fen)) return -2;
@@ -190,11 +203,11 @@ int best_move_monte_carlo_depth(const char* fen, int depth, char* out_move, int 
     constexpr int SIMS = 100000;
 
     chess::Move best = monte_carlo_search(board, depth, SIMS);
-
     std::strncpy(out_move, chess::uci::moveToUci(best).c_str(), out_len);
     out_move[out_len - 1] = '\0';
     return 0;
 }
+
 
 int best_move_monte_carlo_time(const char* fen, int time_ms,
                                char* out_move, int out_len) {
@@ -245,12 +258,11 @@ int best_move_monte_carlo_time(const char* fen, int time_ms,
     timer.join();
 
     chess::Move best = pick_best(roots);
-
     std::strncpy(out_move, chess::uci::moveToUci(best).c_str(), out_len);
     out_move[out_len - 1] = '\0';
-
     return 0;
 }
+
 
 int best_move_monte_carlo_cycles(const char* fen, int megacycle_budget,
                                  char* out_move, int out_len) {
@@ -262,23 +274,14 @@ int best_move_monte_carlo_cycles(const char* fen, int megacycle_budget,
     if (moves.empty()) return -1;
 
     exceeded_budget = false;
+    g_cycle_start   = read_cycles();
+    g_cycle_budget  = budget_to_cycles(megacycle_budget);
 
     static bool printed = false;
     if (!printed) {
         printed = true;
-        fprintf(stderr, "[monte-carlo] threads: %d\n", omp_get_max_threads());
+        fprintf(stderr, "[monte-carlo-rp] threads: %d\n", omp_get_max_threads());
     }
-
-    #ifdef USE_PAPI
-    std::call_once(papi_init_flag, init_papi);
-
-    int event_set = PAPI_NULL;
-    PAPI_create_eventset(&event_set);
-    PAPI_add_event(event_set, PAPI_TOT_CYC);
-    PAPI_start(event_set);
-
-    long long cycle_budget = (long long)megacycle_budget * 1'000'000LL;
-    #endif
 
     int num_threads = omp_get_max_threads();
     std::vector<std::unique_ptr<MCTSNode>> roots(num_threads);
@@ -296,31 +299,15 @@ int best_move_monte_carlo_cycles(const char* fen, int megacycle_budget,
             double result = rollout(local_board, SEARCH_DEPTH);
             backprop(leaf, result);
 
-            #ifdef USE_PAPI
-            #pragma omp critical
-            {
-                long long cycles_used;
-                PAPI_read(event_set, &cycles_used);
-                if (cycles_used >= cycle_budget)
-                    exceeded_budget = true;
-            }
-            #else
-            exceeded_budget = true;
-            #endif
+            if (read_cycles() - g_cycle_start >= g_cycle_budget)
+                exceeded_budget = true;
         }
     }
 
-    #ifdef USE_PAPI
-    long long cycles_used;
-    PAPI_stop(event_set, &cycles_used);
-    PAPI_cleanup_eventset(event_set);
-    PAPI_destroy_eventset(&event_set);
-    #endif
+    g_cycle_budget = 0;
 
     chess::Move best = pick_best(roots);
-
     std::strncpy(out_move, chess::uci::moveToUci(best).c_str(), out_len);
     out_move[out_len - 1] = '\0';
-
     return 0;
 }

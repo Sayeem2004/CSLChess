@@ -31,31 +31,9 @@ def _compile_library(src: str, lib_out: str) -> ctypes.CDLL:
                        glob.glob(os.path.join(STOCKFISH_SRC_DIR, "syzygy", "*.cpp"))
         sf_sources   = [f for f in sf_sources if os.path.basename(f) != "main.cpp"]
 
-        # Attempt to get PAPI flags dynamically, fallback to default
-        if platform.system() == "Linux":
-            try:
-                papi_pkg = ' '.join(subprocess.check_output(["pkg-config", "--cflags", "--libs", "papi"], stderr=subprocess.DEVNULL, text=True).split())
-                if papi_pkg:
-                    papi_flags = ["-DUSE_PAPI"] + papi_pkg.split()
-                else:
-                    raise Exception("pkg-config returned empty")
-            except Exception:
-                # Fallback to absolute paths if available (NERSC setup)
-                papi_fallback_dir = "/opt/cray/pe/papi/default"
-                if os.path.exists(papi_fallback_dir):
-                    papi_flags = [
-                        "-DUSE_PAPI",
-                        f"-I{papi_fallback_dir}/include",
-                        f"-L{papi_fallback_dir}/lib",
-                        "-lpapi"
-                    ]
-                else:
-                    papi_flags = ["-DUSE_PAPI", "-lpapi"]
-        else:
-            papi_flags = []
         print_yellow(f"[build] compiling {os.path.basename(src)} with {CXX} ...")
-        cmd = [CXX, "-O2", "-std=c++17", "-shared", "-fPIC", "-fopenmp",
-               *papi_flags, src, evaluate_src, *sf_sources, "-o", lib_out]
+        cmd = [CXX, "-O2", "-DNDEBUG", "-std=c++17", "-shared", "-fPIC", "-fopenmp",
+               src, evaluate_src, *sf_sources, "-o", lib_out]
 
         result = subprocess.run(cmd, capture_output=True, text=True)
         if result.returncode != 0:
