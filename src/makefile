@@ -59,8 +59,8 @@ update-fen: clean
 
 
 # Graphing scripts
-.PHONY: graph-alpha-beta-depth graph-alpha-beta-time graph-mc-time
-.PHONY: graph-search-space
+.PHONY: graph-alpha-beta-depth graph-alpha-beta-time graph-mc-depth
+.PHONY: graph-search-space graph-stockfish-elo-ab graph-stockfish-elo-mc
 graph-alpha-beta-depth:
 	venv/bin/python -u graphs/alpha_beta_depth.py --depth 5
 
@@ -72,6 +72,12 @@ graph-mc-depth:
 
 graph-search-space:
 	venv/bin/python -u graphs/search_space.py
+
+graph-stockfish-elo-ab:
+	venv/bin/python -u graphs/stockfish_elo_ab.py
+
+graph-stockfish-elo-mc:
+	venv/bin/python -u graphs/stockfish_elo_mc.py
 
 
 # Alpha-Beta playing scripts
