@@ -1,0 +1,71 @@
+[calibrate_alpha_beta_depth] running OMP_NUM_THREADS=1 ...
+[93m[build] compiling alpha-beta.cpp with g++ ...[00m
+[92m[build] succeeded at standard/alpha-beta.so
+[00m
+[alpha-beta] threads: 1 outer x 1 inner = 1 total
+[calibrate_alpha_beta_depth] running OMP_NUM_THREADS=32 ...
+[93m[build] alpha-beta.so already exists, skipping compilation
+[00m
+[alpha-beta] threads: 1 outer x 32 inner = 32 total
+[calibrate_alpha_beta_depth] running OMP_NUM_THREADS=64 ...
+[93m[build] alpha-beta.so already exists, skipping compilation
+[00m
+[alpha-beta] threads: 2 outer x 32 inner = 64 total
+[calibrate_alpha_beta_depth] running OMP_NUM_THREADS=128 ...
+[93m[build] alpha-beta.so already exists, skipping compilation
+[00m
+[alpha-beta] threads: 4 outer x 32 inner = 128 total
+[calibrate_alpha_beta_depth] running OMP_NUM_THREADS=256 ...
+[93m[build] alpha-beta.so already exists, skipping compilation
+[00m
+[alpha-beta] threads: 8 outer x 32 inner = 256 total
+
+=== Depth 1 ===
+Phase                     1T                 32T                 64T                128T                256T   Speedup
+----------------------------------------------------------------------------------------------------------------------
+early         0.52ms± 4.26ms      1.73ms±16.84ms      3.04ms±29.38ms      5.60ms±54.96ms    10.54ms±104.29ms     0.05x
+mid           0.12ms± 0.39ms      0.13ms± 0.87ms      0.20ms± 1.11ms      0.25ms± 1.55ms      0.17ms± 0.81ms     0.67x
+late          0.04ms± 0.02ms      0.04ms± 0.01ms      0.06ms± 0.02ms      0.07ms± 0.03ms      0.08ms± 0.03ms     0.56x
+
+=== Depth 2 ===
+Phase                     1T                 32T                 64T                128T                256T   Speedup
+----------------------------------------------------------------------------------------------------------------------
+early         0.31ms± 0.18ms      0.17ms± 0.10ms      0.72ms± 0.46ms      0.46ms± 0.76ms      1.83ms± 3.91ms     0.17x
+mid           0.27ms± 0.14ms      0.14ms± 0.05ms      0.20ms± 0.03ms      0.21ms± 0.03ms      0.23ms± 0.04ms     1.16x
+late          0.19ms± 0.33ms      0.18ms± 0.82ms      0.21ms± 0.81ms      0.22ms± 0.78ms      0.30ms± 1.38ms     0.64x
+
+=== Depth 3 ===
+Phase                     1T                 32T                 64T                128T                256T   Speedup
+----------------------------------------------------------------------------------------------------------------------
+early         2.84ms± 6.77ms      1.65ms± 7.85ms      2.35ms±14.47ms      2.79ms±15.09ms      3.18ms±16.30ms     0.89x
+mid           2.33ms± 1.69ms      0.57ms± 0.33ms      0.59ms± 0.29ms      0.65ms± 0.25ms      0.74ms± 0.30ms     3.14x
+late          0.99ms± 0.90ms      0.33ms± 0.20ms      0.34ms± 0.19ms      0.36ms± 0.20ms      0.40ms± 0.22ms     2.49x
+
+=== Depth 4 ===
+Phase                     1T                 32T                 64T                128T                256T   Speedup
+----------------------------------------------------------------------------------------------------------------------
+early         5.52ms± 5.60ms      5.13ms± 4.61ms      5.74ms± 4.38ms      7.07ms± 2.36ms      7.35ms± 4.52ms     0.75x
+mid           6.99ms± 6.48ms      4.38ms± 3.28ms      4.60ms± 2.81ms      6.13ms± 2.37ms      6.66ms± 2.53ms     1.05x
+late          2.76ms± 3.50ms      1.91ms± 1.86ms      2.24ms± 1.86ms      2.55ms± 1.82ms      2.78ms± 2.03ms     0.99x
+
+=== Depth 5 ===
+Phase                     1T                 32T                 64T                128T                256T   Speedup
+----------------------------------------------------------------------------------------------------------------------
+early        37.25ms±44.41ms     18.75ms±17.99ms     15.05ms±14.37ms     19.20ms±13.09ms     29.38ms±14.97ms     1.27x
+mid          41.44ms±42.29ms     17.17ms±14.23ms     14.73ms±11.87ms     17.19ms±10.10ms     25.71ms±13.42ms     1.61x
+late         13.18ms±22.18ms      5.98ms± 6.75ms      4.96ms± 5.49ms      6.16ms± 5.69ms      7.17ms± 6.32ms     1.84x
+
+=== Depth 6 ===
+Phase                     1T                 32T                 64T                128T                256T   Speedup
+----------------------------------------------------------------------------------------------------------------------
+early       95.71ms±115.22ms   102.98ms±102.38ms     91.66ms±92.57ms    110.16ms±93.18ms    183.98ms±76.06ms     0.52x
+mid        111.76ms±124.29ms   112.33ms±100.00ms    102.58ms±89.64ms    116.00ms±86.07ms    172.85ms±83.81ms     0.65x
+late         33.22ms±75.21ms     35.08ms±51.29ms     30.49ms±44.27ms     42.34ms±54.29ms     58.59ms±64.70ms     0.57x
+
+=== Depth 7 ===
+Phase                     1T                 32T                 64T                128T                256T   Speedup
+----------------------------------------------------------------------------------------------------------------------
+early      577.70ms±748.42ms   392.40ms±414.92ms   300.67ms±348.94ms   327.30ms±346.86ms   594.04ms±339.98ms     0.97x
+mid        577.87ms±666.85ms   413.09ms±407.01ms   293.86ms±304.05ms   355.23ms±341.57ms   491.34ms±298.11ms     1.18x
+late       139.66ms±320.38ms   101.90ms±168.55ms    69.57ms±118.29ms    82.44ms±118.69ms   127.39ms±135.12ms     1.10x
+
