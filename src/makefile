@@ -203,17 +203,17 @@ play-cpp-ab-cycles-elo: clean
 	venv/bin/python -u main.py --algorithm cpp-alpha-beta --cycles 10 --elo 2850 --num 100 \
 		>> ../data/outputs/competitive/cpp-alpha-beta-cycles10-elo.txt 2>&1
 
-	venv/bin/python -u main.py --algorithm cpp-alpha-beta --cycles 100 --elo 1350 --num 100 \
+	venv/bin/python -u main.py --algorithm cpp-alpha-beta --cycles 100 --elo 1350 --num 50 \
 		> ../data/outputs/competitive/cpp-alpha-beta-cycles100-elo.txt 2>&1
-	venv/bin/python -u main.py --algorithm cpp-alpha-beta --cycles 100 --elo 1650 --num 100 \
+	venv/bin/python -u main.py --algorithm cpp-alpha-beta --cycles 100 --elo 1650 --num 50 \
 		>> ../data/outputs/competitive/cpp-alpha-beta-cycles100-elo.txt 2>&1
-	venv/bin/python -u main.py --algorithm cpp-alpha-beta --cycles 100 --elo 1950 --num 100 \
+	venv/bin/python -u main.py --algorithm cpp-alpha-beta --cycles 100 --elo 1950 --num 50 \
 		>> ../data/outputs/competitive/cpp-alpha-beta-cycles100-elo.txt 2>&1
-	venv/bin/python -u main.py --algorithm cpp-alpha-beta --cycles 100 --elo 2250 --num 100 \
+	venv/bin/python -u main.py --algorithm cpp-alpha-beta --cycles 100 --elo 2250 --num 50 \
 		>> ../data/outputs/competitive/cpp-alpha-beta-cycles100-elo.txt 2>&1
-	venv/bin/python -u main.py --algorithm cpp-alpha-beta --cycles 100 --elo 2550 --num 100 \
+	venv/bin/python -u main.py --algorithm cpp-alpha-beta --cycles 100 --elo 2550 --num 50 \
 		>> ../data/outputs/competitive/cpp-alpha-beta-cycles100-elo.txt 2>&1
-	venv/bin/python -u main.py --algorithm cpp-alpha-beta --cycles 100 --elo 2850 --num 100 \
+	venv/bin/python -u main.py --algorithm cpp-alpha-beta --cycles 100 --elo 2850 --num 50 \
 		>> ../data/outputs/competitive/cpp-alpha-beta-cycles100-elo.txt 2>&1
 
 
@@ -305,15 +305,15 @@ play-cpp-mc-cycles-elo: clean
 	venv/bin/python -u main.py --algorithm cpp-monte-carlo --cycles 10 --elo 2850 --num 100 \
 		>> ../data/outputs/competitive/cpp-monte-carlo-cycles10-elo.txt 2>&1
 
-	venv/bin/python -u main.py --algorithm cpp-monte-carlo --cycles 100 --elo 1350 --num 100 \
+	venv/bin/python -u main.py --algorithm cpp-monte-carlo --cycles 100 --elo 1350 --num 50 \
 		> ../data/outputs/competitive/cpp-monte-carlo-cycles100-elo.txt 2>&1
-	venv/bin/python -u main.py --algorithm cpp-monte-carlo --cycles 100 --elo 1650 --num 100 \
+	venv/bin/python -u main.py --algorithm cpp-monte-carlo --cycles 100 --elo 1650 --num 50 \
 		>> ../data/outputs/competitive/cpp-monte-carlo-cycles100-elo.txt 2>&1
-	venv/bin/python -u main.py --algorithm cpp-monte-carlo --cycles 100 --elo 1950 --num 100 \
+	venv/bin/python -u main.py --algorithm cpp-monte-carlo --cycles 100 --elo 1950 --num 50 \
 		>> ../data/outputs/competitive/cpp-monte-carlo-cycles100-elo.txt 2>&1
-	venv/bin/python -u main.py --algorithm cpp-monte-carlo --cycles 100 --elo 2250 --num 100 \
+	venv/bin/python -u main.py --algorithm cpp-monte-carlo --cycles 100 --elo 2250 --num 50 \
 		>> ../data/outputs/competitive/cpp-monte-carlo-cycles100-elo.txt 2>&1
-	venv/bin/python -u main.py --algorithm cpp-monte-carlo --cycles 100 --elo 2550 --num 100 \
+	venv/bin/python -u main.py --algorithm cpp-monte-carlo --cycles 100 --elo 2550 --num 50 \
 		>> ../data/outputs/competitive/cpp-monte-carlo-cycles100-elo.txt 2>&1
-	venv/bin/python -u main.py --algorithm cpp-monte-carlo --cycles 100 --elo 2850 --num 100 \
+	venv/bin/python -u main.py --algorithm cpp-monte-carlo --cycles 100 --elo 2850 --num 50 \
 		>> ../data/outputs/competitive/cpp-monte-carlo-cycles100-elo.txt 2>&1

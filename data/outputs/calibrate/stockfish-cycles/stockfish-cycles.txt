@@ -1,0 +1,14 @@
+[calibrate] early: running 100 positions at depth 8 in one process ...
+  total nodes=       254,750  total cycles=     533,638,008  cycles/node=2094.75
+[calibrate] early: cycles/node = 2094.75
+[calibrate] early: wrote /global/u1/m/msk295/CSLChess/src/benchmark/../../data/early/linux/stockfish_calibration.csv
+[calibrate] mid: running 100 positions at depth 8 in one process ...
+  total nodes=       302,347  total cycles=     578,511,263  cycles/node=1913.40
+[calibrate] mid: cycles/node = 1913.40
+[calibrate] mid: wrote /global/u1/m/msk295/CSLChess/src/benchmark/../../data/mid/linux/stockfish_calibration.csv
+[calibrate] late: running 100 positions at depth 8 in one process ...
+  total nodes=       349,425  total cycles=     549,828,599  cycles/node=1573.52
+[calibrate] late: cycles/node = 1573.52
+[calibrate] late: wrote /global/u1/m/msk295/CSLChess/src/benchmark/../../data/late/linux/stockfish_calibration.csv
+
+=== overall cycles/node across all phases: 1833.36 ===

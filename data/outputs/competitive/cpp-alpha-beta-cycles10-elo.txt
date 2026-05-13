@@ -1,0 +1,1914 @@
+[93m[build] alpha-beta.so already exists, skipping compilation
+[00m
+[93m[stockfish] loaded at 1350 ELO (UCI_LimitStrength)
+[00m
+[93mGame 1/100  (our engine plays white)[00m
+[alpha-beta] threads: 8 outer x 32 inner = 256 total
+[92m  -> win
+[00m
+[93mGame 2/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 3/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 4/100  (our engine plays white)[00m
+[92m  -> win
+[00m
+[93mGame 5/100  (our engine plays white)[00m
+[92m  -> win
+[00m
+[93mGame 6/100  (our engine plays black)[00m
+[92m  -> win
+[00m
+[93mGame 7/100  (our engine plays white)[00m
+[92m  -> win
+[00m
+[93mGame 8/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 9/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 10/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 11/100  (our engine plays black)[00m
+[92m  -> win
+[00m
+[93mGame 12/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 13/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 14/100  (our engine plays white)[00m
+[92m  -> win
+[00m
+[93mGame 15/100  (our engine plays white)[00m
+[92m  -> win
+[00m
+[93mGame 16/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 17/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 18/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 19/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 20/100  (our engine plays white)[00m
+[92m  -> win
+[00m
+[93mGame 21/100  (our engine plays white)[00m
+[92m  -> win
+[00m
+[93mGame 22/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 23/100  (our engine plays white)[00m
+[92m  -> win
+[00m
+[93mGame 24/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 25/100  (our engine plays black)[00m
+[92m  -> win
+[00m
+[93mGame 26/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 27/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 28/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 29/100  (our engine plays white)[00m
+[92m  -> win
+[00m
+[93mGame 30/100  (our engine plays white)[00m
+[92m  -> win
+[00m
+[93mGame 31/100  (our engine plays white)[00m
+[92m  -> win
+[00m
+[93mGame 32/100  (our engine plays black)[00m
+[92m  -> win
+[00m
+[93mGame 33/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 34/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 35/100  (our engine plays black)[00m
+[92m  -> win
+[00m
+[93mGame 36/100  (our engine plays black)[00m
+[92m  -> win
+[00m
+[93mGame 37/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 38/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 39/100  (our engine plays black)[00m
+[92m  -> win
+[00m
+[93mGame 40/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 41/100  (our engine plays black)[00m
+[92m  -> win
+[00m
+[93mGame 42/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 43/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 44/100  (our engine plays black)[00m
+[93m  -> draw
+[00m
+[93mGame 45/100  (our engine plays black)[00m
+[92m  -> win
+[00m
+[93mGame 46/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 47/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 48/100  (our engine plays black)[00m
+[92m  -> win
+[00m
+[93mGame 49/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 50/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 51/100  (our engine plays white)[00m
+[92m  -> win
+[00m
+[93mGame 52/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 53/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 54/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 55/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 56/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 57/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 58/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 59/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 60/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 61/100  (our engine plays white)[00m
+[92m  -> win
+[00m
+[93mGame 62/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 63/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 64/100  (our engine plays black)[00m
+[92m  -> win
+[00m
+[93mGame 65/100  (our engine plays black)[00m
+[93m  -> draw
+[00m
+[93mGame 66/100  (our engine plays black)[00m
+[92m  -> win
+[00m
+[93mGame 67/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 68/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 69/100  (our engine plays white)[00m
+[92m  -> win
+[00m
+[93mGame 70/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 71/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 72/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 73/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 74/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 75/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 76/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 77/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 78/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 79/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 80/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 81/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 82/100  (our engine plays white)[00m
+[92m  -> win
+[00m
+[93mGame 83/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 84/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 85/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 86/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 87/100  (our engine plays black)[00m
+[92m  -> win
+[00m
+[93mGame 88/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 89/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 90/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 91/100  (our engine plays white)[00m
+[92m  -> win
+[00m
+[93mGame 92/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 93/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 94/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 95/100  (our engine plays black)[00m
+[92m  -> win
+[00m
+[93mGame 96/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 97/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 98/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 99/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 100/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93m============================================================[00m
+[93m  Final Results[00m
+[93m============================================================[00m
+[93m  Algorithm : cpp-alpha-beta[00m
+[93m  Budget    : cycles=10[00m
+[93m  Games     : 100[00m
+[93m  Opponent  : Stockfish 1350 ELO[00m
+[93m  Color     : random[00m
+[93m============================================================[00m
+[92m  Wins  : 31[00m
+[91m  Losses: 67[00m
+[93m  Draws : 2[00m
+[93m  Win % : 31.0%[00m
+[93m============================================================[00m
+[93m[build] alpha-beta.so already exists, skipping compilation
+[00m
+[93m[stockfish] loaded at 1650 ELO (UCI_LimitStrength)
+[00m
+[93mGame 1/100  (our engine plays black)[00m
+[alpha-beta] threads: 8 outer x 32 inner = 256 total
+[91m  -> loss
+[00m
+[93mGame 2/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 3/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 4/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 5/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 6/100  (our engine plays black)[00m
+[92m  -> win
+[00m
+[93mGame 7/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 8/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 9/100  (our engine plays white)[00m
+[92m  -> win
+[00m
+[93mGame 10/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 11/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 12/100  (our engine plays white)[00m
+[92m  -> win
+[00m
+[93mGame 13/100  (our engine plays black)[00m
+[93m  -> draw
+[00m
+[93mGame 14/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 15/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 16/100  (our engine plays white)[00m
+[92m  -> win
+[00m
+[93mGame 17/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 18/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 19/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 20/100  (our engine plays white)[00m
+[92m  -> win
+[00m
+[93mGame 21/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 22/100  (our engine plays black)[00m
+[92m  -> win
+[00m
+[93mGame 23/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 24/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 25/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 26/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 27/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 28/100  (our engine plays white)[00m
+[92m  -> win
+[00m
+[93mGame 29/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 30/100  (our engine plays white)[00m
+[92m  -> win
+[00m
+[93mGame 31/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 32/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 33/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 34/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 35/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 36/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 37/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 38/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 39/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 40/100  (our engine plays white)[00m
+[92m  -> win
+[00m
+[93mGame 41/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 42/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 43/100  (our engine plays white)[00m
+[92m  -> win
+[00m
+[93mGame 44/100  (our engine plays white)[00m
+[92m  -> win
+[00m
+[93mGame 45/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 46/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 47/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 48/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 49/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 50/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 51/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 52/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 53/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 54/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 55/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 56/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 57/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 58/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 59/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 60/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 61/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 62/100  (our engine plays white)[00m
+[92m  -> win
+[00m
+[93mGame 63/100  (our engine plays white)[00m
+[92m  -> win
+[00m
+[93mGame 64/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 65/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 66/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 67/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 68/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 69/100  (our engine plays black)[00m
+[92m  -> win
+[00m
+[93mGame 70/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 71/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 72/100  (our engine plays black)[00m
+[92m  -> win
+[00m
+[93mGame 73/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 74/100  (our engine plays black)[00m
+[92m  -> win
+[00m
+[93mGame 75/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 76/100  (our engine plays black)[00m
+[92m  -> win
+[00m
+[93mGame 77/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 78/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 79/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 80/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 81/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 82/100  (our engine plays black)[00m
+[92m  -> win
+[00m
+[93mGame 83/100  (our engine plays white)[00m
+[92m  -> win
+[00m
+[93mGame 84/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 85/100  (our engine plays black)[00m
+[92m  -> win
+[00m
+[93mGame 86/100  (our engine plays black)[00m
+[92m  -> win
+[00m
+[93mGame 87/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 88/100  (our engine plays white)[00m
+[92m  -> win
+[00m
+[93mGame 89/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 90/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 91/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 92/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 93/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 94/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 95/100  (our engine plays white)[00m
+[92m  -> win
+[00m
+[93mGame 96/100  (our engine plays white)[00m
+[92m  -> win
+[00m
+[93mGame 97/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 98/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 99/100  (our engine plays white)[00m
+[92m  -> win
+[00m
+[93mGame 100/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93m============================================================[00m
+[93m  Final Results[00m
+[93m============================================================[00m
+[93m  Algorithm : cpp-alpha-beta[00m
+[93m  Budget    : cycles=10[00m
+[93m  Games     : 100[00m
+[93m  Opponent  : Stockfish 1650 ELO[00m
+[93m  Color     : random[00m
+[93m============================================================[00m
+[92m  Wins  : 25[00m
+[91m  Losses: 74[00m
+[93m  Draws : 1[00m
+[93m  Win % : 25.0%[00m
+[93m============================================================[00m
+[93m[build] alpha-beta.so already exists, skipping compilation
+[00m
+[93m[stockfish] loaded at 1950 ELO (UCI_LimitStrength)
+[00m
+[93mGame 1/100  (our engine plays black)[00m
+[alpha-beta] threads: 8 outer x 32 inner = 256 total
+[91m  -> loss
+[00m
+[93mGame 2/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 3/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 4/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 5/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 6/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 7/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 8/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 9/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 10/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 11/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 12/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 13/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 14/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 15/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 16/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 17/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 18/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 19/100  (our engine plays white)[00m
+[93m  -> draw
+[00m
+[93mGame 20/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 21/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 22/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 23/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 24/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 25/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 26/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 27/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 28/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 29/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 30/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 31/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 32/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 33/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 34/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 35/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 36/100  (our engine plays black)[00m
+[92m  -> win
+[00m
+[93mGame 37/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 38/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 39/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 40/100  (our engine plays black)[00m
+[93m  -> draw
+[00m
+[93mGame 41/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 42/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 43/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 44/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 45/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 46/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 47/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 48/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 49/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 50/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 51/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 52/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 53/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 54/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 55/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 56/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 57/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 58/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 59/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 60/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 61/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 62/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 63/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 64/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 65/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 66/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 67/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 68/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 69/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 70/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 71/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 72/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 73/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 74/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 75/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 76/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 77/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 78/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 79/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 80/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 81/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 82/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 83/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 84/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 85/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 86/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 87/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 88/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 89/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 90/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 91/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 92/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 93/100  (our engine plays white)[00m
+[92m  -> win
+[00m
+[93mGame 94/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 95/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 96/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 97/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 98/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 99/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 100/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93m============================================================[00m
+[93m  Final Results[00m
+[93m============================================================[00m
+[93m  Algorithm : cpp-alpha-beta[00m
+[93m  Budget    : cycles=10[00m
+[93m  Games     : 100[00m
+[93m  Opponent  : Stockfish 1950 ELO[00m
+[93m  Color     : random[00m
+[93m============================================================[00m
+[92m  Wins  : 2[00m
+[91m  Losses: 96[00m
+[93m  Draws : 2[00m
+[93m  Win % : 2.0%[00m
+[93m============================================================[00m
+[93m[build] alpha-beta.so already exists, skipping compilation
+[00m
+[93m[stockfish] loaded at 2250 ELO (UCI_LimitStrength)
+[00m
+[93mGame 1/100  (our engine plays white)[00m
+[alpha-beta] threads: 8 outer x 32 inner = 256 total
+[91m  -> loss
+[00m
+[93mGame 2/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 3/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 4/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 5/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 6/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 7/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 8/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 9/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 10/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 11/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 12/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 13/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 14/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 15/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 16/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 17/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 18/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 19/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 20/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 21/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 22/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 23/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 24/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 25/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 26/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 27/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 28/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 29/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 30/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 31/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 32/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 33/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 34/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 35/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 36/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 37/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 38/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 39/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 40/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 41/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 42/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 43/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 44/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 45/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 46/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 47/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 48/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 49/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 50/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 51/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 52/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 53/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 54/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 55/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 56/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 57/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 58/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 59/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 60/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 61/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 62/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 63/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 64/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 65/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 66/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 67/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 68/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 69/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 70/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 71/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 72/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 73/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 74/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 75/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 76/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 77/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 78/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 79/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 80/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 81/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 82/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 83/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 84/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 85/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 86/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 87/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 88/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 89/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 90/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 91/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 92/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 93/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 94/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 95/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 96/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 97/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 98/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 99/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 100/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93m============================================================[00m
+[93m  Final Results[00m
+[93m============================================================[00m
+[93m  Algorithm : cpp-alpha-beta[00m
+[93m  Budget    : cycles=10[00m
+[93m  Games     : 100[00m
+[93m  Opponent  : Stockfish 2250 ELO[00m
+[93m  Color     : random[00m
+[93m============================================================[00m
+[92m  Wins  : 0[00m
+[91m  Losses: 100[00m
+[93m  Draws : 0[00m
+[93m  Win % : 0.0%[00m
+[93m============================================================[00m
+[93m[build] alpha-beta.so already exists, skipping compilation
+[00m
+[93m[stockfish] loaded at 2550 ELO (UCI_LimitStrength)
+[00m
+[93mGame 1/100  (our engine plays white)[00m
+[alpha-beta] threads: 8 outer x 32 inner = 256 total
+[91m  -> loss
+[00m
+[93mGame 2/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 3/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 4/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 5/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 6/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 7/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 8/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 9/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 10/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 11/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 12/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 13/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 14/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 15/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 16/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 17/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 18/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 19/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 20/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 21/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 22/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 23/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 24/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 25/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 26/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 27/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 28/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 29/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 30/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 31/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 32/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 33/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 34/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 35/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 36/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 37/100  (our engine plays black)[00m
+[93m  -> draw
+[00m
+[93mGame 38/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 39/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 40/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 41/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 42/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 43/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 44/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 45/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 46/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 47/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 48/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 49/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 50/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 51/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 52/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 53/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 54/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 55/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 56/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 57/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 58/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 59/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 60/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 61/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 62/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 63/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 64/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 65/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 66/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 67/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 68/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 69/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 70/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 71/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 72/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 73/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 74/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 75/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 76/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 77/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 78/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 79/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 80/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 81/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 82/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 83/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 84/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 85/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 86/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 87/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 88/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 89/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 90/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 91/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 92/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 93/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 94/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 95/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 96/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 97/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 98/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 99/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 100/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93m============================================================[00m
+[93m  Final Results[00m
+[93m============================================================[00m
+[93m  Algorithm : cpp-alpha-beta[00m
+[93m  Budget    : cycles=10[00m
+[93m  Games     : 100[00m
+[93m  Opponent  : Stockfish 2550 ELO[00m
+[93m  Color     : random[00m
+[93m============================================================[00m
+[92m  Wins  : 0[00m
+[91m  Losses: 99[00m
+[93m  Draws : 1[00m
+[93m  Win % : 0.0%[00m
+[93m============================================================[00m
+[93m[build] alpha-beta.so already exists, skipping compilation
+[00m
+[93m[stockfish] loaded at 2850 ELO (UCI_LimitStrength)
+[00m
+[93mGame 1/100  (our engine plays white)[00m
+[alpha-beta] threads: 8 outer x 32 inner = 256 total
+[91m  -> loss
+[00m
+[93mGame 2/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 3/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 4/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 5/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 6/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 7/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 8/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 9/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 10/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 11/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 12/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 13/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 14/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 15/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 16/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 17/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 18/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 19/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 20/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 21/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 22/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 23/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 24/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 25/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 26/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 27/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 28/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 29/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 30/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 31/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 32/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 33/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 34/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 35/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 36/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 37/100  (our engine plays black)[00m
+[93m  -> draw
+[00m
+[93mGame 38/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 39/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 40/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 41/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 42/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 43/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 44/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 45/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 46/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 47/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 48/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 49/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 50/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 51/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 52/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 53/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 54/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 55/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 56/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 57/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 58/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 59/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 60/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 61/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 62/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 63/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 64/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 65/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 66/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 67/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 68/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 69/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 70/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 71/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 72/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 73/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 74/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 75/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 76/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 77/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 78/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 79/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 80/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 81/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 82/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 83/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 84/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 85/100  (our engine plays black)[00m
+[92m  -> win
+[00m
+[93mGame 86/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 87/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 88/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 89/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 90/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 91/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 92/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 93/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 94/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 95/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 96/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 97/100  (our engine plays black)[00m
+[91m  -> loss
+[00m
+[93mGame 98/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 99/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93mGame 100/100  (our engine plays white)[00m
+[91m  -> loss
+[00m
+[93m============================================================[00m
+[93m  Final Results[00m
+[93m============================================================[00m
+[93m  Algorithm : cpp-alpha-beta[00m
+[93m  Budget    : cycles=10[00m
+[93m  Games     : 100[00m
+[93m  Opponent  : Stockfish 2850 ELO[00m
+[93m  Color     : random[00m
+[93m============================================================[00m
+[92m  Wins  : 1[00m
+[91m  Losses: 98[00m
+[93m  Draws : 1[00m
+[93m  Win % : 1.0%[00m
+[93m============================================================[00m

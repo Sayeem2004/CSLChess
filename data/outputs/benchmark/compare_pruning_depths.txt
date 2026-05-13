@@ -1,36 +1,36 @@
-[compare_depths] early: 100 positions, depths 1-5, stockfish threads=8
-[93m[build] compiling alpha-beta.cpp with g++-15 ...[00m
+[compare_pruning_depths] early: 100 positions, depths 1-5, stockfish threads=256
+[93m[build] compiling alpha-beta.cpp with g++ ...[00m
 [92m[build] succeeded at standard/alpha-beta.so
 [00m
-[93m[build] compiling perft.cpp with g++-15 ...[00m
+[93m[build] compiling perft.cpp with g++ ...[00m
 [92m[build] succeeded at standard/perft.so
 [00m
 [93m[build] perft.so already exists, skipping compilation
 [00m
   depth 1/5 ...
-[alpha-beta] threads: 1 outer x 8 inner = 8 total
-    perft:      avg=    0.01ms  std=   0.03ms  nodes avg=        38  std=         8
-    alpha-beta: avg=    0.80ms  std=   5.26ms  nodes avg=        39  std=         8
-    stockfish:  avg=    0.51ms  std=   0.17ms  nodes avg=       381  std=       360  scaled to our nodes=    0.05ms
+[alpha-beta] threads: 8 outer x 32 inner = 256 total
+    perft:      avg=    0.00ms  std=   0.00ms  nodes avg=        38  std=         8
+    alpha-beta: avg=   10.56ms  std= 104.34ms  nodes avg=        39  std=         8
+    stockfish:  avg=    3.01ms  std=   2.51ms  nodes avg=    242037  std=    421138  scaled to our nodes=    0.00ms
   depth 2/5 ...
-    perft:      avg=    0.14ms  std=   0.94ms  nodes avg=      1355  std=       370
-    alpha-beta: avg=    0.86ms  std=   0.80ms  nodes avg=       143  std=        51
-    stockfish:  avg=    0.70ms  std=   0.33ms  nodes avg=       940  std=      1805  scaled to our nodes=    0.11ms
+    perft:      avg=    0.04ms  std=   0.01ms  nodes avg=      1355  std=       370
+    alpha-beta: avg=    0.39ms  std=   0.82ms  nodes avg=       143  std=        51
+    stockfish:  avg=    3.66ms  std=   4.93ms  nodes avg=    395710  std=    969802  scaled to our nodes=    0.00ms
   depth 3/5 ...
-    perft:      avg=    1.49ms  std=   0.57ms  nodes avg=     51929  std=     19473
-    alpha-beta: avg=    1.61ms  std=   1.15ms  nodes avg=      1627  std=       613
-    stockfish:  avg=    0.48ms  std=   0.07ms  nodes avg=      1274  std=       476  scaled to our nodes=    0.61ms
+    perft:      avg=    1.25ms  std=   0.50ms  nodes avg=     51929  std=     19473
+    alpha-beta: avg=    2.49ms  std=  12.45ms  nodes avg=      1627  std=       613
+    stockfish:  avg=    2.72ms  std=   1.82ms  nodes avg=    216635  std=    340702  scaled to our nodes=    0.02ms
   depth 4/5 ...
-    perft:      avg=   47.77ms  std=  21.68ms  nodes avg=   1930645  std=    875753
-    alpha-beta: avg=    6.27ms  std=   5.29ms  nodes avg=      6245  std=      2988
-    stockfish:  avg=    0.52ms  std=   0.11ms  nodes avg=      1987  std=       925  scaled to our nodes=    1.63ms
+    perft:      avg=   42.89ms  std=  19.22ms  nodes avg=   1930645  std=    875753
+    alpha-beta: avg=    6.59ms  std=   3.37ms  nodes avg=      6245  std=      2988
+    stockfish:  avg=    3.12ms  std=   3.34ms  nodes avg=    244882  std=    442458  scaled to our nodes=    0.08ms
   depth 5/5 ...
     perft:      skipped (depth > 4)
-    alpha-beta: avg=   22.15ms  std=  22.30ms  nodes avg=     55784  std=     30674
-    stockfish:  avg=    0.55ms  std=   0.14ms  nodes avg=      2499  std=      1453  scaled to our nodes=   12.20ms
-[compare_depths] early: wrote /Users/Najmoon/Coding/Cornell/CornellCS/Year 4/CS5220/Projects/CSLChess/src/benchmark/../../data/early/darwin/compare_depths.csv
+    alpha-beta: avg=   27.11ms  std=  14.60ms  nodes avg=     55784  std=     30674
+    stockfish:  avg=    3.93ms  std=   7.51ms  nodes avg=    299715  std=    581743  scaled to our nodes=    0.73ms
+[compare_pruning_depths] early: wrote /global/u1/m/msk295/CSLChess/src/benchmark/../../data/early/linux/compare_pruning_depths.csv
 
-[compare_depths] mid: 100 positions, depths 1-5, stockfish threads=8
+[compare_pruning_depths] mid: 100 positions, depths 1-5, stockfish threads=256
 [93m[build] alpha-beta.so already exists, skipping compilation
 [00m
 [93m[build] perft.so already exists, skipping compilation
@@ -39,27 +39,27 @@
 [00m
   depth 1/5 ...
     perft:      avg=    0.00ms  std=   0.00ms  nodes avg=        37  std=        10
-    alpha-beta: avg=    0.36ms  std=   1.25ms  nodes avg=        38  std=        10
-    stockfish:  avg=    0.41ms  std=   0.05ms  nodes avg=       464  std=       313  scaled to our nodes=    0.03ms
+    alpha-beta: avg=    0.98ms  std=   8.77ms  nodes avg=        38  std=        10
+    stockfish:  avg=    3.45ms  std=   5.72ms  nodes avg=    237050  std=    532569  scaled to our nodes=    0.00ms
   depth 2/5 ...
     perft:      avg=    0.04ms  std=   0.01ms  nodes avg=      1384  std=       453
-    alpha-beta: avg=    0.55ms  std=   0.18ms  nodes avg=       154  std=        64
-    stockfish:  avg=    0.45ms  std=   0.10ms  nodes avg=       899  std=       637  scaled to our nodes=    0.08ms
+    alpha-beta: avg=    0.25ms  std=   0.06ms  nodes avg=       154  std=        64
+    stockfish:  avg=    2.96ms  std=   3.27ms  nodes avg=    167486  std=    258309  scaled to our nodes=    0.00ms
   depth 3/5 ...
-    perft:      avg=    1.28ms  std=   0.50ms  nodes avg=     52430  std=     21270
-    alpha-beta: avg=    1.66ms  std=   0.92ms  nodes avg=      1708  std=       895
-    stockfish:  avg=    0.56ms  std=   0.38ms  nodes avg=      1364  std=      1839  scaled to our nodes=    0.70ms
+    perft:      avg=    1.21ms  std=   0.47ms  nodes avg=     52430  std=     21270
+    alpha-beta: avg=    0.86ms  std=   1.02ms  nodes avg=      1708  std=       895
+    stockfish:  avg=    3.34ms  std=   8.03ms  nodes avg=    236358  std=    901315  scaled to our nodes=    0.02ms
   depth 4/5 ...
-    perft:      avg=   49.51ms  std=  24.60ms  nodes avg=   2018319  std=    968120
-    alpha-beta: avg=    6.59ms  std=   4.70ms  nodes avg=      6687  std=      4453
-    stockfish:  avg=    0.52ms  std=   0.13ms  nodes avg=      2052  std=      1114  scaled to our nodes=    1.70ms
+    perft:      avg=   43.95ms  std=  20.72ms  nodes avg=   2018319  std=    968120
+    alpha-beta: avg=    7.04ms  std=   2.64ms  nodes avg=      6687  std=      4453
+    stockfish:  avg=    5.13ms  std=   7.68ms  nodes avg=    577361  std=   1143985  scaled to our nodes=    0.06ms
   depth 5/5 ...
     perft:      skipped (depth > 4)
-    alpha-beta: avg=   25.80ms  std=  22.19ms  nodes avg=     55558  std=     37854
-    stockfish:  avg=    0.62ms  std=   0.25ms  nodes avg=      3108  std=      1813  scaled to our nodes=   11.01ms
-[compare_depths] mid: wrote /Users/Najmoon/Coding/Cornell/CornellCS/Year 4/CS5220/Projects/CSLChess/src/benchmark/../../data/mid/darwin/compare_depths.csv
+    alpha-beta: avg=   24.34ms  std=  12.04ms  nodes avg=     55558  std=     37854
+    stockfish:  avg=    4.29ms  std=   8.07ms  nodes avg=    345106  std=    817475  scaled to our nodes=    0.69ms
+[compare_pruning_depths] mid: wrote /global/u1/m/msk295/CSLChess/src/benchmark/../../data/mid/linux/compare_pruning_depths.csv
 
-[compare_depths] late: 100 positions, depths 1-5, stockfish threads=8
+[compare_pruning_depths] late: 100 positions, depths 1-5, stockfish threads=256
 [93m[build] alpha-beta.so already exists, skipping compilation
 [00m
 [93m[build] perft.so already exists, skipping compilation
@@ -68,23 +68,23 @@
 [00m
   depth 1/5 ...
     perft:      avg=    0.00ms  std=   0.00ms  nodes avg=        23  std=        10
-    alpha-beta: avg=    0.35ms  std=   1.25ms  nodes avg=        24  std=        10
-    stockfish:  avg=    1.05ms  std=   3.98ms  nodes avg=       673  std=      2322  scaled to our nodes=    0.04ms
+    alpha-beta: avg=    0.14ms  std=   0.70ms  nodes avg=        24  std=        10
+    stockfish:  avg=    3.95ms  std=   8.02ms  nodes avg=    359233  std=   1018157  scaled to our nodes=    0.00ms
   depth 2/5 ...
     perft:      avg=    0.02ms  std=   0.01ms  nodes avg=       645  std=       443
-    alpha-beta: avg=    0.58ms  std=   0.19ms  nodes avg=       110  std=        76
-    stockfish:  avg=    0.46ms  std=   0.09ms  nodes avg=       753  std=       534  scaled to our nodes=    0.07ms
+    alpha-beta: avg=    0.18ms  std=   0.08ms  nodes avg=       110  std=        76
+    stockfish:  avg=    2.93ms  std=   4.95ms  nodes avg=    155596  std=    371754  scaled to our nodes=    0.00ms
   depth 3/5 ...
-    perft:      avg=    0.50ms  std=   0.44ms  nodes avg=     17580  std=     16144
-    alpha-beta: avg=    1.13ms  std=   0.61ms  nodes avg=       729  std=       525
-    stockfish:  avg=    0.59ms  std=   0.17ms  nodes avg=       745  std=       636  scaled to our nodes=    0.58ms
+    perft:      avg=    0.44ms  std=   0.39ms  nodes avg=     17580  std=     16144
+    alpha-beta: avg=    0.42ms  std=   0.65ms  nodes avg=       729  std=       525
+    stockfish:  avg=    4.68ms  std=  12.92ms  nodes avg=    462018  std=   1928295  scaled to our nodes=    0.01ms
   depth 4/5 ...
-    perft:      avg=   13.96ms  std=  17.14ms  nodes avg=    554788  std=    621317
-    alpha-beta: avg=    3.10ms  std=   2.62ms  nodes avg=      3112  std=      2768
-    stockfish:  avg=    0.48ms  std=   0.13ms  nodes avg=      1842  std=      1205  scaled to our nodes=    0.81ms
+    perft:      avg=   12.14ms  std=  13.41ms  nodes avg=    554788  std=    621317
+    alpha-beta: avg=    2.93ms  std=   2.29ms  nodes avg=      3112  std=      2768
+    stockfish:  avg=    3.43ms  std=   5.80ms  nodes avg=    243290  std=    537197  scaled to our nodes=    0.04ms
   depth 5/5 ...
     perft:      skipped (depth > 4)
-    alpha-beta: avg=   10.23ms  std=  13.81ms  nodes avg=     17322  std=     18067
-    stockfish:  avg=    0.53ms  std=   0.14ms  nodes avg=      2661  std=      1467  scaled to our nodes=    3.46ms
-[compare_depths] late: wrote /Users/Najmoon/Coding/Cornell/CornellCS/Year 4/CS5220/Projects/CSLChess/src/benchmark/../../data/late/darwin/compare_depths.csv
+    alpha-beta: avg=    7.52ms  std=   6.94ms  nodes avg=     17322  std=     18067
+    stockfish:  avg=    4.37ms  std=   5.45ms  nodes avg=    537074  std=   1106015  scaled to our nodes=    0.14ms
+[compare_pruning_depths] late: wrote /global/u1/m/msk295/CSLChess/src/benchmark/../../data/late/linux/compare_pruning_depths.csv
 
