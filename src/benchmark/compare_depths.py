@@ -16,6 +16,7 @@ from utils.load import load_perft, load_standard_alpha_beta, STOCKFISH_LINUX_BIN
 
 
 MOVE_BUF_LEN = 8
+PERFT_MAX_DEPTH = 4
 
 
 def load_phase_fens(phase, max_positions=None):
@@ -31,12 +32,14 @@ def load_phase_fens(phase, max_positions=None):
 
 
 def time_perft(fn, fens, depth):
-    times = []
+    times  = []
+    counts = []
     for fen in fens:
         t0 = time.perf_counter()
-        fn(fen.encode(), depth)
+        n  = fn(fen.encode(), depth)
         times.append(time.perf_counter() - t0)
-    return times
+        counts.append(int(n))
+    return times, counts
 
 
 def run_alpha_beta(time_fn, count_fn, fens, depth):
@@ -106,6 +109,7 @@ def compare_phase(phase, max_depth, max_positions, sf_path, sys_subfolder, sf_th
     fieldnames = [
         "depth",
         "perft_avg_s",          "perft_std_s",
+        "perft_avg_nodes",      "perft_std_nodes",
         "alpha_beta_avg_s",     "alpha_beta_std_s",
         "alpha_beta_avg_nodes", "alpha_beta_std_nodes",
         "stockfish_avg_s",      "stockfish_std_s",
@@ -113,22 +117,28 @@ def compare_phase(phase, max_depth, max_positions, sf_path, sys_subfolder, sf_th
     ]
     rows = []
 
-
     for depth in range(1, max_depth + 1):
         print(f"  depth {depth}/{max_depth} ...")
 
-        perft_times               = time_perft(perft_fn, fens, depth)
-        ab_times, ab_nodes        = run_alpha_beta(ab_time_fn, ab_count_fn, fens, depth)
-        sf_times, sf_nodes        = run_stockfish(sf_path, fens, depth, sf_threads)
+        run_perft = depth <= PERFT_MAX_DEPTH
+        if run_perft:
+            perft_times, perft_nodes  = time_perft(perft_fn, fens, depth)
+            perft_avg,   perft_std    = summarize(perft_times)
+            perft_n_avg, perft_n_std  = summarize(perft_nodes)
+        ab_times, ab_nodes            = run_alpha_beta(ab_time_fn, ab_count_fn, fens, depth)
+        sf_times, sf_nodes            = run_stockfish(sf_path, fens, depth, sf_threads)
 
-        perft_avg, perft_std      = summarize(perft_times)
-        ab_avg,    ab_std         = summarize(ab_times)
-        ab_n_avg,  ab_n_std       = summarize(ab_nodes)
-        sf_avg,    sf_std         = summarize(sf_times)
-        sf_n_avg,  sf_n_std       = summarize(sf_nodes)
+        ab_avg,    ab_std             = summarize(ab_times)
+        ab_n_avg,  ab_n_std           = summarize(ab_nodes)
+        sf_avg,    sf_std             = summarize(sf_times)
+        sf_n_avg,  sf_n_std           = summarize(sf_nodes)
 
         sf_scaled_ms = (sf_avg / sf_n_avg * ab_n_avg * 1000) if sf_n_avg > 0 else float("nan")
-        print(f"    perft:      avg={perft_avg*1000:8.2f}ms  std={perft_std*1000:7.2f}ms")
+        if run_perft:
+            print(f"    perft:      avg={perft_avg*1000:8.2f}ms  std={perft_std*1000:7.2f}ms  "
+                  f"nodes avg={perft_n_avg:>10.0f}  std={perft_n_std:>10.0f}")
+        else:
+            print(f"    perft:      skipped (depth > {PERFT_MAX_DEPTH})")
         print(f"    alpha-beta: avg={ab_avg*1000:8.2f}ms  std={ab_std*1000:7.2f}ms  "
               f"nodes avg={ab_n_avg:>10.0f}  std={ab_n_std:>10.0f}")
         print(f"    stockfish:  avg={sf_avg*1000:8.2f}ms  std={sf_std*1000:7.2f}ms  "
@@ -137,8 +147,10 @@ def compare_phase(phase, max_depth, max_positions, sf_path, sys_subfolder, sf_th
 
         rows.append({
             "depth":                depth,
-            "perft_avg_s":          f"{perft_avg:.6f}",
-            "perft_std_s":          f"{perft_std:.6f}",
+            "perft_avg_s":          f"{perft_avg:.6f}"   if run_perft else "",
+            "perft_std_s":          f"{perft_std:.6f}"   if run_perft else "",
+            "perft_avg_nodes":      f"{perft_n_avg:.1f}" if run_perft else "",
+            "perft_std_nodes":      f"{perft_n_std:.1f}" if run_perft else "",
             "alpha_beta_avg_s":     f"{ab_avg:.6f}",
             "alpha_beta_std_s":     f"{ab_std:.6f}",
             "alpha_beta_avg_nodes": f"{ab_n_avg:.1f}",
@@ -168,8 +180,8 @@ if __name__ == "__main__":
     sf_default = STOCKFISH_MAC_BIN if platform.system() == "Darwin" else STOCKFISH_LINUX_BIN
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--max-depth",     type=int, default=4,
-                        help="max depth to test (default: 4)")
+    parser.add_argument("--max-depth",     type=int, default=5,
+                        help="max depth to test (default: 5)")
     parser.add_argument("--max-positions", type=int, default=None,
                         help="cap number of FENs across all phases (default: all)")
     parser.add_argument("--stockfish",        default=sf_default,
