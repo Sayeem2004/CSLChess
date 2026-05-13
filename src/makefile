@@ -23,24 +23,19 @@ clean:
 
 
 # Benchmarking scripts
-.PHONY: calibrate-alpha-beta-time calibrate-alpha-beta-depth calibrate-stockfish
-.PHONY: calibrate-mc-depth calibrate-mc-time
+.PHONY: calibrate-alpha-beta-depth calibrate-alpha-beta-time calibrate-mc-depth calibrate-stockfish
 .PHONY: compare-pruning-depths count-nodes count-nodes-ab update-fen
-calibrate-alpha-beta-time: clean
-	venv/bin/python -u benchmark/calibrate_alpha_beta_time.py \
-		> ../data/outputs/calibrate/alpha-beta-time/alpha-beta-time.txt 2>&1
-
 calibrate-alpha-beta-depth: clean
 	venv/bin/python -u benchmark/calibrate_alpha_beta_depth.py \
 		> ../data/outputs/calibrate/alpha-beta-depth/alpha-beta-depth.txt 2>&1
 
+calibrate-alpha-beta-time: clean
+	venv/bin/python -u benchmark/calibrate_alpha_beta_time.py \
+		> ../data/outputs/calibrate/alpha-beta-time/alpha-beta-time.txt 2>&1
+
 calibrate-mc-depth: clean
 	venv/bin/python -u benchmark/calibrate_monte_carlo_depth.py \
 		> ../data/outputs/calibrate/monte-carlo-depth/monte-carlo-depth.txt 2>&1
-
-calibrate-mc-time: clean
-	venv/bin/python -u benchmark/calibrate_monte_carlo_time.py \
-		> ../data/outputs/calibrate/monte-carlo-time/monte-carlo-time.txt 2>&1
 
 calibrate-stockfish: clean
 	venv/bin/python -u benchmark/calibrate_stockfish.py \
@@ -64,12 +59,16 @@ update-fen: clean
 
 
 # Graphing scripts
-.PHONY: graph-alpha-beta-branch graph-alpha-beta-depth graph-search-space
-graph-alpha-beta-branch:
-	venv/bin/python -u graphs/alpha_beta_branch.py --budget 500
-
+.PHONY: graph-alpha-beta-depth graph-alpha-beta-time graph-mc-time
+.PHONY: graph-search-space
 graph-alpha-beta-depth:
 	venv/bin/python -u graphs/alpha_beta_depth.py --depth 5
+
+graph-alpha-beta-time:
+	venv/bin/python -u graphs/alpha_beta_time.py --budget 500
+
+graph-mc-depth:
+	venv/bin/python -u graphs/monte_carlo_depth.py --depth 5
 
 graph-search-space:
 	venv/bin/python -u graphs/search_space.py
