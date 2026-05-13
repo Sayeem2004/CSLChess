@@ -24,6 +24,7 @@ static inline uint64_t budget_to_cycles(int megacycles) { return (uint64_t)megac
 static std::atomic<bool> exceeded_budget{false};
 static uint64_t g_cycle_start  = 0;
 static uint64_t g_cycle_budget = 0;
+static std::once_flag print_flag;
 
 
 double rollout(chess::Board state, int max_depth = 5) {
@@ -289,6 +290,10 @@ int best_move_monte_carlo_depth(const char* fen, int depth, char* out_move, int 
     chess::movegen::legalmoves(moves, board);
     if (moves.empty()) return -1;
 
+    std::call_once(print_flag, []() {
+        fprintf(stderr, "[monte-carlo] threads: %d\n", omp_get_max_threads());
+    });
+
     static thread_local NodePool pool;
     MCTSNode root(board);
 
@@ -309,6 +314,10 @@ int best_move_monte_carlo_time(const char* fen, int time_ms, char* out_move, int
     if (moves.empty()) return -1;
 
     exceeded_budget.store(false, std::memory_order_relaxed);
+
+    std::call_once(print_flag, []() {
+        fprintf(stderr, "[monte-carlo] threads: %d\n", omp_get_max_threads());
+    });
 
     using clock = std::chrono::steady_clock;
     auto deadline = clock::now() + std::chrono::milliseconds(time_ms);
@@ -339,6 +348,11 @@ int best_move_monte_carlo_cycles(const char* fen, int megacycle_budget, char* ou
     if (moves.empty()) return -1;
 
     exceeded_budget.store(false, std::memory_order_relaxed);
+
+    std::call_once(print_flag, []() {
+        fprintf(stderr, "[monte-carlo] threads: %d\n", omp_get_max_threads());
+    });
+
     g_cycle_start  = read_cycles();
     g_cycle_budget = budget_to_cycles(megacycle_budget);
 

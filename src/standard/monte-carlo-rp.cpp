@@ -24,6 +24,7 @@ static inline uint64_t budget_to_cycles(int megacycles) { return (uint64_t)megac
 static std::atomic<bool> exceeded_budget{false};
 static uint64_t g_cycle_start  = 0;
 static uint64_t g_cycle_budget = 0;
+static std::once_flag print_flag;
 
 
 // rollout() simulates a random playout from the given state until a terminal state is reached or a maximum depth is exceeded.
@@ -200,6 +201,10 @@ int best_move_monte_carlo_depth(const char* fen, int depth, char* out_move, int 
     chess::movegen::legalmoves(moves, board);
     if (moves.empty()) return -1;
 
+    std::call_once(print_flag, []() {
+        fprintf(stderr, "[monte-carlo-rp] threads: %d\n", omp_get_max_threads());
+    });
+
     constexpr int SIMS = 100000;
 
     chess::Move best = monte_carlo_search(board, depth, SIMS);
@@ -220,11 +225,9 @@ int best_move_monte_carlo_time(const char* fen, int time_ms,
 
     exceeded_budget = false;
 
-    static bool printed = false;
-    if (!printed) {
-        printed = true;
-        fprintf(stderr, "[monte-carlo] threads: %d\n", omp_get_max_threads());
-    }
+    std::call_once(print_flag, []() {
+        fprintf(stderr, "[monte-carlo-rp] threads: %d\n", omp_get_max_threads());
+    });
 
     using clock = std::chrono::steady_clock;
     auto deadline = clock::now() + std::chrono::milliseconds(time_ms);
@@ -277,11 +280,9 @@ int best_move_monte_carlo_cycles(const char* fen, int megacycle_budget,
     g_cycle_start   = read_cycles();
     g_cycle_budget  = budget_to_cycles(megacycle_budget);
 
-    static bool printed = false;
-    if (!printed) {
-        printed = true;
+    std::call_once(print_flag, []() {
         fprintf(stderr, "[monte-carlo-rp] threads: %d\n", omp_get_max_threads());
-    }
+    });
 
     int num_threads = omp_get_max_threads();
     std::vector<std::unique_ptr<MCTSNode>> roots(num_threads);
