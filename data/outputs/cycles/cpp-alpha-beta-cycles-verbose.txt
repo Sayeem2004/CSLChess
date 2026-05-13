@@ -1,0 +1,1059 @@
+[93m[build] alpha-beta.so already exists, skipping compilation
+[00m
+[93m[stockfish] loaded at 1350 ELO (UCI_LimitStrength)
+[00m
+[93mGame 1/1  (our engine plays white)[00m
+[93m============================================================[00m
+[93m  Engine  : cpp-alpha-beta (White)[00m
+[93m  Budget  : cycles=10[00m
+[93m  Opponent: Stockfish[00m
+[93m============================================================
+[00m
+--- Move 1 (White) ---
+r n b q k b n r
+p p p p p p p p
+. . . . . . . .
+. . . . . . . .
+. . . . . . . .
+. . . . . . . .
+P P P P P P P P
+R N B Q K B N R
+
+[alpha-beta] threads: 1 outer x 8 inner = 8 total
+[92m  [cpp-alpha-beta]  e4
+[00m
+--- Move 1 (Black) ---
+r n b q k b n r
+p p p p p p p p
+. . . . . . . .
+. . . . . . . .
+. . . . P . . .
+. . . . . . . .
+P P P P . P P P
+R N B Q K B N R
+
+[93m  [stockfish]  d5
+[00m
+--- Move 2 (White) ---
+r n b q k b n r
+p p p . p p p p
+. . . . . . . .
+. . . p . . . .
+. . . . P . . .
+. . . . . . . .
+P P P P . P P P
+R N B Q K B N R
+
+[92m  [cpp-alpha-beta]  d4
+[00m
+--- Move 2 (Black) ---
+r n b q k b n r
+p p p . p p p p
+. . . . . . . .
+. . . p . . . .
+. . . P P . . .
+. . . . . . . .
+P P P . . P P P
+R N B Q K B N R
+
+[93m  [stockfish]  e6
+[00m
+--- Move 3 (White) ---
+r n b q k b n r
+p p p . . p p p
+. . . . p . . .
+. . . p . . . .
+. . . P P . . .
+. . . . . . . .
+P P P . . P P P
+R N B Q K B N R
+
+[92m  [cpp-alpha-beta]  Nc3
+[00m
+--- Move 3 (Black) ---
+r n b q k b n r
+p p p . . p p p
+. . . . p . . .
+. . . p . . . .
+. . . P P . . .
+. . N . . . . .
+P P P . . P P P
+R . B Q K B N R
+
+[93m  [stockfish]  c6
+[00m
+--- Move 4 (White) ---
+r n b q k b n r
+p p . . . p p p
+. . p . p . . .
+. . . p . . . .
+. . . P P . . .
+. . N . . . . .
+P P P . . P P P
+R . B Q K B N R
+
+[92m  [cpp-alpha-beta]  exd5
+[00m
+--- Move 4 (Black) ---
+r n b q k b n r
+p p . . . p p p
+. . p . p . . .
+. . . P . . . .
+. . . P . . . .
+. . N . . . . .
+P P P . . P P P
+R . B Q K B N R
+
+[93m  [stockfish]  cxd5
+[00m
+--- Move 5 (White) ---
+r n b q k b n r
+p p . . . p p p
+. . . . p . . .
+. . . p . . . .
+. . . P . . . .
+. . N . . . . .
+P P P . . P P P
+R . B Q K B N R
+
+[92m  [cpp-alpha-beta]  Bb5+
+[00m
+--- Move 5 (Black) ---
+r n b q k b n r
+p p . . . p p p
+. . . . p . . .
+. B . p . . . .
+. . . P . . . .
+. . N . . . . .
+P P P . . P P P
+R . B Q K . N R
+
+[93m  [stockfish]  Nc6
+[00m
+--- Move 6 (White) ---
+r . b q k b n r
+p p . . . p p p
+. . n . p . . .
+. B . p . . . .
+. . . P . . . .
+. . N . . . . .
+P P P . . P P P
+R . B Q K . N R
+
+[92m  [cpp-alpha-beta]  Nf3
+[00m
+--- Move 6 (Black) ---
+r . b q k b n r
+p p . . . p p p
+. . n . p . . .
+. B . p . . . .
+. . . P . . . .
+. . N . . N . .
+P P P . . P P P
+R . B Q K . . R
+
+[93m  [stockfish]  Qd6
+[00m
+--- Move 7 (White) ---
+r . b . k b n r
+p p . . . p p p
+. . n q p . . .
+. B . p . . . .
+. . . P . . . .
+. . N . . N . .
+P P P . . P P P
+R . B Q K . . R
+
+[92m  [cpp-alpha-beta]  Ne5
+[00m
+--- Move 7 (Black) ---
+r . b . k b n r
+p p . . . p p p
+. . n q p . . .
+. B . p N . . .
+. . . P . . . .
+. . N . . . . .
+P P P . . P P P
+R . B Q K . . R
+
+[93m  [stockfish]  Bd7
+[00m
+--- Move 8 (White) ---
+r . . . k b n r
+p p . b . p p p
+. . n q p . . .
+. B . p N . . .
+. . . P . . . .
+. . N . . . . .
+P P P . . P P P
+R . B Q K . . R
+
+[92m  [cpp-alpha-beta]  Nxd7
+[00m
+--- Move 8 (Black) ---
+r . . . k b n r
+p p . N . p p p
+. . n q p . . .
+. B . p . . . .
+. . . P . . . .
+. . N . . . . .
+P P P . . P P P
+R . B Q K . . R
+
+[93m  [stockfish]  Qxd7
+[00m
+--- Move 9 (White) ---
+r . . . k b n r
+p p . q . p p p
+. . n . p . . .
+. B . p . . . .
+. . . P . . . .
+. . N . . . . .
+P P P . . P P P
+R . B Q K . . R
+
+[92m  [cpp-alpha-beta]  Bf4
+[00m
+--- Move 9 (Black) ---
+r . . . k b n r
+p p . q . p p p
+. . n . p . . .
+. B . p . . . .
+. . . P . B . .
+. . N . . . . .
+P P P . . P P P
+R . . Q K . . R
+
+[93m  [stockfish]  Be7
+[00m
+--- Move 10 (White) ---
+r . . . k . n r
+p p . q b p p p
+. . n . p . . .
+. B . p . . . .
+. . . P . B . .
+. . N . . . . .
+P P P . . P P P
+R . . Q K . . R
+
+[92m  [cpp-alpha-beta]  O-O
+[00m
+--- Move 10 (Black) ---
+r . . . k . n r
+p p . q b p p p
+. . n . p . . .
+. B . p . . . .
+. . . P . B . .
+. . N . . . . .
+P P P . . P P P
+R . . Q . R K .
+
+[93m  [stockfish]  h6
+[00m
+--- Move 11 (White) ---
+r . . . k . n r
+p p . q b p p .
+. . n . p . . p
+. B . p . . . .
+. . . P . B . .
+. . N . . . . .
+P P P . . P P P
+R . . Q . R K .
+
+[92m  [cpp-alpha-beta]  Re1
+[00m
+--- Move 11 (Black) ---
+r . . . k . n r
+p p . q b p p .
+. . n . p . . p
+. B . p . . . .
+. . . P . B . .
+. . N . . . . .
+P P P . . P P P
+R . . Q R . K .
+
+[93m  [stockfish]  Nf6
+[00m
+--- Move 12 (White) ---
+r . . . k . . r
+p p . q b p p .
+. . n . p n . p
+. B . p . . . .
+. . . P . B . .
+. . N . . . . .
+P P P . . P P P
+R . . Q R . K .
+
+[92m  [cpp-alpha-beta]  Bg3
+[00m
+--- Move 12 (Black) ---
+r . . . k . . r
+p p . q b p p .
+. . n . p n . p
+. B . p . . . .
+. . . P . . . .
+. . N . . . B .
+P P P . . P P P
+R . . Q R . K .
+
+[93m  [stockfish]  h5
+[00m
+--- Move 13 (White) ---
+r . . . k . . r
+p p . q b p p .
+. . n . p n . .
+. B . p . . . p
+. . . P . . . .
+. . N . . . B .
+P P P . . P P P
+R . . Q R . K .
+
+[92m  [cpp-alpha-beta]  Bh4
+[00m
+--- Move 13 (Black) ---
+r . . . k . . r
+p p . q b p p .
+. . n . p n . .
+. B . p . . . p
+. . . P . . . B
+. . N . . . . .
+P P P . . P P P
+R . . Q R . K .
+
+[93m  [stockfish]  Ng4
+[00m
+--- Move 14 (White) ---
+r . . . k . . r
+p p . q b p p .
+. . n . p . . .
+. B . p . . . p
+. . . P . . n B
+. . N . . . . .
+P P P . . P P P
+R . . Q R . K .
+
+[92m  [cpp-alpha-beta]  Bxe7
+[00m
+--- Move 14 (Black) ---
+r . . . k . . r
+p p . q B p p .
+. . n . p . . .
+. B . p . . . p
+. . . P . . n .
+. . N . . . . .
+P P P . . P P P
+R . . Q R . K .
+
+[93m  [stockfish]  Kxe7
+[00m
+--- Move 15 (White) ---
+r . . . . . . r
+p p . q k p p .
+. . n . p . . .
+. B . p . . . p
+. . . P . . n .
+. . N . . . . .
+P P P . . P P P
+R . . Q R . K .
+
+[92m  [cpp-alpha-beta]  Bxc6
+[00m
+--- Move 15 (Black) ---
+r . . . . . . r
+p p . q k p p .
+. . B . p . . .
+. . . p . . . p
+. . . P . . n .
+. . N . . . . .
+P P P . . P P P
+R . . Q R . K .
+
+[93m  [stockfish]  bxc6
+[00m
+--- Move 16 (White) ---
+r . . . . . . r
+p . . q k p p .
+. . p . p . . .
+. . . p . . . p
+. . . P . . n .
+. . N . . . . .
+P P P . . P P P
+R . . Q R . K .
+
+[92m  [cpp-alpha-beta]  Qf3
+[00m
+--- Move 16 (Black) ---
+r . . . . . . r
+p . . q k p p .
+. . p . p . . .
+. . . p . . . p
+. . . P . . n .
+. . N . . Q . .
+P P P . . P P P
+R . . . R . K .
+
+[93m  [stockfish]  Qc7
+[00m
+--- Move 17 (White) ---
+r . . . . . . r
+p . q . k p p .
+. . p . p . . .
+. . . p . . . p
+. . . P . . n .
+. . N . . Q . .
+P P P . . P P P
+R . . . R . K .
+
+[92m  [cpp-alpha-beta]  Qh3
+[00m
+--- Move 17 (Black) ---
+r . . . . . . r
+p . q . k p p .
+. . p . p . . .
+. . . p . . . p
+. . . P . . n .
+. . N . . . . Q
+P P P . . P P P
+R . . . R . K .
+
+[93m  [stockfish]  Rab8
+[00m
+--- Move 18 (White) ---
+. r . . . . . r
+p . q . k p p .
+. . p . p . . .
+. . . p . . . p
+. . . P . . n .
+. . N . . . . Q
+P P P . . P P P
+R . . . R . K .
+
+[92m  [cpp-alpha-beta]  b3
+[00m
+--- Move 18 (Black) ---
+. r . . . . . r
+p . q . k p p .
+. . p . p . . .
+. . . p . . . p
+. . . P . . n .
+. P N . . . . Q
+P . P . . P P P
+R . . . R . K .
+
+[93m  [stockfish]  Qf4
+[00m
+--- Move 19 (White) ---
+. r . . . . . r
+p . . . k p p .
+. . p . p . . .
+. . . p . . . p
+. . . P . q n .
+. P N . . . . Q
+P . P . . P P P
+R . . . R . K .
+
+[92m  [cpp-alpha-beta]  Qh4+
+[00m
+--- Move 19 (Black) ---
+. r . . . . . r
+p . . . k p p .
+. . p . p . . .
+. . . p . . . p
+. . . P . q n Q
+. P N . . . . .
+P . P . . P P P
+R . . . R . K .
+
+[93m  [stockfish]  f6
+[00m
+--- Move 20 (White) ---
+. r . . . . . r
+p . . . k . p .
+. . p . p p . .
+. . . p . . . p
+. . . P . q n Q
+. P N . . . . .
+P . P . . P P P
+R . . . R . K .
+
+[92m  [cpp-alpha-beta]  Rad1
+[00m
+--- Move 20 (Black) ---
+. r . . . . . r
+p . . . k . p .
+. . p . p p . .
+. . . p . . . p
+. . . P . q n Q
+. P N . . . . .
+P . P . . P P P
+. . . R R . K .
+
+[93m  [stockfish]  Kd7
+[00m
+--- Move 21 (White) ---
+. r . . . . . r
+p . . k . . p .
+. . p . p p . .
+. . . p . . . p
+. . . P . q n Q
+. P N . . . . .
+P . P . . P P P
+. . . R R . K .
+
+[92m  [cpp-alpha-beta]  Na4
+[00m
+--- Move 21 (Black) ---
+. r . . . . . r
+p . . k . . p .
+. . p . p p . .
+. . . p . . . p
+N . . P . q n Q
+. P . . . . . .
+P . P . . P P P
+. . . R R . K .
+
+[93m  [stockfish]  g5
+[00m
+--- Move 22 (White) ---
+. r . . . . . r
+p . . k . . . .
+. . p . p p . .
+. . . p . . p p
+N . . P . q n Q
+. P . . . . . .
+P . P . . P P P
+. . . R R . K .
+
+[92m  [cpp-alpha-beta]  Nc5+
+[00m
+--- Move 22 (Black) ---
+. r . . . . . r
+p . . k . . . .
+. . p . p p . .
+. . N p . . p p
+. . . P . q n Q
+. P . . . . . .
+P . P . . P P P
+. . . R R . K .
+
+[93m  [stockfish]  Ke8
+[00m
+--- Move 23 (White) ---
+. r . . k . . r
+p . . . . . . .
+. . p . p p . .
+. . N p . . p p
+. . . P . q n Q
+. P . . . . . .
+P . P . . P P P
+. . . R R . K .
+
+[92m  [cpp-alpha-beta]  Nxe6
+[00m
+--- Move 23 (Black) ---
+. r . . k . . r
+p . . . . . . .
+. . p . N p . .
+. . . p . . p p
+. . . P . q n Q
+. P . . . . . .
+P . P . . P P P
+. . . R R . K .
+
+[93m  [stockfish]  Kf7
+[00m
+--- Move 24 (White) ---
+. r . . . . . r
+p . . . . k . .
+. . p . N p . .
+. . . p . . p p
+. . . P . q n Q
+. P . . . . . .
+P . P . . P P P
+. . . R R . K .
+
+[92m  [cpp-alpha-beta]  Nxf4
+[00m
+--- Move 24 (Black) ---
+. r . . . . . r
+p . . . . k . .
+. . p . . p . .
+. . . p . . p p
+. . . P . N n Q
+. P . . . . . .
+P . P . . P P P
+. . . R R . K .
+
+[93m  [stockfish]  gxh4
+[00m
+--- Move 25 (White) ---
+. r . . . . . r
+p . . . . k . .
+. . p . . p . .
+. . . p . . . p
+. . . P . N n p
+. P . . . . . .
+P . P . . P P P
+. . . R R . K .
+
+[92m  [cpp-alpha-beta]  h3
+[00m
+--- Move 25 (Black) ---
+. r . . . . . r
+p . . . . k . .
+. . p . . p . .
+. . . p . . . p
+. . . P . N n p
+. P . . . . . P
+P . P . . P P .
+. . . R R . K .
+
+[93m  [stockfish]  Rbe8
+[00m
+--- Move 26 (White) ---
+. . . . r . . r
+p . . . . k . .
+. . p . . p . .
+. . . p . . . p
+. . . P . N n p
+. P . . . . . P
+P . P . . P P .
+. . . R R . K .
+
+[92m  [cpp-alpha-beta]  hxg4
+[00m
+--- Move 26 (Black) ---
+. . . . r . . r
+p . . . . k . .
+. . p . . p . .
+. . . p . . . p
+. . . P . N P p
+. P . . . . . .
+P . P . . P P .
+. . . R R . K .
+
+[93m  [stockfish]  Rxe1+
+[00m
+--- Move 27 (White) ---
+. . . . . . . r
+p . . . . k . .
+. . p . . p . .
+. . . p . . . p
+. . . P . N P p
+. P . . . . . .
+P . P . . P P .
+. . . R r . K .
+
+[92m  [cpp-alpha-beta]  Rxe1
+[00m
+--- Move 27 (Black) ---
+. . . . . . . r
+p . . . . k . .
+. . p . . p . .
+. . . p . . . p
+. . . P . N P p
+. P . . . . . .
+P . P . . P P .
+. . . . R . K .
+
+[93m  [stockfish]  hxg4
+[00m
+--- Move 28 (White) ---
+. . . . . . . r
+p . . . . k . .
+. . p . . p . .
+. . . p . . . .
+. . . P . N p p
+. P . . . . . .
+P . P . . P P .
+. . . . R . K .
+
+[92m  [cpp-alpha-beta]  Re6
+[00m
+--- Move 28 (Black) ---
+. . . . . . . r
+p . . . . k . .
+. . p . R p . .
+. . . p . . . .
+. . . P . N p p
+. P . . . . . .
+P . P . . P P .
+. . . . . . K .
+
+[93m  [stockfish]  Rh6
+[00m
+--- Move 29 (White) ---
+. . . . . . . .
+p . . . . k . .
+. . p . R p . r
+. . . p . . . .
+. . . P . N p p
+. P . . . . . .
+P . P . . P P .
+. . . . . . K .
+
+[92m  [cpp-alpha-beta]  Rxc6
+[00m
+--- Move 29 (Black) ---
+. . . . . . . .
+p . . . . k . .
+. . R . . p . r
+. . . p . . . .
+. . . P . N p p
+. P . . . . . .
+P . P . . P P .
+. . . . . . K .
+
+[93m  [stockfish]  Ke7
+[00m
+--- Move 30 (White) ---
+. . . . . . . .
+p . . . k . . .
+. . R . . p . r
+. . . p . . . .
+. . . P . N p p
+. P . . . . . .
+P . P . . P P .
+. . . . . . K .
+
+[92m  [cpp-alpha-beta]  Nxd5+
+[00m
+--- Move 30 (Black) ---
+. . . . . . . .
+p . . . k . . .
+. . R . . p . r
+. . . N . . . .
+. . . P . . p p
+. P . . . . . .
+P . P . . P P .
+. . . . . . K .
+
+[93m  [stockfish]  Ke8
+[00m
+--- Move 31 (White) ---
+. . . . k . . .
+p . . . . . . .
+. . R . . p . r
+. . . N . . . .
+. . . P . . p p
+. P . . . . . .
+P . P . . P P .
+. . . . . . K .
+
+[92m  [cpp-alpha-beta]  Re6+
+[00m
+--- Move 31 (Black) ---
+. . . . k . . .
+p . . . . . . .
+. . . . R p . r
+. . . N . . . .
+. . . P . . p p
+. P . . . . . .
+P . P . . P P .
+. . . . . . K .
+
+[93m  [stockfish]  Kf7
+[00m
+--- Move 32 (White) ---
+. . . . . . . .
+p . . . . k . .
+. . . . R p . r
+. . . N . . . .
+. . . P . . p p
+. P . . . . . .
+P . P . . P P .
+. . . . . . K .
+
+[92m  [cpp-alpha-beta]  Re7+
+[00m
+--- Move 32 (Black) ---
+. . . . . . . .
+p . . . R k . .
+. . . . . p . r
+. . . N . . . .
+. . . P . . p p
+. P . . . . . .
+P . P . . P P .
+. . . . . . K .
+
+[93m  [stockfish]  Kf8
+[00m
+--- Move 33 (White) ---
+. . . . . k . .
+p . . . R . . .
+. . . . . p . r
+. . . N . . . .
+. . . P . . p p
+. P . . . . . .
+P . P . . P P .
+. . . . . . K .
+
+[92m  [cpp-alpha-beta]  Rc7
+[00m
+--- Move 33 (Black) ---
+. . . . . k . .
+p . R . . . . .
+. . . . . p . r
+. . . N . . . .
+. . . P . . p p
+. P . . . . . .
+P . P . . P P .
+. . . . . . K .
+
+[93m  [stockfish]  g3
+[00m
+--- Move 34 (White) ---
+. . . . . k . .
+p . R . . . . .
+. . . . . p . r
+. . . N . . . .
+. . . P . . . p
+. P . . . . p .
+P . P . . P P .
+. . . . . . K .
+
+[92m  [cpp-alpha-beta]  fxg3
+[00m
+--- Move 34 (Black) ---
+. . . . . k . .
+p . R . . . . .
+. . . . . p . r
+. . . N . . . .
+. . . P . . . p
+. P . . . . P .
+P . P . . . P .
+. . . . . . K .
+
+[93m  [stockfish]  a6
+[00m
+--- Move 35 (White) ---
+. . . . . k . .
+. . R . . . . .
+p . . . . p . r
+. . . N . . . .
+. . . P . . . p
+. P . . . . P .
+P . P . . . P .
+. . . . . . K .
+
+[92m  [cpp-alpha-beta]  g4
+[00m
+--- Move 35 (Black) ---
+. . . . . k . .
+. . R . . . . .
+p . . . . p . r
+. . . N . . . .
+. . . P . . P p
+. P . . . . . .
+P . P . . . P .
+. . . . . . K .
+
+[93m  [stockfish]  Ke8
+[00m
+--- Move 36 (White) ---
+. . . . k . . .
+. . R . . . . .
+p . . . . p . r
+. . . N . . . .
+. . . P . . P p
+. P . . . . . .
+P . P . . . P .
+. . . . . . K .
+
+[92m  [cpp-alpha-beta]  c4
+[00m
+--- Move 36 (Black) ---
+. . . . k . . .
+. . R . . . . .
+p . . . . p . r
+. . . N . . . .
+. . P P . . P p
+. P . . . . . .
+P . . . . . P .
+. . . . . . K .
+
+[93m  [stockfish]  Kf8
+[00m
+--- Move 37 (White) ---
+. . . . . k . .
+. . R . . . . .
+p . . . . p . r
+. . . N . . . .
+. . P P . . P p
+. P . . . . . .
+P . . . . . P .
+. . . . . . K .
+
+[92m  [cpp-alpha-beta]  b4
+[00m
+--- Move 37 (Black) ---
+. . . . . k . .
+. . R . . . . .
+p . . . . p . r
+. . . N . . . .
+. P P P . . P p
+. . . . . . . .
+P . . . . . P .
+. . . . . . K .
+
+[93m  [stockfish]  Kg8
+[00m
+--- Move 38 (White) ---
+. . . . . . k .
+. . R . . . . .
+p . . . . p . r
+. . . N . . . .
+. P P P . . P p
+. . . . . . . .
+P . . . . . P .
+. . . . . . K .
+
+[92m  [cpp-alpha-beta]  b5
+[00m
+--- Move 38 (Black) ---
+. . . . . . k .
+. . R . . . . .
+p . . . . p . r
+. P . N . . . .
+. . P P . . P p
+. . . . . . . .
+P . . . . . P .
+. . . . . . K .
+
+[93m  [stockfish]  Kf8
+[00m
+--- Move 39 (White) ---
+. . . . . k . .
+. . R . . . . .
+p . . . . p . r
+. P . N . . . .
+. . P P . . P p
+. . . . . . . .
+P . . . . . P .
+. . . . . . K .
+
+[92m  [cpp-alpha-beta]  Rc8+
+[00m
+--- Move 39 (Black) ---
+. . R . . k . .
+. . . . . . . .
+p . . . . p . r
+. P . N . . . .
+. . P P . . P p
+. . . . . . . .
+P . . . . . P .
+. . . . . . K .
+
+[93m  [stockfish]  Kg7
+[00m
+--- Move 40 (White) ---
+. . R . . . . .
+. . . . . . k .
+p . . . . p . r
+. P . N . . . .
+. . P P . . P p
+. . . . . . . .
+P . . . . . P .
+. . . . . . K .
+
+[92m  [cpp-alpha-beta]  bxa6
+[00m
+--- Move 40 (Black) ---
+. . R . . . . .
+. . . . . . k .
+P . . . . p . r
+. . . N . . . .
+. . P P . . P p
+. . . . . . . .
+P . . . . . P .
+. . . . . . K .
+
+[93m  [stockfish]  Kf7
+[00m
+--- Move 41 (White) ---
+. . R . . . . .
+. . . . . k . .
+P . . . . p . r
+. . . N . . . .
+. . P P . . P p
+. . . . . . . .
+P . . . . . P .
+. . . . . . K .
+
+[92m  [cpp-alpha-beta]  Rc7+
+[00m
+--- Move 41 (Black) ---
+. . . . . . . .
+. . R . . k . .
+P . . . . p . r
+. . . N . . . .
+. . P P . . P p
+. . . . . . . .
+P . . . . . P .
+. . . . . . K .
+
+[93m  [stockfish]  Kf8
+[00m
+--- Move 42 (White) ---
+. . . . . k . .
+. . R . . . . .
+P . . . . p . r
+. . . N . . . .
+. . P P . . P p
+. . . . . . . .
+P . . . . . P .
+. . . . . . K .
+
+[92m  [cpp-alpha-beta]  a7
+[00m
+--- Move 42 (Black) ---
+. . . . . k . .
+P . R . . . . .
+. . . . . p . r
+. . . N . . . .
+. . P P . . P p
+. . . . . . . .
+P . . . . . P .
+. . . . . . K .
+
+[93m  [stockfish]  Rg6
+[00m
+--- Move 43 (White) ---
+. . . . . k . .
+P . R . . . . .
+. . . . . p r .
+. . . N . . . .
+. . P P . . P p
+. . . . . . . .
+P . . . . . P .
+. . . . . . K .
+
+[92m  [cpp-alpha-beta]  a8=R#
+[00m
+============================================================
+R . . . . k . .
+. . R . . . . .
+. . . . . p r .
+. . . N . . . .
+. . P P . . P p
+. . . . . . . .
+P . . . . . P .
+. . . . . . K .
+============================================================
+
+[92m  -> win
+[00m
+[93m============================================================[00m
+[93m  Final Results[00m
+[93m============================================================[00m
+[93m  Algorithm : cpp-alpha-beta[00m
+[93m  Budget    : cycles=10[00m
+[93m  Games     : 1[00m
+[93m  Opponent  : Stockfish 1350 ELO[00m
+[93m  Color     : random[00m
+[93m============================================================[00m
+[92m  Wins  : 1[00m
+[91m  Losses: 0[00m
+[93m  Draws : 0[00m
+[93m  Win % : 100.0%[00m
+[93m============================================================[00m

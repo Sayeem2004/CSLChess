@@ -142,7 +142,7 @@ struct NodePool {
     std::mutex grow_mutex;
 
     NodePool() {
-        chunks.reserve(32);
+        chunks.reserve(64);
         chunks.push_back(new Chunk());
     }
 
@@ -150,14 +150,12 @@ struct NodePool {
         size_t idx_chunk = current.load(std::memory_order_relaxed);
         Chunk* c = chunks[idx_chunk];
 
-        // fast path: atomic bump inside chunk
         size_t idx = c->used.fetch_add(1, std::memory_order_relaxed);
 
         if (idx < CHUNK_SIZE) {
             return new (&c->data[idx]) MCTSNode(b, m, parent);
         }
 
-        // slow path: need new chunk
         std::lock_guard<std::mutex> lock(grow_mutex);
 
         idx_chunk = current.load(std::memory_order_relaxed);

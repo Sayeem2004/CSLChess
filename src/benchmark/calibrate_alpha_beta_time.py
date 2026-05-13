@@ -105,41 +105,50 @@ def spawn_worker(threads, budgets, max_positions):
         sys.exit(1)
 
 
-def run_comparison(budgets, max_positions, single_t, multi_t):
-    print(f"[calibrate] Single-thread ({single_t}T) vs Multi-thread ({multi_t}T Hybrid)")
+def run_comparison(budgets, max_positions, thread_counts):
+    print(f"[calibrate] Thread counts: {thread_counts}")
     print(f"[calibrate] Budgets: {budgets} ms\n")
 
-    single, single_schema = spawn_worker(single_t, budgets, max_positions)
-    multi,  multi_schema  = spawn_worker(multi_t,  budgets, max_positions)
+    results = {}
+    schemas = {}
+    for t in thread_counts:
+        print(f"[calibrate] running OMP_NUM_THREADS={t} ...")
+        results[t], schemas[t] = spawn_worker(t, budgets, max_positions)
 
-    print(f"[calibrate] Schemas — single: {single_schema}  multi: {multi_schema}\n")
+    col_w = 14
+    labels = [schemas[t] for t in thread_counts]
 
-    s_label = f"{single_schema} Avg Depth"
-    m_label = f"{multi_schema} Avg Depth"
-    header = f"{'Phase':<8}  {s_label:>18}  {m_label:>18}  {'Depth Gain':>12}"
-    sep = "-" * len(header)
-
-    for t in budgets:
-        print(f"--- Budget: {t}ms ---")
+    for t_ms in budgets:
+        print(f"\n--- Budget: {t_ms}ms ---")
+        header = f"{'Phase':<8}" + "".join(f"  {lbl:>{col_w}}" for lbl in labels) + f"  {'Depth Gain':>12}"
         print(header)
-        print(sep)
+        print("-" * len(header))
         for phase in PHASES:
-            s = single.get(phase, {}).get(str(t))
-            m = multi.get(phase, {}).get(str(t))
-            if not s or not m: continue
-
-            gain = m['avg'] - s['avg']
-            print(f"{phase:<8}  {s['avg']:18.2f}  {m['avg']:18.2f}  {gain:>+11.2f}")
-        print()
+            row_parts = []
+            all_ok = True
+            for t in thread_counts:
+                entry = results[t].get(phase, {}).get(str(t_ms))
+                if not entry:
+                    all_ok = False
+                    break
+                row_parts.append(entry)
+            if not all_ok:
+                continue
+            gain = row_parts[-1]["avg"] - row_parts[0]["avg"]
+            line = f"{phase:<8}" + "".join(f"  {e['avg']:>{col_w}.2f}" for e in row_parts)
+            line += f"  {gain:>+11.2f}"
+            print(line)
+    print()
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--budgets", type=str, default="10,100,500", help="Comma-separated ms limits")
-    parser.add_argument("--max-positions", type=int, default=None, help="cap FENs per phase (default: all)")
-    parser.add_argument("--single-threads", type=int, default=1)
-    parser.add_argument("--multi-threads",  type=int,
-                        default=int(os.environ.get("OMP_NUM_THREADS", os.cpu_count())))
+    parser.add_argument("--budgets",       type=str, default="10,100,500",
+                        help="Comma-separated ms limits")
+    parser.add_argument("--max-positions", type=int, default=None,
+                        help="cap FENs per phase (default: all)")
+    parser.add_argument("--threads",       type=str, default="1,32,64,128,256",
+                        help="comma-separated thread counts (default: 1,32,64,128,256)")
     parser.add_argument("--worker", action="store_true")
     args = parser.parse_args()
 
@@ -148,4 +157,5 @@ if __name__ == "__main__":
     if args.worker:
         run_worker(budgets, args.max_positions)
     else:
-        run_comparison(budgets, args.max_positions, args.single_threads, args.multi_threads)
+        thread_counts = [int(x) for x in args.threads.split(",")]
+        run_comparison(budgets, args.max_positions, thread_counts)

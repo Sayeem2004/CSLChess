@@ -275,9 +275,9 @@ int best_move_alpha_beta_time(const char* fen, int time_ms, char* out_move, int 
 
     using clock = std::chrono::steady_clock;
     auto deadline = clock::now() + std::chrono::milliseconds(time_ms);
-    std::thread timer([deadline]() {
+    std::thread timer([deadline, time_ms]() {
         while (!exceeded_budget && clock::now() < deadline)
-            std::this_thread::sleep_for(std::chrono::milliseconds(min(10, time_ms)));
+            std::this_thread::sleep_for(std::chrono::milliseconds(std::min(10, time_ms)));
         exceeded_budget = true;
     });
 

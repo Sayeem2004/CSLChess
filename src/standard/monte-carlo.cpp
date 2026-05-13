@@ -133,7 +133,7 @@ struct NodePool {
     std::mutex grow_mutex;
 
     NodePool() {
-        chunks.reserve(32);
+        chunks.reserve(64);
         chunks.push_back(new Chunk());
     }
 
@@ -187,6 +187,7 @@ static MCTSNode* tree_descend(MCTSNode* node, chess::Board& board, NodePool& poo
         if (node->is_stable.load(std::memory_order_acquire)) {
             if (node->children.empty()) return node;
             MCTSNode* best = node->best_child();
+            if (!best) { node->virtual_loss.fetch_sub(1, std::memory_order_relaxed); continue; }
             board.makeMove(best->move);
             node = best;
             continue;
@@ -255,6 +256,7 @@ static chess::Move pick_best(MCTSNode& root) {
     double expected_win_rate = 0.0;
 
     for (const auto& child : root.children) {
+        if (!child) continue;
         int child_v = child->visits.load();
         if (child_v > most_visits) {
             most_visits = child_v;
@@ -290,7 +292,7 @@ int best_move_monte_carlo_depth(const char* fen, int depth, char* out_move, int 
     static thread_local NodePool pool;
     MCTSNode root(board);
 
-    run_simulations(root, board, depth, 1000000, pool);
+    run_simulations(root, board, depth, 10000, pool);
 
     chess::Move best = pick_best(root);
     std::strncpy(out_move, chess::uci::moveToUci(best).c_str(), out_len);

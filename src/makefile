@@ -15,6 +15,7 @@ install: venv
 
 clean:
 	rm -f standard/alpha-beta.so
+	rm -f standard/monte-carlo-rp.so
 	rm -f standard/monte-carlo.so
 	rm -f standard/perft.so
 	rm -f mpi/alpha-beta-mpi
@@ -23,6 +24,7 @@ clean:
 
 # Benchmarking scripts
 .PHONY: calibrate-alpha-beta-time calibrate-alpha-beta-depth calibrate-stockfish
+.PHONY: calibrate-mc-depth calibrate-mc-time
 .PHONY: compare-pruning-depths count-nodes count-nodes-ab update-fen
 calibrate-alpha-beta-time: clean
 	venv/bin/python -u benchmark/calibrate_alpha_beta_time.py \
@@ -31,6 +33,14 @@ calibrate-alpha-beta-time: clean
 calibrate-alpha-beta-depth: clean
 	venv/bin/python -u benchmark/calibrate_alpha_beta_depth.py \
 		> ../data/outputs/calibrate/alpha-beta-depth/alpha-beta-depth.txt 2>&1
+
+calibrate-mc-depth: clean
+	venv/bin/python -u benchmark/calibrate_monte_carlo_depth.py \
+		> ../data/outputs/calibrate/monte-carlo-depth/monte-carlo-depth.txt 2>&1
+
+calibrate-mc-time: clean
+	venv/bin/python -u benchmark/calibrate_monte_carlo_time.py \
+		> ../data/outputs/calibrate/monte-carlo-time/monte-carlo-time.txt 2>&1
 
 calibrate-stockfish: clean
 	venv/bin/python -u benchmark/calibrate_stockfish.py \
@@ -69,9 +79,9 @@ graph-search-space:
 .PHONY: play-cpp-ab-depth play-cpp-ab-time play-cpp-ab-cycles
 .PHONY: play-cpp-ab-depth-elo play-cpp-ab-time-elo play-cpp-ab-cycles-elo
 play-cpp-ab-depth:
-	venv/bin/python -u main.py --algorithm cpp-alpha-beta --depth 5 --num 100 \
+	venv/bin/python -u main.py --algorithm cpp-alpha-beta --depth 4 --num 100 \
 		> ../data/outputs/depth/cpp-alpha-beta-depth.txt 2>&1
-	venv/bin/python -u main.py --algorithm cpp-alpha-beta --depth 5 --verbose \
+	venv/bin/python -u main.py --algorithm cpp-alpha-beta --depth 4 --verbose \
 		> ../data/outputs/depth/cpp-alpha-beta-depth-verbose.txt 2>&1
 
 play-cpp-ab-time:
@@ -86,7 +96,7 @@ play-cpp-ab-cycles:
 	venv/bin/python -u main.py --algorithm cpp-alpha-beta --cycles 10 --verbose \
 		> ../data/outputs/cycles/cpp-alpha-beta-cycles-verbose.txt 2>&1
 
-play-cpp-ab-depth-elo:
+play-cpp-ab-depth-elo: clean
 	venv/bin/python -u main.py --algorithm cpp-alpha-beta --depth 3 --elo 1350 --num 100 \
 		> ../data/outputs/competitive/cpp-alpha-beta-depth3-elo.txt 2>&1
 	venv/bin/python -u main.py --algorithm cpp-alpha-beta --depth 3 --elo 1650 --num 100 \
@@ -126,7 +136,7 @@ play-cpp-ab-depth-elo:
 	venv/bin/python -u main.py --algorithm cpp-alpha-beta --depth 5 --elo 2850 --num 100 \
 		>> ../data/outputs/competitive/cpp-alpha-beta-depth5-elo.txt 2>&1
 
-play-cpp-ab-time-elo:
+play-cpp-ab-time-elo: clean
 	venv/bin/python -u main.py --algorithm cpp-alpha-beta --time 1 --elo 1350 --num 100 \
 		> ../data/outputs/competitive/cpp-alpha-beta-time1-elo.txt 2>&1
 	venv/bin/python -u main.py --algorithm cpp-alpha-beta --time 1 --elo 1650 --num 100 \
@@ -166,7 +176,7 @@ play-cpp-ab-time-elo:
 	venv/bin/python -u main.py --algorithm cpp-alpha-beta --time 100 --elo 2850 --num 100 \
 		>> ../data/outputs/competitive/cpp-alpha-beta-time100-elo.txt 2>&1
 
-play-cpp-ab-cycles-elo:
+play-cpp-ab-cycles-elo: clean
 	venv/bin/python -u main.py --algorithm cpp-alpha-beta --cycles 1 --elo 1350 --num 100 \
 		> ../data/outputs/competitive/cpp-alpha-beta-cycles1-elo.txt 2>&1
 	venv/bin/python -u main.py --algorithm cpp-alpha-beta --cycles 1 --elo 1650 --num 100 \
@@ -211,9 +221,9 @@ play-cpp-ab-cycles-elo:
 .PHONY: play-cpp-mc-depth play-cpp-mc-time play-cpp-mc-cycles
 .PHONY: play-cpp-mc-time-elo play-cpp-mc-cycles-elo
 play-cpp-mc-depth:
-	venv/bin/python -u main.py --algorithm cpp-monte-carlo --depth 5 --num 100 \
+	venv/bin/python -u main.py --algorithm cpp-monte-carlo --depth 4 --num 100 \
 		> ../data/outputs/depth/cpp-monte-carlo-depth.txt 2>&1
-	venv/bin/python -u main.py --algorithm cpp-monte-carlo --depth 5 --verbose \
+	venv/bin/python -u main.py --algorithm cpp-monte-carlo --depth 4 --verbose \
 		> ../data/outputs/depth/cpp-monte-carlo-depth-verbose.txt 2>&1
 
 play-cpp-mc-time:
@@ -228,7 +238,7 @@ play-cpp-mc-cycles:
 	venv/bin/python -u main.py --algorithm cpp-monte-carlo --cycles 10 --verbose \
 		> ../data/outputs/cycles/cpp-monte-carlo-cycles-verbose.txt 2>&1
 
-play-cpp-mc-time-elo:
+play-cpp-mc-time-elo: clean
 	venv/bin/python -u main.py --algorithm cpp-monte-carlo --time 1 --elo 1350 --num 100 \
 		> ../data/outputs/competitive/cpp-monte-carlo-time1-elo.txt 2>&1
 	venv/bin/python -u main.py --algorithm cpp-monte-carlo --time 1 --elo 1650 --num 100 \
@@ -268,7 +278,7 @@ play-cpp-mc-time-elo:
 	venv/bin/python -u main.py --algorithm cpp-monte-carlo --time 100 --elo 2850 --num 100 \
 		>> ../data/outputs/competitive/cpp-monte-carlo-time100-elo.txt 2>&1
 
-play-cpp-mc-cycles-elo:
+play-cpp-mc-cycles-elo: clean
 	venv/bin/python -u main.py --algorithm cpp-monte-carlo --cycles 1 --elo 1350 --num 100 \
 		> ../data/outputs/competitive/cpp-monte-carlo-cycles1-elo.txt 2>&1
 	venv/bin/python -u main.py --algorithm cpp-monte-carlo --cycles 1 --elo 1650 --num 100 \

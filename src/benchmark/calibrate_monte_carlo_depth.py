@@ -16,7 +16,6 @@ import csv
 import ctypes
 import json
 import os
-import platform
 import statistics
 import subprocess
 import sys
@@ -117,31 +116,43 @@ def fmt(avg_s, std_s):
     return f"{avg_ms:8.2f}ms ± {std_ms:6.2f}ms"
 
 
-def run_comparison(max_depth, max_positions, single_threads, multi_threads, rp):
-    print(f"[calibrate_monte_carlo_depth] running single-thread  (OMP_NUM_THREADS={single_threads}) ...")
-    single = spawn_worker(single_threads, max_depth, max_positions, rp)
+def run_comparison(max_depth, max_positions, thread_counts, rp):
+    data = {}
+    for t in thread_counts:
+        print(f"[calibrate_monte_carlo_depth] running OMP_NUM_THREADS={t} ...")
+        data[t] = spawn_worker(t, max_depth, max_positions, rp)
 
-    print(f"[calibrate_monte_carlo_depth] running multi-thread   (OMP_NUM_THREADS={multi_threads}) ...")
-    multi  = spawn_worker(multi_threads,  max_depth, max_positions, rp)
-
-    header = (f"{'Phase':<8}  {'Single (1T) avg ± std':>26}  "
-              f"{'Multi (' + str(multi_threads) + 'T) avg ± std':>26}  {'Speedup':>8}")
-    sep    = "-" * len(header)
+    col_w = 18
+    t_labels = [f"{t}T" for t in thread_counts]
 
     for depth in range(1, max_depth + 1):
         print(f"\n=== Depth {depth} ===")
+        header = f"{'Phase':<8}" + "".join(f"  {lbl:>{col_w}}" for lbl in t_labels) + f"  {'Speedup':>8}"
         print(header)
-        print(sep)
+        print("-" * len(header))
         for phase in PHASES:
-            if phase not in single or str(depth) not in single[phase] and depth not in single[phase]:
+            row_parts = []
+            base_avg = None
+            all_ok = True
+            for t in thread_counts:
+                d = data[t].get(phase, {})
+                entry = d.get(depth) or d.get(str(depth))
+                if entry is None:
+                    all_ok = False
+                    break
+                row_parts.append(entry)
+                if base_avg is None:
+                    base_avg = entry["avg"]
+            if not all_ok or base_avg is None:
                 continue
-            # json keys round-trip as strings; handle both int and str keys
-            s = single[phase].get(depth) or single[phase].get(str(depth))
-            m = multi[phase].get(depth)  or multi[phase].get(str(depth))
-            if s is None or m is None:
-                continue
-            speedup = s["avg"] / m["avg"] if m["avg"] > 0 else float("nan")
-            print(f"{phase:<8}  {fmt(s['avg'], s['std']):>26}  {fmt(m['avg'], m['std']):>26}  {speedup:>7.2f}x")
+            last_avg = row_parts[-1]["avg"]
+            speedup  = base_avg / last_avg if last_avg > 0 else float("nan")
+            line = f"{phase:<8}"
+            for e in row_parts:
+                cell = fmt(e["avg"], e["std"])
+                line += f"  {cell:>{col_w}}"
+            line += f"  {speedup:>7.2f}x"
+            print(line)
     print()
 
 
@@ -151,10 +162,8 @@ if __name__ == "__main__":
                         help="maximum depth / iterations for MCTS (default: 5)")
     parser.add_argument("--max-positions", type=int, default=None,
                         help="cap FENs per phase (default: all)")
-    parser.add_argument("--single-threads", type=int, default=1,
-                        help="thread count for single-threaded baseline (default: 1)")
-    parser.add_argument("--multi-threads",  type=int, default=os.cpu_count(),
-                        help="thread count for parallel run (default: cpu count)")
+    parser.add_argument("--threads", type=str, default="1,32,64,128,256",
+                        help="comma-separated thread counts (default: 1,32,64,128,256)")
     parser.add_argument("--worker", action="store_true",
                         help="internal: run as timing subprocess, print JSON")
     parser.add_argument("--rp", action="store_true",
@@ -164,5 +173,5 @@ if __name__ == "__main__":
     if args.worker:
         run_worker(args.max_depth, args.max_positions, args.rp)
     else:
-        run_comparison(args.max_depth, args.max_positions,
-                       args.single_threads, args.multi_threads, args.rp)
+        thread_counts = [int(x) for x in args.threads.split(",")]
+        run_comparison(args.max_depth, args.max_positions, thread_counts, args.rp)
