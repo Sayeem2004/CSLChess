@@ -1,0 +1,551 @@
+[93m[build] monte-carlo.so already exists, skipping compilation
+[00m
+[93m[stockfish] loaded at 1350 ELO (UCI_LimitStrength)
+[00m
+[93mGame 1/1  (our engine plays black)[00m
+[93m============================================================[00m
+[93m  Engine  : cpp-monte-carlo (Black)[00m
+[93m  Budget  : time=10[00m
+[93m  Opponent: Stockfish[00m
+[93m============================================================
+[00m
+--- Move 1 (White) ---
+r n b q k b n r
+p p p p p p p p
+. . . . . . . .
+. . . . . . . .
+. . . . . . . .
+. . . . . . . .
+P P P P P P P P
+R N B Q K B N R
+
+[93m  [stockfish]  d3
+[00m
+--- Move 1 (Black) ---
+r n b q k b n r
+p p p p p p p p
+. . . . . . . .
+. . . . . . . .
+. . . . . . . .
+. . . P . . . .
+P P P . P P P P
+R N B Q K B N R
+
+[monte-carlo] threads: 256
+MCTS prefers move a1a1 with loss rate 100.00% (-1 visits)
+[91m  [cpp-monte-carlo] (fallback)  Nh6
+[00m
+--- Move 2 (White) ---
+r n b q k b . r
+p p p p p p p p
+. . . . . . . n
+. . . . . . . .
+. . . . . . . .
+. . . P . . . .
+P P P . P P P P
+R N B Q K B N R
+
+[93m  [stockfish]  Nf3
+[00m
+--- Move 2 (Black) ---
+r n b q k b . r
+p p p p p p p p
+. . . . . . . n
+. . . . . . . .
+. . . . . . . .
+. . . P . N . .
+P P P . P P P P
+R N B Q K B . R
+
+MCTS prefers move e7e5 with loss rate 57.91% (14 visits)
+[92m  [cpp-monte-carlo]  e5
+[00m
+--- Move 3 (White) ---
+r n b q k b . r
+p p p p . p p p
+. . . . . . . n
+. . . . p . . .
+. . . . . . . .
+. . . P . N . .
+P P P . P P P P
+R N B Q K B . R
+
+[93m  [stockfish]  e4
+[00m
+--- Move 3 (Black) ---
+r n b q k b . r
+p p p p . p p p
+. . . . . . . n
+. . . . p . . .
+. . . . P . . .
+. . . P . N . .
+P P P . . P P P
+R N B Q K B . R
+
+MCTS prefers move h6g4 with loss rate 50.20% (5675 visits)
+[92m  [cpp-monte-carlo]  Ng4
+[00m
+--- Move 4 (White) ---
+r n b q k b . r
+p p p p . p p p
+. . . . . . . .
+. . . . p . . .
+. . . . P . n .
+. . . P . N . .
+P P P . . P P P
+R N B Q K B . R
+
+[93m  [stockfish]  Nc3
+[00m
+--- Move 4 (Black) ---
+r n b q k b . r
+p p p p . p p p
+. . . . . . . .
+. . . . p . . .
+. . . . P . n .
+. . N P . N . .
+P P P . . P P P
+R . B Q K B . R
+
+MCTS prefers move g4f2 with win rate 57.26% (2791 visits)
+[92m  [cpp-monte-carlo]  Nxf2
+[00m
+--- Move 5 (White) ---
+r n b q k b . r
+p p p p . p p p
+. . . . . . . .
+. . . . p . . .
+. . . . P . . .
+. . N P . N . .
+P P P . . n P P
+R . B Q K B . R
+
+[93m  [stockfish]  Kxf2
+[00m
+--- Move 5 (Black) ---
+r n b q k b . r
+p p p p . p p p
+. . . . . . . .
+. . . . p . . .
+. . . . P . . .
+. . N P . N . .
+P P P . . K P P
+R . B Q . B . R
+
+MCTS prefers move a7a6 with loss rate 80.20% (471 visits)
+[92m  [cpp-monte-carlo]  a6
+[00m
+--- Move 6 (White) ---
+r n b q k b . r
+. p p p . p p p
+p . . . . . . .
+. . . . p . . .
+. . . . P . . .
+. . N P . N . .
+P P P . . K P P
+R . B Q . B . R
+
+[93m  [stockfish]  Bg5
+[00m
+--- Move 6 (Black) ---
+r n b q k b . r
+. p p p . p p p
+p . . . . . . .
+. . . . p . B .
+. . . . P . . .
+. . N P . N . .
+P P P . . K P P
+R . . Q . B . R
+
+MCTS prefers move d8g5 with win rate 55.24% (774 visits)
+[92m  [cpp-monte-carlo]  Qxg5
+[00m
+--- Move 7 (White) ---
+r n b . k b . r
+. p p p . p p p
+p . . . . . . .
+. . . . p . q .
+. . . . P . . .
+. . N P . N . .
+P P P . . K P P
+R . . Q . B . R
+
+[93m  [stockfish]  Nxg5
+[00m
+--- Move 7 (Black) ---
+r n b . k b . r
+. p p p . p p p
+p . . . . . . .
+. . . . p . N .
+. . . . P . . .
+. . N P . . . .
+P P P . . K P P
+R . . Q . B . R
+
+MCTS prefers move f8c5 with loss rate 99.30% (8760 visits)
+[92m  [cpp-monte-carlo]  Bc5+
+[00m
+--- Move 8 (White) ---
+r n b . k . . r
+. p p p . p p p
+p . . . . . . .
+. . b . p . N .
+. . . . P . . .
+. . N P . . . .
+P P P . . K P P
+R . . Q . B . R
+
+[93m  [stockfish]  Kg3
+[00m
+--- Move 8 (Black) ---
+r n b . k . . r
+. p p p . p p p
+p . . . . . . .
+. . b . p . N .
+. . . . P . . .
+. . N P . . K .
+P P P . . . P P
+R . . Q . B . R
+
+MCTS prefers move c5b6 with loss rate 98.70% (796 visits)
+[92m  [cpp-monte-carlo]  Bb6
+[00m
+--- Move 9 (White) ---
+r n b . k . . r
+. p p p . p p p
+p b . . . . . .
+. . . . p . N .
+. . . . P . . .
+. . N P . . K .
+P P P . . . P P
+R . . Q . B . R
+
+[93m  [stockfish]  Qd2
+[00m
+--- Move 9 (Black) ---
+r n b . k . . r
+. p p p . p p p
+p b . . . . . .
+. . . . p . N .
+. . . . P . . .
+. . N P . . K .
+P P P Q . . P P
+R . . . . B . R
+
+MCTS prefers move f7f5 with loss rate 97.20% (695 visits)
+[92m  [cpp-monte-carlo]  f5
+[00m
+--- Move 10 (White) ---
+r n b . k . . r
+. p p p . . p p
+p b . . . . . .
+. . . . p p N .
+. . . . P . . .
+. . N P . . K .
+P P P Q . . P P
+R . . . . B . R
+
+[93m  [stockfish]  Nd5
+[00m
+--- Move 10 (Black) ---
+r n b . k . . r
+. p p p . . p p
+p b . . . . . .
+. . . N p p N .
+. . . . P . . .
+. . . P . . K .
+P P P Q . . P P
+R . . . . B . R
+
+MCTS prefers move b6e3 with loss rate 92.91% (3461 visits)
+[92m  [cpp-monte-carlo]  Be3
+[00m
+--- Move 11 (White) ---
+r n b . k . . r
+. p p p . . p p
+p . . . . . . .
+. . . N p p N .
+. . . . P . . .
+. . . P b . K .
+P P P Q . . P P
+R . . . . B . R
+
+[93m  [stockfish]  Nxc7+
+[00m
+--- Move 11 (Black) ---
+r n b . k . . r
+. p N p . . p p
+p . . . . . . .
+. . . . p p N .
+. . . . P . . .
+. . . P b . K .
+P P P Q . . P P
+R . . . . B . R
+
+MCTS prefers move e8e7 with loss rate 95.34% (2790 visits)
+[92m  [cpp-monte-carlo]  Ke7
+[00m
+--- Move 12 (White) ---
+r n b . . . . r
+. p N p k . p p
+p . . . . . . .
+. . . . p p N .
+. . . . P . . .
+. . . P b . K .
+P P P Q . . P P
+R . . . . B . R
+
+[93m  [stockfish]  Nd5+
+[00m
+--- Move 12 (Black) ---
+r n b . . . . r
+. p . p k . p p
+p . . . . . . .
+. . . N p p N .
+. . . . P . . .
+. . . P b . K .
+P P P Q . . P P
+R . . . . B . R
+
+MCTS prefers move e7d8 with loss rate 94.40% (3683 visits)
+[92m  [cpp-monte-carlo]  Kd8
+[00m
+--- Move 13 (White) ---
+r n b k . . . r
+. p . p . . p p
+p . . . . . . .
+. . . N p p N .
+. . . . P . . .
+. . . P b . K .
+P P P Q . . P P
+R . . . . B . R
+
+[93m  [stockfish]  Nxe3
+[00m
+--- Move 13 (Black) ---
+r n b k . . . r
+. p . p . . p p
+p . . . . . . .
+. . . . p p N .
+. . . . P . . .
+. . . P N . K .
+P P P Q . . P P
+R . . . . B . R
+
+MCTS prefers move d8e7 with loss rate 99.86% (817 visits)
+[92m  [cpp-monte-carlo]  Ke7
+[00m
+--- Move 14 (White) ---
+r n b . . . . r
+. p . p k . p p
+p . . . . . . .
+. . . . p p N .
+. . . . P . . .
+. . . P N . K .
+P P P Q . . P P
+R . . . . B . R
+
+[93m  [stockfish]  Nd5+
+[00m
+--- Move 14 (Black) ---
+r n b . . . . r
+. p . p k . p p
+p . . . . . . .
+. . . N p p N .
+. . . . P . . .
+. . . P . . K .
+P P P Q . . P P
+R . . . . B . R
+
+MCTS prefers move e7d8 with loss rate 99.62% (3645 visits)
+[92m  [cpp-monte-carlo]  Kd8
+[00m
+--- Move 15 (White) ---
+r n b k . . . r
+. p . p . . p p
+p . . . . . . .
+. . . N p p N .
+. . . . P . . .
+. . . P . . K .
+P P P Q . . P P
+R . . . . B . R
+
+[93m  [stockfish]  Qa5+
+[00m
+--- Move 15 (Black) ---
+r n b k . . . r
+. p . p . . p p
+p . . . . . . .
+Q . . N p p N .
+. . . . P . . .
+. . . P . . K .
+P P P . . . P P
+R . . . . B . R
+
+MCTS prefers move d8e8 with loss rate 99.36% (5405 visits)
+[92m  [cpp-monte-carlo]  Ke8
+[00m
+--- Move 16 (White) ---
+r n b . k . . r
+. p . p . . p p
+p . . . . . . .
+Q . . N p p N .
+. . . . P . . .
+. . . P . . K .
+P P P . . . P P
+R . . . . B . R
+
+[93m  [stockfish]  Nc7+
+[00m
+--- Move 16 (Black) ---
+r n b . k . . r
+. p N p . . p p
+p . . . . . . .
+Q . . . p p N .
+. . . . P . . .
+. . . P . . K .
+P P P . . . P P
+R . . . . B . R
+
+MCTS prefers move e8f8 with loss rate 99.48% (4429 visits)
+[92m  [cpp-monte-carlo]  Kf8
+[00m
+--- Move 17 (White) ---
+r n b . . k . r
+. p N p . . p p
+p . . . . . . .
+Q . . . p p N .
+. . . . P . . .
+. . . P . . K .
+P P P . . . P P
+R . . . . B . R
+
+[93m  [stockfish]  Qc5+
+[00m
+--- Move 17 (Black) ---
+r n b . . k . r
+. p N p . . p p
+p . . . . . . .
+. . Q . p p N .
+. . . . P . . .
+. . . P . . K .
+P P P . . . P P
+R . . . . B . R
+
+MCTS prefers move f8g8 with loss rate 99.04% (6278 visits)
+[92m  [cpp-monte-carlo]  Kg8
+[00m
+--- Move 18 (White) ---
+r n b . . . k r
+. p N p . . p p
+p . . . . . . .
+. . Q . p p N .
+. . . . P . . .
+. . . P . . K .
+P P P . . . P P
+R . . . . B . R
+
+[93m  [stockfish]  Qd5+
+[00m
+--- Move 18 (Black) ---
+r n b . . . k r
+. p N p . . p p
+p . . . . . . .
+. . . Q p p N .
+. . . . P . . .
+. . . P . . K .
+P P P . . . P P
+R . . . . B . R
+
+MCTS prefers move g8f8 with loss rate 98.90% (11390 visits)
+[92m  [cpp-monte-carlo]  Kf8
+[00m
+--- Move 19 (White) ---
+r n b . . k . r
+. p N p . . p p
+p . . . . . . .
+. . . Q p p N .
+. . . . P . . .
+. . . P . . K .
+P P P . . . P P
+R . . . . B . R
+
+[93m  [stockfish]  Qd6+
+[00m
+--- Move 19 (Black) ---
+r n b . . k . r
+. p N p . . p p
+p . . Q . . . .
+. . . . p p N .
+. . . . P . . .
+. . . P . . K .
+P P P . . . P P
+R . . . . B . R
+
+MCTS prefers move f8g8 with loss rate 98.56% (11079 visits)
+[92m  [cpp-monte-carlo]  Kg8
+[00m
+--- Move 20 (White) ---
+r n b . . . k r
+. p N p . . p p
+p . . Q . . . .
+. . . . p p N .
+. . . . P . . .
+. . . P . . K .
+P P P . . . P P
+R . . . . B . R
+
+[93m  [stockfish]  Qxe5
+[00m
+--- Move 20 (Black) ---
+r n b . . . k r
+. p N p . . p p
+p . . . . . . .
+. . . . Q p N .
+. . . . P . . .
+. . . P . . K .
+P P P . . . P P
+R . . . . B . R
+
+MCTS prefers move d7d6 with loss rate 98.97% (1377 visits)
+[92m  [cpp-monte-carlo]  d6
+[00m
+--- Move 21 (White) ---
+r n b . . . k r
+. p N . . . p p
+p . . p . . . .
+. . . . Q p N .
+. . . . P . . .
+. . . P . . K .
+P P P . . . P P
+R . . . . B . R
+
+[93m  [stockfish]  Qe8#
+[00m
+============================================================
+r n b . Q . k r
+. p N . . . p p
+p . . p . . . .
+. . . . . p N .
+. . . . P . . .
+. . . P . . K .
+P P P . . . P P
+R . . . . B . R
+============================================================
+
+[91m  -> loss
+[00m
+[93m============================================================[00m
+[93m  Final Results[00m
+[93m============================================================[00m
+[93m  Algorithm : cpp-monte-carlo[00m
+[93m  Budget    : time=10[00m
+[93m  Games     : 1[00m
+[93m  Opponent  : Stockfish 1350 ELO[00m
+[93m  Color     : random[00m
+[93m============================================================[00m
+[92m  Wins  : 0[00m
+[91m  Losses: 1[00m
+[93m  Draws : 0[00m
+[93m  Win % : 0.0%[00m
+[93m============================================================[00m
