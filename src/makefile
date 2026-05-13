@@ -22,11 +22,11 @@ clean:
 
 
 # Benchmarking scripts
-.PHONY: calibrate-alpha-beta-branch calibrate-alpha-beta-depth calibrate-stockfish
-.PHONY: compare-depths count-nodes count-nodes-ab update-fen
-calibrate-alpha-beta-branch: clean
-	venv/bin/python -u benchmark/calibrate_alpha_beta_branch.py \
-		> ../data/outputs/calibrate/alpha-beta-branch/alpha-beta-branch.txt 2>&1
+.PHONY: calibrate-alpha-beta-time calibrate-alpha-beta-depth calibrate-stockfish
+.PHONY: compare-pruning-depths count-nodes count-nodes-ab update-fen
+calibrate-alpha-beta-time: clean
+	venv/bin/python -u benchmark/calibrate_alpha_beta_time.py \
+		> ../data/outputs/calibrate/alpha-beta-time/alpha-beta-time.txt 2>&1
 
 calibrate-alpha-beta-depth: clean
 	venv/bin/python -u benchmark/calibrate_alpha_beta_depth.py \
@@ -34,11 +34,11 @@ calibrate-alpha-beta-depth: clean
 
 calibrate-stockfish: clean
 	venv/bin/python -u benchmark/calibrate_stockfish.py \
-		> ../data/outputs/calibrate/stockfish/stockfish.txt 2>&1
+		> ../data/outputs/calibrate/stockfish-cycles/stockfish-cycles.txt 2>&1
 
-compare-depths: clean
-	venv/bin/python -u benchmark/compare_depths.py \
-		> ../data/outputs/benchmark/compare_depths.txt 2>&1
+compare-pruning-depths: clean
+	venv/bin/python -u benchmark/compare_pruning_depths.py \
+		> ../data/outputs/benchmark/compare_pruning_depths.txt 2>&1
 
 count-nodes: clean
 	venv/bin/python -u benchmark/count_nodes.py \

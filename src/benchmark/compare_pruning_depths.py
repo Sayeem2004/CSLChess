@@ -22,7 +22,7 @@ PERFT_MAX_DEPTH = 4
 def load_phase_fens(phase, max_positions=None):
     path = os.path.join(DATA_DIR, phase, "puzzles.csv")
     if not os.path.exists(path):
-        print(f"[compare_depths] {phase}: puzzles.csv not found, skipping")
+        print(f"[compare_pruning_depths] {phase}: puzzles.csv not found, skipping")
         return []
     with open(path, newline="") as f:
         fens = [row["UpdatedFEN"] for row in csv.DictReader(f) if row.get("UpdatedFEN")]
@@ -100,7 +100,7 @@ def compare_phase(phase, max_depth, max_positions, sf_path, sys_subfolder, sf_th
     fens = load_phase_fens(phase, max_positions)
     if not fens:
         return
-    print(f"[compare_depths] {phase}: {len(fens)} positions, depths 1-{max_depth}, stockfish threads={sf_threads}")
+    print(f"[compare_pruning_depths] {phase}: {len(fens)} positions, depths 1-{max_depth}, stockfish threads={sf_threads}")
 
     ab_time_fn  = load_standard_alpha_beta()["depth"]
     ab_count_fn = load_perft()["alpha_beta"]
@@ -163,12 +163,12 @@ def compare_phase(phase, max_depth, max_positions, sf_path, sys_subfolder, sf_th
 
     out_dir  = os.path.join(DATA_DIR, phase, sys_subfolder)
     os.makedirs(out_dir, exist_ok=True)
-    out_path = os.path.join(out_dir, "compare_depths.csv")
+    out_path = os.path.join(out_dir, "compare_pruning_depths.csv")
     with open(out_path, "w", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(rows)
-    print(f"[compare_depths] {phase}: wrote {out_path}\n")
+    print(f"[compare_pruning_depths] {phase}: wrote {out_path}\n")
 
 
 def compare_depths(max_depth, max_positions, sf_path, sys_subfolder, sf_threads=1):
