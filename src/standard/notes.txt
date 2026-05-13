@@ -9,7 +9,8 @@ Alpha-Beta Pruning:
 - Try to move things out of omp critical section and also try padding to see if TT false sharing is reduced.
 - Try different cache sizes to find the ones that works the best.
 - Reduce locks in TT using memory_order_relaxed.
-- Do capture moves and killers first in the search (MVV-LVA)
+- Do capture moves and killers first in the search (MVV-LVA).
+- Reduce threads to exactly move count, less overhead.
 
 Monte-Carlo Tree Search Notes:
 - Currently using dynamic scheduling, should probably convert to static though?

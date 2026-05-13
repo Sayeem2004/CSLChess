@@ -9,21 +9,21 @@
 [00m
   depth 1/4 ...
 [alpha-beta] threads: 1 outer x 8 inner = 8 total
-    perft:      avg=    0.01ms  std=   0.03ms
-    alpha-beta: avg=    0.80ms  std=   4.73ms  nodes avg=        39  std=         8
-    stockfish:  avg=    0.46ms  std=   0.21ms  nodes avg=       425  std=       342  scaled to our nodes=    0.04ms
+    perft:      avg=    0.02ms  std=   0.09ms
+    alpha-beta: avg=    0.86ms  std=   5.93ms  nodes avg=        39  std=         8
+    stockfish:  avg=    0.45ms  std=   0.20ms  nodes avg=       513  std=       731  scaled to our nodes=    0.03ms
   depth 2/4 ...
-    perft:      avg=    0.04ms  std=   0.02ms
-    alpha-beta: avg=    0.60ms  std=   0.27ms  nodes avg=       143  std=        51
-    stockfish:  avg=    0.47ms  std=   0.14ms  nodes avg=      1002  std=      1773  scaled to our nodes=    0.07ms
+    perft:      avg=    0.12ms  std=   0.59ms
+    alpha-beta: avg=    0.86ms  std=   1.01ms  nodes avg=       143  std=        51
+    stockfish:  avg=    0.63ms  std=   0.24ms  nodes avg=       591  std=       393  scaled to our nodes=    0.15ms
   depth 3/4 ...
-    perft:      avg=    1.38ms  std=   0.50ms
-    alpha-beta: avg=    1.51ms  std=   1.04ms  nodes avg=      1627  std=       613
-    stockfish:  avg=    0.49ms  std=   0.11ms  nodes avg=      1407  std=       761  scaled to our nodes=    0.57ms
+    perft:      avg=    1.34ms  std=   0.47ms
+    alpha-beta: avg=    1.62ms  std=   1.16ms  nodes avg=      1627  std=       613
+    stockfish:  avg=    0.47ms  std=   0.07ms  nodes avg=      1393  std=       515  scaled to our nodes=    0.55ms
   depth 4/4 ...
-    perft:      avg=   50.38ms  std=  23.11ms
-    alpha-beta: avg=    5.79ms  std=   4.84ms  nodes avg=      6245  std=      2988
-    stockfish:  avg=    0.51ms  std=   0.09ms  nodes avg=      1707  std=       890  scaled to our nodes=    1.88ms
+    perft:      avg=   49.38ms  std=  22.20ms
+    alpha-beta: avg=    6.44ms  std=   6.74ms  nodes avg=      6245  std=      2988
+    stockfish:  avg=    0.53ms  std=   0.12ms  nodes avg=      2003  std=      1032  scaled to our nodes=    1.67ms
 [compare_depths] early: wrote /Users/Najmoon/Coding/Cornell/CornellCS/Year 4/CS5220/Projects/CSLChess/src/benchmark/../../data/early/darwin/compare_depths.csv
 
 [compare_depths] mid: 100 positions, depths 1-4, stockfish threads=8
@@ -35,20 +35,20 @@
 [00m
   depth 1/4 ...
     perft:      avg=    0.00ms  std=   0.00ms
-    alpha-beta: avg=    0.27ms  std=   0.02ms  nodes avg=        38  std=        10
-    stockfish:  avg=    0.42ms  std=   0.06ms  nodes avg=       482  std=       347  scaled to our nodes=    0.03ms
+    alpha-beta: avg=    0.25ms  std=   0.04ms  nodes avg=        38  std=        10
+    stockfish:  avg=    0.42ms  std=   0.06ms  nodes avg=       471  std=       356  scaled to our nodes=    0.03ms
   depth 2/4 ...
     perft:      avg=    0.04ms  std=   0.01ms
-    alpha-beta: avg=    0.70ms  std=   1.37ms  nodes avg=       153  std=        64
-    stockfish:  avg=    0.44ms  std=   0.06ms  nodes avg=       942  std=       401  scaled to our nodes=    0.07ms
+    alpha-beta: avg=    0.69ms  std=   1.30ms  nodes avg=       153  std=        64
+    stockfish:  avg=    0.44ms  std=   0.07ms  nodes avg=       931  std=       417  scaled to our nodes=    0.07ms
   depth 3/4 ...
-    perft:      avg=    1.35ms  std=   0.52ms
-    alpha-beta: avg=    1.70ms  std=   0.95ms  nodes avg=      1710  std=       894
-    stockfish:  avg=    0.49ms  std=   0.09ms  nodes avg=      1220  std=       479  scaled to our nodes=    0.69ms
+    perft:      avg=    1.35ms  std=   0.53ms
+    alpha-beta: avg=    1.75ms  std=   1.03ms  nodes avg=      1710  std=       894
+    stockfish:  avg=    0.47ms  std=   0.21ms  nodes avg=      1316  std=      1803  scaled to our nodes=    0.61ms
   depth 4/4 ...
-    perft:      avg=   52.63ms  std=  26.27ms
-    alpha-beta: avg=    7.12ms  std=   5.31ms  nodes avg=      6684  std=      4456
-    stockfish:  avg=    0.53ms  std=   0.17ms  nodes avg=      1979  std=      1156  scaled to our nodes=    1.80ms
+    perft:      avg=   55.56ms  std=  27.15ms
+    alpha-beta: avg=    6.73ms  std=   4.79ms  nodes avg=      6684  std=      4456
+    stockfish:  avg=    0.52ms  std=   0.11ms  nodes avg=      2065  std=      1033  scaled to our nodes=    1.68ms
 [compare_depths] mid: wrote /Users/Najmoon/Coding/Cornell/CornellCS/Year 4/CS5220/Projects/CSLChess/src/benchmark/../../data/mid/darwin/compare_depths.csv
 
 [compare_depths] late: 100 positions, depths 1-4, stockfish threads=8
@@ -60,19 +60,19 @@
 [00m
   depth 1/4 ...
     perft:      avg=    0.00ms  std=   0.00ms
-    alpha-beta: avg=    0.24ms  std=   0.03ms  nodes avg=        24  std=        10
-    stockfish:  avg=    0.37ms  std=   0.06ms  nodes avg=       355  std=       358  scaled to our nodes=    0.03ms
+    alpha-beta: avg=    0.23ms  std=   0.04ms  nodes avg=        24  std=        10
+    stockfish:  avg=    0.38ms  std=   0.06ms  nodes avg=       348  std=       334  scaled to our nodes=    0.03ms
   depth 2/4 ...
     perft:      avg=    0.02ms  std=   0.01ms
-    alpha-beta: avg=    0.51ms  std=   0.13ms  nodes avg=       108  std=        75
-    stockfish:  avg=    0.39ms  std=   0.06ms  nodes avg=       734  std=       429  scaled to our nodes=    0.06ms
+    alpha-beta: avg=    0.51ms  std=   0.15ms  nodes avg=       108  std=        75
+    stockfish:  avg=    0.40ms  std=   0.11ms  nodes avg=       754  std=       704  scaled to our nodes=    0.06ms
   depth 3/4 ...
-    perft:      avg=    0.48ms  std=   0.42ms
-    alpha-beta: avg=    1.13ms  std=   0.99ms  nodes avg=       727  std=       526
-    stockfish:  avg=    0.42ms  std=   0.07ms  nodes avg=      1176  std=       698  scaled to our nodes=    0.26ms
+    perft:      avg=    0.48ms  std=   0.43ms
+    alpha-beta: avg=    1.12ms  std=   0.97ms  nodes avg=       727  std=       526
+    stockfish:  avg=    0.53ms  std=   1.12ms  nodes avg=      2571  std=     14957  scaled to our nodes=    0.15ms
   depth 4/4 ...
-    perft:      avg=   14.44ms  std=  15.86ms
-    alpha-beta: avg=    3.29ms  std=   2.76ms  nodes avg=      3114  std=      2768
-    stockfish:  avg=    0.56ms  std=   0.36ms  nodes avg=      1764  std=      3982  scaled to our nodes=    0.98ms
+    perft:      avg=   14.49ms  std=  15.90ms
+    alpha-beta: avg=    3.80ms  std=   5.60ms  nodes avg=      3114  std=      2768
+    stockfish:  avg=    0.52ms  std=   0.38ms  nodes avg=      2337  std=      5771  scaled to our nodes=    0.70ms
 [compare_depths] late: wrote /Users/Najmoon/Coding/Cornell/CornellCS/Year 4/CS5220/Projects/CSLChess/src/benchmark/../../data/late/darwin/compare_depths.csv
 

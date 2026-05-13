@@ -16,6 +16,7 @@
 
 static std::atomic<bool> exceeded_budget{false};
 static std::once_flag omp_init_flag;
+static std::once_flag print_flag;
 static void init_omp() { omp_set_max_active_levels(2); }
 // Chess branching factor — sets the number of inner (root-parallel) threads per search_root call.
 // Outer thread count = omp_get_max_threads() / BRANCH_FACTOR, used for Lazy SMP staggering.
@@ -156,15 +157,14 @@ static chess::Move search_root(chess::Board& board, int depth, int nthreads) {
 
     // Each inner thread searches one root move; dynamic scheduling gives idle threads
     // the next unstarted move, hopefully load balancing better than a static split.
-    #pragma omp parallel for num_threads(nthreads) schedule(dynamic, 1) \
+    int actual_threads = std::min(nthreads, (int)moves.size());
+    #pragma omp parallel for num_threads(actual_threads) schedule(dynamic, 1) \
             shared(best_move, best_score, depth_alpha)
     for (int i = 0; i < (int)moves.size(); i++) {
         if (exceeded_budget.load(std::memory_order_relaxed)) continue;
         chess::Board local = board;
         local.makeMove(moves[i]);
-
-        int alpha = depth_alpha.load(std::memory_order_relaxed);
-        int score = -negamax(local, depth-1, -1000000, -alpha);
+        int score = -negamax(local, depth-1, -1000000, -depth_alpha.load(std::memory_order_relaxed));
 
         // Update shared alpha lower-bound lock-free (no critical needed — already atomic).
         int prev = depth_alpha.load(std::memory_order_relaxed);
@@ -191,6 +191,13 @@ int best_move_alpha_beta_depth(const char* fen, int depth, char* out_move, int o
     chess::Movelist moves;
     chess::movegen::legalmoves(moves, board);
     if (moves.empty()) return -1;
+    
+    if (moves.size() == 1) {
+        std::string uci = chess::uci::moveToUci(moves[0]);
+        std::strncpy(out_move, uci.c_str(), out_len);
+        out_move[out_len-1] = '\0';
+        return depth;
+    }
 
     // Increment to reduce memset frequency
     if (++tt_gen == 0) std::memset(tt, 0, sizeof(tt));
@@ -199,8 +206,7 @@ int best_move_alpha_beta_depth(const char* fen, int depth, char* out_move, int o
     int inner_threads = std::min(BRANCH_FACTOR, omp_get_max_threads());
     int outer_threads = std::max(1, omp_get_max_threads() / inner_threads);
 
-    static bool printed = false;
-    if (!printed) { printed = true; fprintf(stderr, "[alpha-beta] threads: %d outer x %d inner = %d total\n", outer_threads, inner_threads, outer_threads * inner_threads); }
+    std::call_once(print_flag, [&]() { fprintf(stderr, "[alpha-beta] threads: %d outer x %d inner = %d total\n", outer_threads, inner_threads, outer_threads * inner_threads); });
 
     chess::Move best       = moves[0];
     int         best_depth = 0;
@@ -250,6 +256,13 @@ int best_move_alpha_beta_time(const char* fen, int time_ms, char* out_move, int 
     chess::Movelist moves;
     chess::movegen::legalmoves(moves, board);
     if (moves.empty()) return -1;
+    
+    if (moves.size() == 1) {
+        std::string uci = chess::uci::moveToUci(moves[0]);
+        std::strncpy(out_move, uci.c_str(), out_len);
+        out_move[out_len-1] = '\0';
+        return 1;
+    }
 
     // Increment to reduce memset frequency
     if (++tt_gen == 0) std::memset(tt, 0, sizeof(tt));
@@ -258,8 +271,7 @@ int best_move_alpha_beta_time(const char* fen, int time_ms, char* out_move, int 
     int inner_threads = std::min(BRANCH_FACTOR, omp_get_max_threads());
     int outer_threads = std::max(1, omp_get_max_threads() / inner_threads);
 
-    static bool printed = false;
-    if (!printed) { printed = true; fprintf(stderr, "[alpha-beta] threads: %d outer x %d inner = %d total\n", outer_threads, inner_threads, outer_threads * inner_threads); }
+    std::call_once(print_flag, [&]() { fprintf(stderr, "[alpha-beta] threads: %d outer x %d inner = %d total\n", outer_threads, inner_threads, outer_threads * inner_threads); });
 
     using clock = std::chrono::steady_clock;
     auto deadline = clock::now() + std::chrono::milliseconds(time_ms);
@@ -315,6 +327,13 @@ int best_move_alpha_beta_cycles(const char* fen, int megacycle_budget, char* out
     chess::Movelist moves;
     chess::movegen::legalmoves(moves, board);
     if (moves.empty()) return -1;
+    
+    if (moves.size() == 1) {
+        std::string uci = chess::uci::moveToUci(moves[0]);
+        std::strncpy(out_move, uci.c_str(), out_len);
+        out_move[out_len-1] = '\0';
+        return 1;
+    }
 
     // Increment to reduce memset frequency
     if (++tt_gen == 0) std::memset(tt, 0, sizeof(tt));
@@ -323,8 +342,7 @@ int best_move_alpha_beta_cycles(const char* fen, int megacycle_budget, char* out
     int inner_threads = std::min(BRANCH_FACTOR, omp_get_max_threads());
     int outer_threads = std::max(1, omp_get_max_threads() / inner_threads);
 
-    static bool printed = false;
-    if (!printed) { printed = true; fprintf(stderr, "[alpha-beta] threads: %d outer x %d inner = %d total\n", outer_threads, inner_threads, outer_threads * inner_threads); }
+    std::call_once(print_flag, [&]() { fprintf(stderr, "[alpha-beta] threads: %d outer x %d inner = %d total\n", outer_threads, inner_threads, outer_threads * inner_threads); });
 
     chess::Move best       = moves[0];
     int         best_depth = 0;
