@@ -15,6 +15,7 @@ install: venv
 clean:
 	rm -f standard/alpha-beta.so
 	rm -f standard/monte-carlo.so
+	rm -f standard/perft.so
 
 
 # Benchmarking scripts

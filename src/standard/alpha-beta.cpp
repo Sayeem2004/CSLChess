@@ -48,6 +48,7 @@ struct alignas(32) TTEntry {
 static constexpr int TT_SIZE = 1 << 22;
 static TTEntry tt[TT_SIZE];
 static uint8_t tt_gen = 0;
+static thread_local chess::Move tl_killers[AB_MAX_PLY][2];
 
 
 // Returns a score in centipawns from the perspective of the side to move.
@@ -97,14 +98,12 @@ static int negamax(chess::Board& board, int depth, int alpha, int beta) {
         return -20000 - (depth * 100); // Checkmate: prefer faster mates
     }
 
-    if (tt_valid) {
-        for (int i = 0; i < (int)moves.size(); i++) {
-            if (moves[i] == e.best_move) {
-                std::swap(moves[0], moves[i]);
-                break;
-            }
-        }
-    }
+    int ki = std::min(depth, AB_MAX_PLY - 1);
+    chess::Move tt_mv = tt_valid ? e.best_move : chess::Move{};
+    std::sort(moves.begin(), moves.end(), [&](const chess::Move& a, const chess::Move& b) {
+        return ab_score_move(board, a, tt_mv, tl_killers[ki]) >
+               ab_score_move(board, b, tt_mv, tl_killers[ki]);
+    });
 
     chess::Move best_move = moves[0];
     int         best      = -1000000;
@@ -116,7 +115,16 @@ static int negamax(chess::Board& board, int depth, int alpha, int beta) {
 
         if (score > best) { best = score; best_move = move; }
         if (score > alpha) alpha = score;
-        if (alpha >= beta) break; // Pruning cutoff
+        if (alpha >= beta) { // Pruning/killer cutoff
+            if (move.typeOf() != chess::Move::ENPASSANT &&
+                board.at(move.to()).type() == chess::PieceType::NONE) {
+                if (tl_killers[ki][0] != move) {
+                    tl_killers[ki][1] = tl_killers[ki][0];
+                    tl_killers[ki][0] = move;
+                }
+            }
+            break;
+        }
     }
 
     if (!exceeded_budget.load(std::memory_order_relaxed)) {
@@ -132,17 +140,15 @@ static chess::Move search_root(chess::Board& board, int depth, int nthreads) {
     chess::Movelist moves;
     chess::movegen::legalmoves(moves, board);
 
-    uint64_t root_hash = board.hash();
-    int      idx       = root_hash & (TT_SIZE - 1);
-    TTEntry& e         = tt[idx];
-    if (e.key == root_hash && e.gen == tt_gen) {
-        for (int i = 0; i < (int)moves.size(); i++) {
-            if (moves[i] == e.best_move) {
-                std::swap(moves[0], moves[i]);
-                break;
-            }
-        }
-    }
+    uint64_t  root_hash = board.hash();
+    int       idx       = root_hash & (TT_SIZE - 1);
+    TTEntry&  e         = tt[idx];
+    bool      tt_valid  = (e.key == root_hash && e.gen == tt_gen);
+
+    chess::Move tt_mv = tt_valid ? e.best_move : chess::Move{};
+    std::sort(moves.begin(), moves.end(), [&](const chess::Move& a, const chess::Move& b) {
+        return ab_score_move(board, a, tt_mv) > ab_score_move(board, b, tt_mv);
+    });
 
     chess::Move      best_move  = moves[0];
     int              best_score = -1000000;
@@ -187,7 +193,7 @@ int best_move_alpha_beta_depth(const char* fen, int depth, char* out_move, int o
     if (moves.empty()) return -1;
 
     // Increment to reduce memset frequency
-    if (++tt_gen == 0) std::memset(tt, 0, sizeof(tt)); 
+    if (++tt_gen == 0) std::memset(tt, 0, sizeof(tt));
     exceeded_budget  = false;
 
     int inner_threads = std::min(BRANCH_FACTOR, omp_get_max_threads());
@@ -227,7 +233,7 @@ int best_move_alpha_beta_depth(const char* fen, int depth, char* out_move, int o
     }
 
     exceeded_budget = false;
-    
+
     std::string uci = chess::uci::moveToUci(best);
     std::strncpy(out_move, uci.c_str(), out_len);
     out_move[out_len-1] = '\0';

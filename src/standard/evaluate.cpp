@@ -45,12 +45,6 @@ int engine_evaluate(const chess::Board& board) {
     // Stockfish's Eval::evaluate() asserts !pos.checkers(), so fall back to
     // simple material counting when the side to move is in check.
     if (pos.checkers()) {
-        static constexpr int PIECE_VALUES[] = {100, 320, 330, 500, 900, 20000};
-        static constexpr chess::PieceType PIECE_TYPES[] = {
-            chess::PieceType::PAWN,   chess::PieceType::KNIGHT, chess::PieceType::BISHOP,
-            chess::PieceType::ROOK,   chess::PieceType::QUEEN,  chess::PieceType::KING,
-        };
-
         int score = 0;
         chess::Color stm = board.sideToMove();
         for (int i = 0; i < 6; i++) {
