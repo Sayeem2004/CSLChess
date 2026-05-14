@@ -62,10 +62,10 @@ update-fen: clean
 .PHONY: graph-alpha-beta-depth graph-alpha-beta-time graph-mc-depth
 .PHONY: graph-search-space graph-stockfish-elo-ab graph-stockfish-elo-mc
 graph-alpha-beta-depth:
-	venv/bin/python -u graphs/alpha_beta_depth.py --depth 5
+	venv/bin/python -u graphs/alpha_beta_depth_pe.py --depth 5
 
 graph-alpha-beta-time:
-	venv/bin/python -u graphs/alpha_beta_time.py --budget 500
+	venv/bin/python -u graphs/alpha_beta_time_pe.py --budget 500
 
 graph-mc-depth:
 	venv/bin/python -u graphs/monte_carlo_depth.py --depth 5

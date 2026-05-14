@@ -156,8 +156,8 @@ def plot_pe(schemas, data, depth, input_path, output_dir):
 
 if __name__ == "__main__":
     default_input = os.path.join(
-        os.path.dirname(os.path.dirname(__file__)),
-        "outputs", "calibrate", "alpha-beta-depth", "alpha-beta-depth.txt"
+        os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+        "data", "outputs", "calibrate", "alpha-beta-depth", "alpha-beta-depth.txt"
     )
     default_output = os.path.join(DATA_DIR, "graphs")
 

@@ -16,7 +16,7 @@ def load_avg_branching_factor(phase):
     with open(path, newline="") as f:
         rows = list(csv.DictReader(f))
     bfs = [float(r["effective_branching_factor"]) for r in rows if r["effective_branching_factor"]]
-    return sum(bfs) / len(bfs)
+    return sum(bfs[3:]) / len(bfs[3:]) # Skip first 3 rows because usually gains are from 4 to 7 ish
 
 
 def schema_to_nthreads(schema):
@@ -143,17 +143,17 @@ def plot_pe(schemas, data, budget_ms, bf, input_path, output_dir):
             ha="center", va="bottom", fontsize=9, fontweight="bold", color="#222222"
         )
 
-    ax.axhline(1.0, color="gray", linestyle="--", linewidth=1, alpha=0.7, label="Perfect efficiency")
+    ax.axhline(1.0, color="gray", linestyle="--", linewidth=1, alpha=0.7, label="Perfect Efficiency")
     ax.set_ylim(0, max(1.1, y_max * 1.18))
-    ax.set_ylabel("Parallel Efficiency  (speedup / N)", fontsize=12)
+    ax.set_ylabel("Parallel Efficiency (Speedup / N)", fontsize=12)
     ax.set_title(
         f"Alpha-Beta Parallel Efficiency — {budget_ms}ms Budget\n"
-        f"(speedup = BF^depth_gain, avg across early/mid/late)",
+        f"(Speedup = BF^Depth_Gain, Average Across Early/Mid/Late)",
         fontsize=12, fontweight="bold"
     )
     ax.set_xticks(x)
     ax.set_xticklabels(schemas, fontsize=10)
-    ax.set_xlabel("Thread Configuration", fontsize=12)
+    ax.set_xlabel("Thread Configuration (Lazy SMP x Root Parallelism)", fontsize=12)
     ax.grid(axis="y", linestyle="--", alpha=0.4)
     ax.legend(fontsize=9)
 
@@ -168,8 +168,8 @@ def plot_pe(schemas, data, budget_ms, bf, input_path, output_dir):
 
 if __name__ == "__main__":
     default_input = os.path.join(
-        os.path.dirname(os.path.dirname(__file__)),
-        "outputs", "calibrate", "alpha-beta-time", "alpha-beta-time.txt"
+        os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+        "data", "outputs", "calibrate", "alpha-beta-time", "alpha-beta-time.txt"
     )
     default_output = os.path.join(DATA_DIR, "graphs")
 

@@ -78,12 +78,12 @@ def plot_elo(output_dir):
                 label=label, linewidth=1.8, markersize=6)
 
     ax.axhline(50, color="black", linestyle="--", linewidth=1.2, alpha=0.6,
-               label="50 pts (break-even)")
+               label="50 pts (Break-Even)")
 
-    ax.set_xlabel("Stockfish ELO", fontsize=12)
-    ax.set_ylabel("Points (out of 100 games)", fontsize=12)
-    ax.set_title("Alpha-Beta vs Stockfish — Points by ELO\n"
-                 "(win=1, draw=0.5, loss=0, scaled to 100 games)",
+    ax.set_xlabel("Stockfish 11 ELO", fontsize=12)
+    ax.set_ylabel("Points (Out Of 100 games)", fontsize=12)
+    ax.set_title("Alpha-Beta Vs Stockfish — Points By ELO\n"
+                 "(Win=1, Draw=0.5, Loss=0, Scaled To 100 Games)",
                  fontsize=12, fontweight="bold")
     ax.set_xticks(ELOS)
     ax.set_ylim(0, 105)
