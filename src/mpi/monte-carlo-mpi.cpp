@@ -308,7 +308,7 @@ static std::string search_depth(const chess::Board& board, int depth) {
     static thread_local NodePool pool;
     MCTSNode root(board);
 
-    constexpr int TOTAL_SIMS = 1000000;
+    constexpr int TOTAL_SIMS = 10000;
     int base    = TOTAL_SIMS / g_nranks;
     int my_sims = base + (g_rank < TOTAL_SIMS % g_nranks ? 1 : 0);
 

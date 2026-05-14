@@ -24,7 +24,7 @@ clean:
 
 # Benchmarking scripts
 .PHONY: calibrate-alpha-beta-depth calibrate-alpha-beta-time calibrate-mc-depth calibrate-stockfish
-.PHONY: compare-pruning-depths count-nodes count-nodes-ab update-fen
+.PHONY: compare-pruning-depths count-nodes count-nodes-ab update-fen mpi-ab mpi-mc
 calibrate-alpha-beta-depth: clean
 	venv/bin/python -u benchmark/calibrate_alpha_beta_depth.py \
 		> ../data/outputs/calibrate/alpha-beta-depth/alpha-beta-depth.txt 2>&1
@@ -56,6 +56,14 @@ count-nodes-ab: clean
 update-fen: clean
 	venv/bin/python -u benchmark/update_fen.py \
 		> ../data/outputs/benchmark/update_fen.txt 2>&1
+
+mpi-ab: clean
+	venv/bin/python -u benchmark/benchmark_mpi_ab.py \
+		> ../data/outputs/benchmark/mpi_alpha_beta.txt 2>&1
+
+mpi-mc: clean
+	venv/bin/python -u benchmark/benchmark_mpi_mc.py \
+		> ../data/outputs/benchmark/mpi_monte_carlo.txt 2>&1
 
 
 # Graphing scripts
