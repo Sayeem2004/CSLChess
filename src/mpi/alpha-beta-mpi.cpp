@@ -200,16 +200,14 @@ static chess::Move search_root(chess::Board& board, int depth, int nthreads) {
             if (score > best_score) {
                 best_score = score;
                 best_move  = moves[i];
-                if (!exceeded_budget.load(std::memory_order_relaxed)) {
-                    tt[idx] = {root_hash, best_score, (int16_t)depth, tt_gen, TT_EXACT, best_move};
-                    push_root_entry(root_hash);
-                }
             }
         }
     }
 
-    if (!exceeded_budget.load(std::memory_order_relaxed))
+    if (!exceeded_budget.load(std::memory_order_relaxed)) {
         tt[idx] = {root_hash, best_score, (int16_t)depth, tt_gen, TT_EXACT, best_move};
+        push_root_entry(root_hash);  // push once per depth, outside OMP parallel section
+    }
     return best_move;
 }
 
@@ -226,7 +224,7 @@ struct DepthResult {
 // Returns true if search should stop.
 static bool sync_depth(const chess::Board& board, chess::Move candidate, int my_depth,
                        int& best_depth, int& best_score, std::string& best_move_str,
-                       int target_depth = 1_000_000_000) {
+                       int target_depth = 1000000000) {
     int candidate_score = -1000000;
     {
         uint64_t h  = board.hash();
@@ -419,7 +417,8 @@ int main(int argc, char** argv) {
         MPI_Bcast(buf, BUF_SIZE, MPI_CHAR, 0, MPI_COMM_WORLD);
 
         // Parse: "<mode> <budget> <fen...>"
-        std::istringstream ss(std::string(buf));
+        std::string line_str(buf);
+        std::istringstream ss(line_str);
         std::string mode;
         int         budget;
         std::string fen;

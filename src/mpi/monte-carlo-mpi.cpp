@@ -401,7 +401,8 @@ int main(int argc, char** argv) {
         MPI_Bcast(buf, BUF_SIZE, MPI_CHAR, 0, MPI_COMM_WORLD);
 
         // Parse: "<mode> <budget> <fen...>"
-        std::istringstream ss(std::string(buf));
+        std::string line_str(buf);
+        std::istringstream ss(line_str);
         std::string mode;
         int         budget;
         std::string fen;

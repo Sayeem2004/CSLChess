@@ -25,7 +25,7 @@ from benchmark import PHASES, DATA_DIR
 from utils.load import load_standard_monte_carlo, load_mpi_monte_carlo
 
 MOVE_BUF_LEN   = 8
-DEFAULT_DEPTHS = "1,2,3,4,5"
+DEFAULT_DEPTHS = "5"
 
 
 def load_fens(phase, max_positions=None):
@@ -48,23 +48,36 @@ def run_worker(depths, max_positions):
 
     buf = ctypes.create_string_buffer(MOVE_BUF_LEN)
     results = {}
-    for phase in PHASES:
-        fens = load_fens(phase, max_positions)
-        if not fens:
-            continue
-        phase_results = {}
-        for depth in depths:
-            times = []
-            for fen in fens:
-                t0 = time.perf_counter()
-                mc_fn(fen.encode(), depth, buf, MOVE_BUF_LEN)
-                times.append(time.perf_counter() - t0)
-            phase_results[depth] = {
-                "avg": statistics.mean(times),
-                "std": statistics.stdev(times) if len(times) > 1 else 0.0,
-                "n":   len(times),
-            }
-        results[phase] = phase_results
+
+    # Redirect OS-level fd 1 → stderr so C-level printf in pick_best goes to stderr.
+    # fflush(NULL) before restoring drains the C library's internal buffer while fd 1
+    # still points to stderr, preventing buffered printf text from leaking into the JSON.
+    libc = ctypes.CDLL(None)
+    saved_fd1 = os.dup(1)
+    os.dup2(2, 1)
+    try:
+        for phase in PHASES:
+            fens = load_fens(phase, max_positions)
+            if not fens:
+                continue
+            phase_results = {}
+            for depth in depths:
+                times = []
+                for fen in fens:
+                    t0 = time.perf_counter()
+                    mc_fn(fen.encode(), depth, buf, MOVE_BUF_LEN)
+                    times.append(time.perf_counter() - t0)
+                phase_results[depth] = {
+                    "avg": statistics.mean(times),
+                    "std": statistics.stdev(times) if len(times) > 1 else 0.0,
+                    "n":   len(times),
+                }
+            results[phase] = phase_results
+    finally:
+        libc.fflush(None)  # flush all C-level buffers while fd 1 → stderr
+        os.dup2(saved_fd1, 1)
+        os.close(saved_fd1)
+
     sys.stdout.write(json.dumps(results) + "\n")
     sys.stdout.flush()
 

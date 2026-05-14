@@ -1,0 +1,33 @@
+[benchmark_mpi_ab] running 1T baseline ...
+[93m[build] compiling alpha-beta.cpp with g++ ...[00m
+[92m[build] succeeded at standard/alpha-beta.so
+[00m
+[alpha-beta] threads: 1 outer x 1 inner = 1 total
+[benchmark_mpi_ab] running MPI 2 ranks x 32 OMP threads ...
+[93m[build] compiling alpha-beta-mpi.cpp with mpicxx ...
+[00m
+[92m[build] succeeded at mpi/alpha-beta-mpi
+[00m
+[mpi-alpha-beta] 2 ranks x 32 OMP threads each
+
+=== Depth 3 ===
+Phase                       1T                2Rx32T   Speedup
+--------------------------------------------------------------
+early         2.72ms ±   4.53ms      7.03ms ±  61.87ms     0.39x
+mid           2.33ms ±   1.69ms      0.91ms ±   0.34ms     2.55x
+late          0.99ms ±   0.90ms      0.84ms ±   0.46ms     1.18x
+
+=== Depth 4 ===
+Phase                       1T                2Rx32T   Speedup
+--------------------------------------------------------------
+early         5.93ms ±   5.98ms      5.62ms ±   1.85ms     1.05x
+mid           6.87ms ±   6.41ms      7.98ms ±   2.92ms     0.86x
+late          2.76ms ±   3.52ms      3.77ms ±   2.88ms     0.73x
+
+=== Depth 5 ===
+Phase                       1T                2Rx32T   Speedup
+--------------------------------------------------------------
+early        37.40ms ±  44.33ms     24.74ms ±  10.77ms     1.51x
+mid          41.96ms ±  43.03ms     31.01ms ±  16.14ms     1.35x
+late         13.11ms ±  22.05ms     11.44ms ±   9.80ms     1.15x
+
