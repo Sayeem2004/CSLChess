@@ -81,7 +81,7 @@ struct MCTSNode {
     bool is_terminal() const { return untried_moves.empty() && children.empty(); }
     bool fully_expanded() const { return untried_moves.empty(); }
 
-    MCTSNode* best_child(double c = std::sqrt(0.0)) const {
+    MCTSNode* best_child(double c = 1.414) const {
         MCTSNode* best    = nullptr;
         double best_score = -1e18;
         double log_visits = std::log((double)visits);
